@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BODA | Our Story</title>
+    <title>BODA | About & Download</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -25,15 +25,203 @@
             overflow-x: hidden;
         }
 
-        /* Navigation Overlay */
+        /* Nav */
         .nav-header {
-            padding: 30px 5%;
+            padding: 25px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
             width: 90%;
             top: 0;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(5,5,5,0.9), transparent);
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-family: var(--luxury-font);
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { background: var(--gold); color: black; }
+
+        /* Hero Section */
+        .about-hero {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(5,5,5,0.6), rgba(5,5,5,1)), url('boda.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .about-hero h1 {
+            font-family: var(--luxury-font);
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            margin: 0;
+            color: var(--gold);
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* App Download Section */
+        .download-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            margin: -150px auto 50px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+        }
+
+        .download-box h2 {
+            font-family: var(--luxury-font);
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .download-box p {
+            color: #bbb;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .app-btn {
+            background: var(--gold);
+            color: black;
+            text-decoration: none;
+            padding: 20px 45px;
+            border-radius: 50px;
+            font-family: var(--luxury-font);
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .app-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            background: white;
+            box-shadow: 0 20px 40px rgba(255,255,255,0.2);
+        }
+
+        /* Features */
+        .features-grid {
+            max-width: 1000px;
+            margin: 50px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 0 5%;
+        }
+
+        .feat-item {
+            background: #111;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #222;
+        }
+
+        .feat-item i {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .feat-item h3 { font-family: var(--luxury-font); margin: 10px 0; }
+
+        .feat-item p { color: #777; font-size: 0.9rem; line-height: 1.6; }
+
+        footer {
+            text-align: center;
+            padding: 60px;
+            border-top: 1px solid #1a1a1a;
+            color: #444;
+            font-size: 0.8rem;
+        }
+
+        .version-tag {
+            background: #222;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="nav-header">
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> BACK</a>
+        <img src="logo.png" alt="Logo" height="35">
+    </header>
+
+    <section class="about-hero">
+        <h1>BODA CLIENT</h1>
+        <p style="letter-spacing: 5px; color: #888; text-transform: uppercase;">The Ultimate Streaming Engine</p>
+    </section>
+
+    <div class="download-box">
+        <span class="version-tag">STABLE v2.0.4 - WINDOWS & MAC</span>
+        <h2>Masterpiece Conversion</h2>
+        <p>Unlock the power to convert HLS streams into permanent 1080p MP4 files. The Boda App allows you to watch your cinematic collection anywhere, anytime—even without an internet connection.</p>
+        
+        <a href="Boda_Setup.exe" class="app-btn">
+            <i class="fa-solid fa-download"></i> DOWNLOAD BODA APP
+        </a>
+
+        <div style="margin-top: 25px; display: flex; justify-content: center; gap: 20px; color: #555; font-size: 0.8rem;">
+            <span><i class="fa-brands fa-windows"></i> Windows 10/11</span>
+            <span><i class="fa-brands fa-apple"></i> macOS 12+</span>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="feat-item">
+            <i class="fa-solid fa-file-video"></i>
+            <h3>MP4 Converter</h3>
+            <p>Automatically stitches HLS segments into a single, high-quality MP4 file saved to your device.</p>
+        </div>
+        <div class="feat-item">
+            <i class="fa-solid fa-gauge-high"></i>
+            <h3>Turbo Downloads</h3>
+            <p>Utilizes multi-thread downloading to saturate your bandwidth for the fastest possible saves.</p>
+        </div>
+        <div class="feat-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3>Direct Integration</h3>
+            <p>Registered as a system protocol handler to work seamlessly with the Boda Web Dashboard.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 BODA CINEMA. All rights reserved.</p>
+        <p>Your portal to premium Korean entertainment.</p>
+    </footer>
+
+</body>
+</html>
             z-index: 100;
             background: linear-gradient(to bottom, rgba(5,5,5,0.8), transparent);
         }
@@ -205,4 +393,3 @@
 
 </body>
   </html>
-  
