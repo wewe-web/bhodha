@@ -331,20 +331,29 @@
         }
 
         // --- THE APP DOWNLOAD LOGIC ---
-        function triggerAppDownload(videoUrl, contentTitle) {
-            // This Custom URI triggers your Boda App to start the M3U8 -> MP4 conversion
-            const customUri = `boda-dl://download?url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(contentTitle)}`;
+        function triggerAppDownload(videoUrl, contentTitle, posterUrl) {
+    // 1. Tell the Boda App to start downloading
+    const customUri = `boda-dl://download?url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(contentTitle)}`;
+    window.location.href = customUri;
 
-            // Attempt to launch the local app
-            window.location.href = customUri;
+    // 2. Save "Receipt" to LocalStorage for the Downloads page
+    let currentDownloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
+    
+    const newEntry = {
+        title: contentTitle,
+        poster: posterUrl,
+        // Assuming your app saves it to a specific local folder
+        localPath: `C:/BodaDownloads/${contentTitle}.mp4`, 
+        date: new Date().toLocaleDateString()
+    };
 
-            // Detection Fallback: If app doesn't respond in 2.5s
-            setTimeout(() => {
-                if (confirm("The Boda App is required for MP4 conversion and offline viewing. Would you like to download the installer now?")) {
-                    window.open('https://your-app-landing-page.com/download', '_blank');
-                }
-            }, 2500);
-        }
+    // Prevent duplicates
+    if (!currentDownloads.find(d => d.title === contentTitle)) {
+        currentDownloads.push(newEntry);
+        localStorage.setItem('boda_downloads', JSON.stringify(currentDownloads));
+        alert("Preparing download in the Boda App...");
+    }
+}
 
         function renderPage(item, type) {
             const container = document.getElementById('content-loader');
