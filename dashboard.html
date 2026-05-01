@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BODA ADMIN | Dashboard</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --black: #0a0a0a;
+            --danger: #ff4d4d;
+        }
+
+        body {
+            background: var(--black);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: auto;
+            background: #111;
+            padding: 30px;
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        h1, h2 {
+            font-family: 'Cinzel';
+            color: var(--gold);
+            text-align: center;
+        }
+
+        /* Dashboard List Styling */
+        .content-manager { margin-bottom: 40px; }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a1a;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid var(--gold);
+        }
+        .item-info { cursor: pointer; flex-grow: 1; }
+        .item-info h4 { margin: 0; color: var(--gold); }
+        .item-info span { font-size: 0.8rem; color: #888; }
+        
+        .action-btns { display: flex; gap: 10px; }
+        .delete-btn { color: var(--danger); cursor: pointer; background: none; border: none; font-size: 1.1rem; }
+
+        /* Floating Plus Button */
+        .add-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--gold);
+            color: black;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            z-index: 100;
+        }
+
+        /* Form Styling */
+        #uploadSection { display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--gold); font-weight: 600; font-size: 0.9rem; }
+        input, textarea, select {
+            width: 100%; padding: 12px; background: #222; border: 1px solid #333;
+            color: white; border-radius: 5px; box-sizing: border-box;
+        }
+        input:focus { border-color: var(--gold); outline: none; }
+
+        .btn-gold {
+            background: var(--gold); color: black; padding: 15px; border: none;
+            font-weight: bold; cursor: pointer; font-family: 'Cinzel'; width: 100%;
+            margin-top: 10px; transition: 0.3s;
+        }
+        .btn-gold:hover { background: #fff; }
+
+        .episode-card {
+            border-left: 3px solid var(--gold); padding: 15px; margin-top: 15px;
+            background: #1a1a1a; border-radius: 0 5px 5px 0;
+        }
+        .episode-card input, .episode-card textarea, .episode-card select { margin-bottom: 10px; }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-container">
+        <h1>BODA Admin Studio</h1>
+
+        <!-- Content Manager (View/Edit/Delete) -->
+        <div class="content-manager">
+            <h2>Current Library</h2>
+            <div id="libraryList">
+                <p style="text-align:center; color:#555;">Loading library...</p>
+            </div>
+        </div>
+
+        <!-- Hidden Upload/Edit Form -->
+        <div id="uploadSection">
+            <h2 id="formTitle">Upload New Content</h2>
+            <div class="form-group">
+                <label for="mediaType">Post Type</label>
+                <select id="mediaType" onchange="toggleFields()">
+                    <option value="series">TV Series / Show</option>
+                    <option value="movie">Movie</option>
+                </select>
+            </div>
+
+            <div id="commonFields">
+                <div class="form-group"><label for="title">Title</label><input type="text" id="title" required></div>
+                <div class="form-group"><label for="synopsis">Synopsis</label><textarea id="synopsis" rows="3"></textarea></div>
+                <div class="form-group"><label for="cover">Cover Image Link (URL)</label><input type="text" id="cover"></div>
+                <div class="form-group"><label for="backdrop">Backdrop Link (URL)</label><input type="text" id="backdrop"></div>
+                <div class="form-group"><label for="genres">Genres (Comma separated)</label><input type="text" id="genres"></div>
+                <div class="form-group">
+                    <label for="isHero">Add to Slideshow Banner?</label>
+                    <select id="isHero">
+                        <option value="NO">NO</option>
+                        <option value="YES">YES</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Series Fields -->
+            <div id="seriesFields">
+                <div style="display: flex; gap: 20px;">
+                    <div class="form-group" style="flex:1"><label for="seasons">No. of Seasons</label><input type="number" id="seasons" value="1"></div>
+                    <div class="form-group" style="flex:1"><label for="totalEpisodes">Total Episodes</label><input type="number" id="totalEpisodes"></div>
+                </div>
+                <div class="form-group"><label for="status">Status</label>
+                    <select id="status">
+                        <option>Ongoing</option>
+                        <option>Upcoming</option>
+                        <option>Completed</option>
+                    </select>
+                </div>
+
+                <div id="episodeList">
+                    <label>Episodes</label>
+                    <div class="episode-card">
+                        <input type="text" class="ep-title" placeholder="Episode Title (Optional)">
+                        <textarea class="ep-desc" placeholder="Episode Description..."></textarea>
+                        <select class="ep-status">
+                            <option>Completed</option>
+                            <option>Upcoming</option>
+                        </select>
+                        <input type="text" class="ep-link" placeholder="m3u8 link">
+                        <textarea class="ep-vtt" placeholder="Paste VTT Subtitles here..."></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn-gold" style="background: #333; color: white; font-size: 0.8rem;" onclick="addEpisode()">+ Add Next Episode</button>
+            </div>
+
+            <!-- Movie Fields -->
+            <div id="movieFields" style="display:none;">
+                <div class="form-group"><label>Video Link (m3u8)</label><input type="text" id="movieLink"></div>
+                <div class="form-group"><label>Movie Subtitle (VTT)</label><textarea id="movieVtt"></textarea></div>
+                <div class="form-group"><label>Release Date</label><input type="date" id="movieDate"></div>
+            </div>
+
+            <button id="saveBtn" class="btn-gold" onclick="saveToBoda()">Publish to BODA Cloud</button>
+            <button class="btn-gold" style="background:#222; color:#888;" onclick="hideForm()">Cancel</button>
+        </div>
+    </div>
+
+    <div class="add-toggle" onclick="showForm()" title="Upload New Content">+</div>
+
+    <script>
+        const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
+        const SERIES_BIN = "69f3074faaba882197550749";
+        const MOVIES_BIN = "69f307c736566621a80b4134";
+        
+        let fullLibrary = { series: [], movies: [] };
+        let editingId = null;
+
+        async function fetchLibrary() {
+            try {
+                const [sRes, mRes] = await Promise.all([
+                    fetch(`https://api.jsonbin.io/v3/b/${SERIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY }}),
+                    fetch(`https://api.jsonbin.io/v3/b/${MOVIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY }})
+                ]);
+                const sData = await sRes.json();
+                const mData = await mRes.json();
+                
+                fullLibrary.series = Array.isArray(sData.record) ? sData.record : [sData.record];
+                fullLibrary.movies = Array.isArray(mData.record) ? mData.record : [mData.record];
+                
+                renderLibrary();
+            } catch (err) { console.error("Library Load Failed", err); }
+        }
+
+        function renderLibrary() {
+            const container = document.getElementById('libraryList');
+            container.innerHTML = "";
+            
+            [...fullLibrary.series, ...fullLibrary.movies].forEach((item, index) => {
+                if(!item.title) return;
+                const type = fullLibrary.series.includes(item) ? 'series' : 'movie';
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <div class="item-info" onclick="editItem('${type}', '${item.title}')">
+                        <h4>${item.title}</h4>
+                        <span>${type.toUpperCase()} • ${item.status || item.releaseDate || 'Stored'}</span>
+                    </div>
+                    <div class="action-btns">
+                        <button class="delete-btn" onclick="deleteItem('${type}', '${item.title}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function showForm() {
+            editingId = null;
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('formTitle').innerText = "Upload New Content";
+            window.scrollTo({ top: document.getElementById('uploadSection').offsetTop, behavior: 'smooth' });
+        }
+
+        function hideForm() {
+            document.getElementById('uploadSection').style.display = 'none';
+        }
+
+        function toggleFields() {
+            const type = document.getElementById('mediaType').value;
+            document.getElementById('seriesFields').style.display = (type === 'series') ? 'block' : 'none';
+            document.getElementById('movieFields').style.display = (type === 'movie') ? 'block' : 'none';
+        }
+
+        function addEpisode(data = {}) {
+            const div = document.createElement('div');
+            div.className = 'episode-card';
+            div.innerHTML = `
+                <input type="text" class="ep-title" placeholder="Episode Title" value="${data.title || ''}">
+                <textarea class="ep-desc" placeholder="Episode Description...">${data.description || ''}</textarea>
+                <select class="ep-status">
+                    <option ${data.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    <option ${data.status === 'Upcoming' ? 'selected' : ''}>Upcoming</option>
+                </select>
+                <input type="text" class="ep-link" placeholder="m3u8 link" value="${data.link || ''}">
+                <textarea class="ep-vtt" placeholder="Paste VTT Subtitles here...">${data.vtt || ''}</textarea>
+            `;
+            document.getElementById('episodeList').appendChild(div);
+        }
+
+        function editItem(type, title) {
+            const item = fullLibrary[type === 'series' ? 'series' : 'movies'].find(i => i.title === title);
+            if (!item) return;
+
+            editingId = title;
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('formTitle').innerText = "Edit Masterpiece";
+            
+            document.getElementById('mediaType').value = type;
+            document.getElementById('title').value = item.title;
+            document.getElementById('synopsis').value = item.synopsis;
+            document.getElementById('cover').value = item.cover;
+            document.getElementById('backdrop').value = item.backdrop;
+            document.getElementById('genres').value = item.genres.join(',');
+            document.getElementById('isHero').value = item.isHero;
+            
+            toggleFields();
+
+            if (type === 'series') {
+                document.getElementById('seasons').value = item.seasons;
+                document.getElementById('totalEpisodes').value = item.totalEpisodes;
+                document.getElementById('status').value = item.status;
+                document.getElementById('episodeList').innerHTML = '<label>Episodes</label>';
+                item.episodes.forEach(ep => addEpisode(ep));
+            } else {
+                document.getElementById('movieLink').value = item.videoLink;
+                document.getElementById('movieVtt').value = item.vtt;
+                document.getElementById('movieDate').value = item.releaseDate;
+            }
+            window.scrollTo({ top: document.getElementById('uploadSection').offsetTop, behavior: 'smooth' });
+        }
+
+        async function deleteItem(type, title) {
+            if(!confirm(`Are you sure you want to delete "${title}"?`)) return;
+            const binId = (type === 'series') ? SERIES_BIN : MOVIES_BIN;
+            const updatedList = fullLibrary[type === 'series' ? 'series' : 'movies'].filter(i => i.title !== title);
+            
+            await syncToCloud(binId, updatedList);
+            alert("Deleted successfully");
+            fetchLibrary();
+        }
+
+        async function syncToCloud(binId, data) {
+            return fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+        }
+
+        async function saveToBoda() {
+            const btn = document.getElementById('saveBtn');
+            const type = document.getElementById('mediaType').value;
+            const binId = (type === 'series') ? SERIES_BIN : MOVIES_BIN;
+
+            btn.innerText = "SYNCING CLOUD...";
+            btn.disabled = true;
+
+            let episodes = [];
+            if (type === 'series') {
+                document.querySelectorAll('.episode-card').forEach(card => {
+                    episodes.push({
+                        title: card.querySelector('.ep-title').value,
+                        description: card.querySelector('.ep-desc').value,
+                        status: card.querySelector('.ep-status').value,
+                        link: card.querySelector('.ep-link').value,
+                        vtt: card.querySelector('.ep-vtt').value
+                    });
+                });
+            }
+
+            const payload = {
+                title: document.getElementById('title').value,
+                synopsis: document.getElementById('synopsis').value,
+                cover: document.getElementById('cover').value,
+                backdrop: document.getElementById('backdrop').value,
+                genres: document.getElementById('genres').value.split(','),
+                isHero: document.getElementById('isHero').value,
+                timestamp: new Date().toISOString()
+            };
+
+            if (type === 'series') {
+                payload.seasons = document.getElementById('seasons').value;
+                payload.totalEpisodes = document.getElementById('totalEpisodes').value;
+                payload.status = document.getElementById('status').value;
+                payload.episodes = episodes;
+            } else {
+                payload.videoLink = document.getElementById('movieLink').value;
+                payload.vtt = document.getElementById('movieVtt').value;
+                payload.releaseDate = document.getElementById('movieDate').value;
+            }
+
+            // Update existing or add new
+            let currentData = fullLibrary[type === 'series' ? 'series' : 'movies'];
+            if (editingId) {
+                const idx = currentData.findIndex(i => i.title === editingId);
+                currentData[idx] = payload;
+            } else {
+                currentData.push(payload);
+            }
+
+            try {
+                const res = await syncToCloud(binId, currentData);
+                if (res.ok) {
+                    alert("Cloud Synced Successfully!");
+                    location.reload();
+                }
+            } catch (error) { alert("Error connecting to BODA Cloud."); }
+            finally { btn.innerText = "Publish to BODA Cloud"; btn.disabled = false; }
+        }
+
+        window.onload = fetchLibrary;
+
+        if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Boda Service Worker Registered'))
+      .catch(err => console.log('Service Worker Registration Failed', err));
+  });
+}
+    </script>
+
+</body>
+</html>

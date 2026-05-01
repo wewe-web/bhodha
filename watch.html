@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BODA | Professional Theater</title>
+
+    <!-- Video.js Base -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <!-- Quality Selector Plugin CSS -->
+    <link href="https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --black: #050505;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black);
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .video-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-js {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Luxury Theme Overrides */
+        .vjs-matrix.video-js {
+            color: var(--gold);
+        }
+
+        .video-js .vjs-big-play-button {
+            background-color: rgba(212, 175, 55, 0.5) !important;
+            border: 2px solid var(--gold) !important;
+            border-radius: 50%;
+            width: 90px;
+            height: 90px;
+            line-height: 90px;
+            top: 50%;
+            left: 50%;
+            margin-top: -45px;
+            margin-left: -45px;
+        }
+
+        .video-js .vjs-play-progress,
+        .video-js .vjs-volume-level {
+            background-color: var(--gold) !important;
+        }
+
+        /* Floating Nav */
+        .player-nav {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 10;
+            opacity: 0;
+            transition: 0.4s ease;
+        }
+
+        .container-active .player-nav {
+            opacity: 1;
+        }
+
+        .btn-back {
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid var(--gold);
+            font-family: 'Cinzel', serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background: var(--gold);
+            color: black;
+        }
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--black);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .gold-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(212, 175, 55, 0.1);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="container-active">
+
+    <div id="loader">
+        <div class="gold-spinner"></div>
+        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; letter-spacing: 3px; font-size: 0.8rem;">
+            INITIALIZING MASTERPIECE</p>
+    </div>
+
+    <nav class="player-nav">
+        <a href="javascript:history.back()" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> EXIT THEATER
+        </a>
+    </nav>
+
+    <div class="video-container" id="playerWrapper">
+        <video id="boda-player" class="video-js vjs-big-play-centered vjs-matrix" controls preload="auto"></video>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <!-- Quality Selector Plugin JS -->
+    <script
+        src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js"></script>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const videoUrl = params.get('video');
+        const vttUrl = params.get('vtt');
+
+        // Initialize Player with Quality Selector
+        const player = videojs('boda-player', {
+            autoplay: false,
+            controls: true,
+            responsive: true,
+            fluid: true,
+            playbackRates: [0.5, 1, 1.25, 1.5, 2],
+            controlBar: {
+                children: [
+                    'playToggle',
+                    'volumePanel',
+                    'currentTimeDisplay',
+                    'timeDivider',
+                    'durationDisplay',
+                    'progressControl',
+                    'liveDisplay',
+                    'remainingTimeDisplay',
+                    'customControlSpacer',
+                    'playbackRateMenuButton',
+                    'chaptersButton',
+                    'descriptionsButton',
+                    'subsCapsButton',
+                    'audioTrackButton',
+                    'fullscreenToggle',
+                ],
+            },
+        });
+
+        // Register Quality Selector
+        player.controlBar.addChild('QualitySelector');
+
+        if (videoUrl) {
+            player.src({
+                src: decodeURIComponent(videoUrl),
+                type: 'application/x-mpegURL' // HLS for adaptive quality
+            });
+
+            // HANDLE CAPTIONS: If vtt is provided, load it. 
+            // If the URL has a "fill it" placeholder or is empty, we can skip or add a default.
+            if (vttUrl && vttUrl !== "undefined" && vttUrl !== "null" && vttUrl !== "") {
+                player.addRemoteTextTrack({
+                    kind: 'captions',
+                    srclang: 'en',
+                    label: 'English [Auto]',
+                    src: decodeURIComponent(vttUrl),
+                    default: true
+                }, false);
+            } else {
+                console.log("No direct caption found. Caption track disabled for this session.");
+            }
+        }
+
+        player.on('ready', () => {
+            document.getElementById('loader').style.display = 'none';
+        });
+
+        // Activity Tracker for UI
+        let timer;
+        function handleUserActivity() {
+            document.body.classList.add('container-active');
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                if (!player.paused()) document.body.classList.remove('container-active');
+            }, 3000);
+        }
+
+        window.addEventListener('mousemove', handleUserActivity);
+        player.on('play', handleUserActivity);
+    </script>
+</body>
+
+</html>

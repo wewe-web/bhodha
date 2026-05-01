@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BODA | Loading Masterpiece...</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --black: #050505;
+            --gray: #1a1a1a;
+            --luxury-font: 'Cinzel', serif;
+            --main-font: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--black);
+            color: white;
+            font-family: var(--main-font);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .back-nav {
+            position: absolute;
+            top: 20px;
+            left: 5%;
+            z-index: 100;
+        }
+
+        .back-btn {
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: 1px solid var(--gold);
+            font-family: var(--luxury-font);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .back-btn:hover {
+            background: var(--gold);
+            color: black;
+            transform: translateX(-5px);
+        }
+
+        /* Hero Backdrop */
+        .hero-bg {
+            width: 100%;
+            height: 65vh;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, var(--black) 10%, rgba(5, 5, 5, 0.4) 50%, rgba(5, 5, 5, 0.1) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            padding: 0 5% 60px;
+            max-width: 900px;
+        }
+
+        .hero-content h1 {
+            font-family: var(--luxury-font);
+            font-size: 4rem;
+            margin: 0 0 15px 0;
+            color: white;
+            text-shadow: 2px 2px 25px rgba(0, 0, 0, 0.9);
+            line-height: 1.1;
+        }
+
+        .meta-tags {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .badge {
+            border: 1px solid var(--gold);
+            padding: 3px 12px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        /* Layout Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 50px;
+            padding: 0 5% 80px;
+            margin-top: -80px;
+        }
+
+        .poster-box img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            position: relative;
+            z-index: 20;
+            transition: 0.5s;
+        }
+
+        .synopsis-box h3 {
+            font-family: var(--luxury-font);
+            color: var(--gold);
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            font-size: 1.5rem;
+            margin-top: 0;
+        }
+
+        .synopsis-text {
+            color: #bbb;
+            line-height: 1.8;
+            font-size: 1.05rem;
+            margin-bottom: 40px;
+        }
+
+        /* Buttons Section */
+        .action-section {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .watch-btn,
+        .download-btn {
+            border: none;
+            padding: 16px 40px;
+            font-family: var(--luxury-font);
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .watch-btn {
+            background: var(--gold);
+            color: black;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .watch-btn:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .download-btn {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+        }
+
+        .download-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        /* Episode List */
+        .episode-container {
+            margin-top: 50px;
+        }
+
+        .episode-list {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .ep-row {
+            background: #0f0f0f;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid #1a1a1a;
+        }
+
+        .ep-row:hover {
+            border-color: var(--gold);
+            background: #161616;
+            transform: scale(1.01);
+        }
+
+        .ep-info h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .ep-info p {
+            margin: 8px 0 0;
+            font-size: 0.85rem;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        .ep-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .dl-icon-btn {
+            background: none;
+            border: none;
+            color: #444;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.3s;
+            padding: 10px;
+        }
+
+        .dl-icon-btn:hover {
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 992px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .poster-box {
+                display: none;
+            }
+
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero-bg {
+                height: 50vh;
+            }
+
+            .details-grid {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="content-loader">
+        <!-- Luxury Content Injected via Script -->
+    </div>
+
+    <script>
+        const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
+        const SERIES_BIN = "69f3074faaba882197550749";
+        const MOVIES_BIN = "69f307c736566621a80b4134";
+
+        async function fetchDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const targetTitle = params.get('title');
+
+            if (!targetTitle) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const [sRes, mRes] = await Promise.all([
+                    fetch(`https://api.jsonbin.io/v3/b/${SERIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY } }),
+                    fetch(`https://api.jsonbin.io/v3/b/${MOVIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY } })
+                ]);
+
+                const sData = await sRes.json();
+                const mData = await mRes.json();
+
+                const seriesList = Array.isArray(sData.record) ? sData.record : [sData.record];
+                const moviesList = Array.isArray(mData.record) ? mData.record : [mData.record];
+
+                const item = seriesList.find(i => i.title === targetTitle) || moviesList.find(i => i.title === targetTitle);
+                const type = seriesList.includes(item) ? 'series' : 'movie';
+
+                if (item) {
+                    document.title = `BODA | ${item.title}`;
+                    renderPage(item, type);
+                }
+
+            } catch (err) {
+                console.error("Critical Data Error:", err);
+            }
+        }
+
+        // --- THE APP DOWNLOAD LOGIC ---
+        function triggerAppDownload(videoUrl, contentTitle) {
+            // This Custom URI triggers your Boda App to start the M3U8 -> MP4 conversion
+            const customUri = `boda-dl://download?url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(contentTitle)}`;
+
+            // Attempt to launch the local app
+            window.location.href = customUri;
+
+            // Detection Fallback: If app doesn't respond in 2.5s
+            setTimeout(() => {
+                if (confirm("The Boda App is required for MP4 conversion and offline viewing. Would you like to download the installer now?")) {
+                    window.open('https://your-app-landing-page.com/download', '_blank');
+                }
+            }, 2500);
+        }
+
+        function renderPage(item, type) {
+            const container = document.getElementById('content-loader');
+
+            let bottomContent = '';
+            let mainActions = '';
+
+            if (type === 'movie') {
+                mainActions = `
+                    <button class="watch-btn" onclick="watch('${item.videoLink}', '${encodeURIComponent(item.vtt)}')">
+                        <i class="fa-solid fa-play"></i> WATCH NOW
+                    </button>
+                    <button class="download-btn" onclick="triggerAppDownload('${item.videoLink}', '${item.title}')">
+                        <i class="fa-solid fa-download"></i> DOWNLOAD MP4
+                    </button>
+                `;
+            } else {
+                bottomContent = `
+                    <div class="episode-container">
+                        <h3>Episodes</h3>
+                        <div class="episode-list">
+                `;
+                item.episodes.forEach((ep, index) => {
+                    bottomContent += `
+                        <div class="ep-row">
+                            <div class="ep-info" onclick="watch('${ep.link}', '${encodeURIComponent(ep.vtt)}')">
+                                <h4>EPISODE ${index + 1}: ${ep.title || 'Untitled'}</h4>
+                                <p>${ep.description || 'Watch the latest chapter of this BODA original.'}</p>
+                            </div>
+                            <div class="ep-actions">
+                                <button class="dl-icon-btn" onclick="triggerAppDownload('${ep.link}', '${item.title} EP${index + 1}')" title="Download to MP4">
+                                    <i class="fa-solid fa-circle-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                bottomContent += `</div></div>`;
+            }
+
+            container.innerHTML = `
+                <nav class="back-nav">
+                    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> HOME</a>
+                </nav>
+
+                <div class="hero-bg" style="background-image: url('${item.backdrop}')">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <div class="meta-tags">
+                            <span class="badge">${type}</span>
+                            <span>${item.genres.join(' • ')}</span>
+                            ${item.status ? `<span>• ${item.status}</span>` : ''}
+                        </div>
+                        <h1>${item.title}</h1>
+                        <p style="color: #aaa; font-size: 1.1rem; margin-top:-5px;">${item.timestamp ? new Date(item.timestamp).getFullYear() : '2026'}</p>
+                        
+                        <div class="action-section">
+                            ${mainActions}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="details-grid">
+                    <div class="poster-box">
+                        <img src="${item.cover}" alt="Poster Artwork">
+                    </div>
+                    <div class="synopsis-box">
+                        <h3>Synopsis</h3>
+                        <p class="synopsis-text">${item.synopsis}</p>
+                        ${bottomContent}
+                    </div>
+                </div>
+            `;
+        }
+
+        function watch(link, vtt) {
+            if (!link || link === "undefined" || link === "") {
+                alert("This cinematic journey is currently being prepared. Check back soon!");
+                return;
+            }
+            window.location.href = `watch.html?video=${encodeURIComponent(link)}&vtt=${vtt}`;
+        }
+
+        window.onload = fetchDetails;
+
+        if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Boda Service Worker Registered'))
+      .catch(err => console.log('Service Worker Registration Failed', err));
+  });
+}
+    </script>
+</body>
+
+</html>
