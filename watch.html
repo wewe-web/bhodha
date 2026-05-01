@@ -220,6 +220,21 @@
             document.getElementById('loader').style.display = 'none';
         });
 
+        const isOffline = params.get('offline') === 'true';
+
+if (videoUrl) {
+    player.src({
+        src: decodeURIComponent(videoUrl),
+        // If offline, use video/mp4. If online, use HLS.
+        type: isOffline ? 'video/mp4' : 'application/x-mpegURL'
+    });
+    
+    // Video.js handle MP4 much better for seeking offline
+    if (isOffline) {
+        console.log("Playing from local library...");
+    }
+}
+
         // Activity Tracker for UI
         let timer;
         function handleUserActivity() {
