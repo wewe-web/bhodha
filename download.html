@@ -13,7 +13,6 @@
             --gold: #D4AF37; 
             --black: #050505; 
             --card-bg: #121212;
-            --bilibili-pink: #fb7299; /* Optional: Bilibili's signature accent if you want variety */
         }
 
         body { 
@@ -25,7 +24,6 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Bilibili Style Header */
         .header-area {
             display: flex;
             justify-content: space-between;
@@ -45,7 +43,6 @@
             letter-spacing: 2px;
         }
 
-        /* Grid Layout: Closer to Bilibili's dense but clean grid */
         .download-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
@@ -65,7 +62,6 @@
             transform: scale(0.95);
         }
 
-        /* Thumbnail - Bilibili uses 16:9 aspect ratio usually */
         .dl-thumb { 
             width: 100%; 
             aspect-ratio: 16/9;
@@ -77,7 +73,6 @@
             background-color: #222;
         }
 
-        /* Overlay for Info on Thumb */
         .thumb-overlay {
             position: absolute;
             bottom: 5px;
@@ -123,7 +118,11 @@
             gap: 8px;
         }
 
-        /* Action/Delete UI */
+        .offline-tag {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
         .delete-btn {
             position: absolute;
             top: 5px;
@@ -150,7 +149,6 @@
 
         .empty-state i { font-size: 3rem; margin-bottom: 10px; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 0px; }
 
     </style>
@@ -170,7 +168,7 @@
     <script>
         function loadDownloads() {
             const grid = document.getElementById('downloadGrid');
-            // This is the data we saved in the details page
+            // Retrieves the list we updated in the details.html logic
             const downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
 
             if (downloads.length === 0) {
@@ -185,21 +183,24 @@
             grid.innerHTML = downloads.map((item, index) => {
                 const progress = item.progress || 100;
                 
+                // Ensure the URL is safely encoded for the click handler
+                const safeUrl = encodeURIComponent(item.url || "");
+                
                 return `
-                <div class="dl-card" id="card-${index}" onclick="handleCardClick(${index}, '${encodeURIComponent(item.videoUrl)}')">
+                <div class="dl-card" id="card-${index}" onclick="handleCardClick(${index}, '${safeUrl}')">
                     <div class="delete-btn" onclick="event.stopPropagation(); deleteDownload(${index})">
                         <i class="fa-solid fa-xmark"></i>
                     </div>
                     
                     <div class="dl-thumb" style="background-image: url('${item.poster}')">
-                        <div class="thumb-overlay">${item.duration || 'HD'}</div>
+                        <div class="thumb-overlay">MP4</div>
                         <div class="progress-bar" style="width: ${progress}%"></div>
                     </div>
 
                     <div class="dl-info">
                         <h3>${item.title}</h3>
                         <div class="meta-info">
-                            <span><i class="fa-regular fa-circle-check"></i> Saved</span>
+                            <span class="offline-tag"><i class="fa-solid fa-bolt"></i> Ready</span>
                             <span>${item.date}</span>
                         </div>
                     </div>
@@ -211,13 +212,20 @@
 
         function handleCardClick(index, videoUrl) {
             const card = document.getElementById(`card-${index}`);
-            // If already in selection mode (long pressed), toggle selection instead of playing
+            
+            // If in selection mode, toggle selection
             if (document.querySelector('.selected')) {
                 card.classList.toggle('selected');
                 return;
             }
             
-            // Otherwise, play the video
+            if (!videoUrl || videoUrl === "undefined" || videoUrl === "") {
+                alert("This file path is missing. Please re-download from the details page.");
+                return;
+            }
+
+            // Play the direct MP4 link in the watch player
+            // We pass 'offline=true' so the player knows to treat it as a direct file, not m3u8
             window.location.href = `watch.html?video=${videoUrl}&offline=true`;
         }
 
@@ -237,6 +245,8 @@
         }
 
         function deleteDownload(index) {
+            if(!confirm("Remove this masterpiece from your library?")) return;
+            
             let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
             downloads.splice(index, 1);
             localStorage.setItem('boda_downloads', JSON.stringify(downloads));
