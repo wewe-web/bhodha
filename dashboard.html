@@ -6,15 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>BODA ADMIN | Dashboard</title>
+    <title>BODA ADMIN | Studio</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --gold: #D4AF37;
-            --black: #0a0a0a;
+            --black: #050505;
+            --dark-gray: #111;
             --danger: #ff4d4d;
+            --success: #2ecc71;
         }
 
         body {
@@ -22,167 +24,195 @@
             color: white;
             font-family: 'Poppins', sans-serif;
             padding: 20px;
+            margin: 0;
         }
 
         .admin-container {
-            max-width: 1000px;
-            margin: auto;
-            background: #111;
+            max-width: 1100px;
+            margin: 40px auto;
+            background: var(--dark-gray);
             padding: 30px;
-            border: 1px solid var(--gold);
-            border-radius: 10px;
-            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
 
-        h1, h2 {
-            font-family: 'Cinzel';
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif;
             color: var(--gold);
             text-align: center;
+            letter-spacing: 2px;
         }
 
-        .content-manager { margin-bottom: 40px; }
         .list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #1a1a1a;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border-left: 3px solid var(--gold);
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--gold);
+            transition: 0.3s;
         }
+
+        .list-item:hover { background: #222; transform: translateX(5px); }
         .item-info { cursor: pointer; flex-grow: 1; }
-        .item-info h4 { margin: 0; color: var(--gold); }
-        .item-info span { font-size: 0.8rem; color: #888; }
+        .item-info h4 { margin: 0; color: #fff; font-size: 1.1rem; }
+        .item-info span { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; }
         
-        .action-btns { display: flex; gap: 10px; }
-        .delete-btn { color: var(--danger); cursor: pointer; background: none; border: none; font-size: 1.1rem; }
+        .action-btns { display: flex; gap: 15px; }
+        .delete-btn { color: var(--danger); cursor: pointer; background: none; border: none; font-size: 1.2rem; transition: 0.2s; }
+        .delete-btn:hover { transform: scale(1.2); }
 
-        .add-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--gold);
-            color: black;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-            z-index: 100;
-        }
-
-        #uploadSection { display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; }
+        /* Form Styling */
+        #uploadSection { display: none; margin-top: 30px; border-top: 1px solid #333; padding-top: 30px; }
         .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: var(--gold); font-weight: 600; font-size: 0.9rem; }
+        label { display: block; margin-bottom: 8px; color: var(--gold); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+        
         input, textarea, select {
-            width: 100%; padding: 12px; background: #222; border: 1px solid #333;
-            color: white; border-radius: 5px; box-sizing: border-box;
+            width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid #333;
+            color: white; border-radius: 6px; box-sizing: border-box; font-family: 'Poppins';
         }
-        input:focus { border-color: var(--gold); outline: none; }
+        input:focus, textarea:focus { border-color: var(--gold); outline: none; background: #222; }
 
         .btn-gold {
-            background: var(--gold); color: black; padding: 15px; border: none;
+            background: var(--gold); color: black; padding: 16px; border: none;
             font-weight: bold; cursor: pointer; font-family: 'Cinzel'; width: 100%;
-            margin-top: 10px; transition: 0.3s;
+            margin-top: 10px; border-radius: 6px; transition: 0.3s; font-size: 1rem;
         }
-        .btn-gold:hover { background: #fff; }
+        .btn-gold:hover { background: #fff; transform: translateY(-2px); }
 
-        .episode-card {
-            border-left: 3px solid var(--gold); padding: 15px; margin-top: 15px;
-            background: #1a1a1a; border-radius: 0 5px 5px 0;
+        /* Season & Episode Architecture */
+        .season-block {
+            background: #0d0d0d;
+            border: 1px solid #222;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 10px;
         }
-        .episode-card input, .episode-card textarea, .episode-card select { margin-bottom: 10px; }
-        
-        /* Highlight for the new field */
-        .download-field { border: 1px solid #444 !important; background: #151515 !important; }
+        .season-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .episode-card {
+            background: #1a1a1a;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            position: relative;
+            border: 1px solid #333;
+        }
+        .multi-source {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .add-toggle {
+            position: fixed; bottom: 30px; right: 30px;
+            background: var(--gold); color: black;
+            width: 65px; height: 65px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            z-index: 1000; transition: 0.3s;
+        }
+        .add-toggle:hover { transform: scale(1.1) rotate(90deg); }
+
+        .flex-row { display: flex; gap: 15px; }
+        .flex-row div { flex: 1; }
+
+        .tag-source { font-size: 0.7rem; background: #333; padding: 2px 6px; border-radius: 3px; color: var(--gold); margin-bottom: 5px; display: inline-block; }
     </style>
 </head>
 
 <body>
 
     <div class="admin-container">
-        <h1>BODA Admin Studio</h1>
+        <h1>BODA Studio</h1>
 
         <div class="content-manager">
-            <h2>Current Library</h2>
+            <h2>Library Management</h2>
             <div id="libraryList">
-                <p style="text-align:center; color:#555;">Loading library...</p>
+                <p style="text-align:center; color:#555;">Connecting to BODA Cloud...</p>
             </div>
         </div>
 
         <div id="uploadSection">
-            <h2 id="formTitle">Upload New Content</h2>
+            <h2 id="formTitle">New Masterpiece</h2>
+            
             <div class="form-group">
-                <label for="mediaType">Post Type</label>
+                <label>Content Format</label>
                 <select id="mediaType" onchange="toggleFields()">
-                    <option value="series">TV Series / Show</option>
-                    <option value="movie">Movie</option>
+                    <option value="series">Television Series</option>
+                    <option value="movie">Feature Film</option>
                 </select>
             </div>
 
             <div id="commonFields">
-                <div class="form-group"><label for="title">Title</label><input type="text" id="title" required></div>
-                <div class="form-group"><label for="synopsis">Synopsis</label><textarea id="synopsis" rows="3"></textarea></div>
-                <div class="form-group"><label for="cover">Cover Image Link (URL)</label><input type="text" id="cover"></div>
-                <div class="form-group"><label for="backdrop">Backdrop Link (URL)</label><input type="text" id="backdrop"></div>
-                <div class="form-group"><label for="genres">Genres (Comma separated)</label><input type="text" id="genres"></div>
-                <div class="form-group">
-                    <label for="isHero">Add to Slideshow Banner?</label>
-                    <select id="isHero">
-                        <option value="NO">NO</option>
-                        <option value="YES">YES</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Series Fields -->
-            <div id="seriesFields">
-                <div style="display: flex; gap: 20px;">
-                    <div class="form-group" style="flex:1"><label for="seasons">No. of Seasons</label><input type="number" id="seasons" value="1"></div>
-                    <div class="form-group" style="flex:1"><label for="totalEpisodes">Total Episodes</label><input type="number" id="totalEpisodes"></div>
-                </div>
-                <div class="form-group"><label for="status">Status</label>
-                    <select id="status">
-                        <option>Ongoing</option>
-                        <option>Upcoming</option>
-                        <option>Completed</option>
-                    </select>
-                </div>
-
-                <div id="episodeList">
-                    <label>Episodes</label>
-                    <div class="episode-card">
-                        <input type="text" class="ep-title" placeholder="Episode Title (Optional)">
-                        <textarea class="ep-desc" placeholder="Episode Description..."></textarea>
-                        <select class="ep-status">
-                            <option>Completed</option>
-                            <option>Upcoming</option>
+                <div class="flex-row">
+                    <div class="form-group"><label>Title</label><input type="text" id="title" required></div>
+                    <div class="form-group">
+                        <label>Hero Banner?</label>
+                        <select id="isHero">
+                            <option value="NO">NO</option>
+                            <option value="YES">YES</option>
                         </select>
-                        <input type="text" class="ep-link" placeholder="Stream Link (m3u8)">
-                        <!-- NEW MP4 DOWNLOAD FIELD -->
-                        <input type="text" class="ep-download" placeholder="Download Link (Direct MP4 URL)" class="download-field">
-                        <textarea class="ep-vtt" placeholder="Paste VTT Subtitles here..."></textarea>
                     </div>
                 </div>
-                <button type="button" class="btn-gold" style="background: #333; color: white; font-size: 0.8rem;" onclick="addEpisode()">+ Add Next Episode</button>
+                <div class="form-group"><label>Synopsis</label><textarea id="synopsis" rows="3"></textarea></div>
+                <div class="flex-row">
+                    <div class="form-group"><label>Cover URL</label><input type="text" id="cover"></div>
+                    <div class="form-group"><label>Backdrop URL</label><input type="text" id="backdrop"></div>
+                </div>
+                <div class="form-group"><label>Genres (Action, Drama...)</label><input type="text" id="genres"></div>
             </div>
 
-            <!-- Movie Fields -->
+            <!-- SERIES ARCHITECTURE -->
+            <div id="seriesFields">
+                <div class="flex-row">
+                    <div class="form-group"><label>Status</label>
+                        <select id="status">
+                            <option>Ongoing</option>
+                            <option>Upcoming</option>
+                            <option>Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="seasonContainer">
+                    <!-- Seasons will be injected here -->
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-gold" style="background: #222; color: var(--gold); font-size: 0.8rem;" onclick="addSeason()">+ Add New Season</button>
+                </div>
+            </div>
+
+            <!-- MOVIE ARCHITECTURE -->
             <div id="movieFields" style="display:none;">
-                <div class="form-group"><label>Stream Link (m3u8)</label><input type="text" id="movieLink"></div>
-                <!-- NEW MOVIE MP4 DOWNLOAD FIELD -->
-                <div class="form-group"><label>Download Link (Direct MP4 URL)</label><input type="text" id="movieDownload" class="download-field"></div>
-                <div class="form-group"><label>Movie Subtitle (VTT)</label><textarea id="movieVtt"></textarea></div>
-                <div class="form-group"><label>Release Date</label><input type="date" id="movieDate"></div>
+                <div class="multi-source">
+                    <div class="form-group">
+                        <span class="tag-source">Source A (HLS)</span>
+                        <input type="text" id="movieLink" placeholder="m3u8 Stream Link">
+                    </div>
+                    <div class="form-group">
+                        <span class="tag-source">Source B (MP4)</span>
+                        <input type="text" id="movieDownload" placeholder="Direct MP4/Web Link">
+                    </div>
+                </div>
+                <div class="form-group"><label>Subtitles (VTT Content)</label><textarea id="movieVtt" rows="4"></textarea></div>
+                <div class="form-group"><label>Global Release Date</label><input type="date" id="movieDate"></div>
             </div>
 
             <button id="saveBtn" class="btn-gold" onclick="saveToBoda()">Publish to BODA Cloud</button>
-            <button class="btn-gold" style="background:#222; color:#888;" onclick="hideForm()">Cancel</button>
+            <button class="btn-gold" style="background:transparent; color:#555; border: 1px solid #333;" onclick="hideForm()">Discard Changes</button>
         </div>
     </div>
 
@@ -195,6 +225,7 @@
         
         let fullLibrary = { series: [], movies: [] };
         let editingId = null;
+        let seasonCount = 0;
 
         async function fetchLibrary() {
             try {
@@ -204,27 +235,24 @@
                 ]);
                 const sData = await sRes.json();
                 const mData = await mRes.json();
-                
                 fullLibrary.series = Array.isArray(sData.record) ? sData.record : [sData.record];
                 fullLibrary.movies = Array.isArray(mData.record) ? mData.record : [mData.record];
-                
                 renderLibrary();
-            } catch (err) { console.error("Library Load Failed", err); }
+            } catch (err) { console.error("Cloud Error", err); }
         }
 
         function renderLibrary() {
             const container = document.getElementById('libraryList');
             container.innerHTML = "";
-            
-            [...fullLibrary.series, ...fullLibrary.movies].forEach((item, index) => {
+            [...fullLibrary.series, ...fullLibrary.movies].forEach(item => {
                 if(!item.title) return;
                 const type = fullLibrary.series.includes(item) ? 'series' : 'movie';
                 const div = document.createElement('div');
                 div.className = 'list-item';
                 div.innerHTML = `
                     <div class="item-info" onclick="editItem('${type}', '${item.title}')">
+                        <span>${type}</span>
                         <h4>${item.title}</h4>
-                        <span>${type.toUpperCase()} • ${item.status || item.releaseDate || 'Stored'}</span>
                     </div>
                     <div class="action-btns">
                         <button class="delete-btn" onclick="deleteItem('${type}', '${item.title}')"><i class="fa-solid fa-trash"></i></button>
@@ -234,43 +262,74 @@
             });
         }
 
-        function showForm() {
-            editingId = null;
-            document.getElementById('uploadSection').style.display = 'block';
-            document.getElementById('formTitle').innerText = "Upload New Content";
-            window.scrollTo({ top: document.getElementById('uploadSection').offsetTop, behavior: 'smooth' });
-        }
-
-        function hideForm() { document.getElementById('uploadSection').style.display = 'none'; }
-
         function toggleFields() {
             const type = document.getElementById('mediaType').value;
             document.getElementById('seriesFields').style.display = (type === 'series') ? 'block' : 'none';
             document.getElementById('movieFields').style.display = (type === 'movie') ? 'block' : 'none';
         }
 
-        function addEpisode(data = {}) {
+        function addSeason(seasonData = null) {
+            seasonCount++;
+            const sNum = seasonData ? seasonData.seasonNumber : seasonCount;
+            const container = document.getElementById('seasonContainer');
+            
+            const seasonDiv = document.createElement('div');
+            seasonDiv.className = 'season-block';
+            seasonDiv.id = `season-block-${sNum}`;
+            seasonDiv.innerHTML = `
+                <div class="season-header">
+                    <h3>Season ${sNum}</h3>
+                    <button type="button" class="btn-gold" style="width:auto; padding: 5px 15px; font-size:0.7rem;" onclick="addEpisode(${sNum})">+ Add Episode</button>
+                </div>
+                <div id="episode-list-${sNum}"></div>
+            `;
+            container.appendChild(seasonDiv);
+
+            if (seasonData && seasonData.episodes) {
+                seasonData.episodes.forEach(ep => addEpisode(sNum, ep));
+            } else {
+                addEpisode(sNum); // Add one empty episode by default
+            }
+        }
+
+        function addEpisode(sNum, data = {}) {
+            const epList = document.getElementById(`episode-list-${sNum}`);
             const div = document.createElement('div');
             div.className = 'episode-card';
             div.innerHTML = `
                 <input type="text" class="ep-title" placeholder="Episode Title" value="${data.title || ''}">
                 <textarea class="ep-desc" placeholder="Episode Description...">${data.description || ''}</textarea>
-                <select class="ep-status">
+                <div class="multi-source">
+                    <input type="text" class="ep-link" placeholder="Source A (m3u8)" value="${data.link || ''}">
+                    <input type="text" class="ep-download" placeholder="Source B (MP4/Web)" value="${data.download || ''}">
+                </div>
+                <textarea class="ep-vtt" placeholder="VTT Subtitles...">${data.vtt || ''}</textarea>
+                <select class="ep-status" style="margin-top:10px;">
                     <option ${data.status === 'Completed' ? 'selected' : ''}>Completed</option>
                     <option ${data.status === 'Upcoming' ? 'selected' : ''}>Upcoming</option>
                 </select>
-                <input type="text" class="ep-link" placeholder="m3u8 link" value="${data.link || ''}">
-                <input type="text" class="ep-download" placeholder="Download Link (Direct MP4 URL)" value="${data.download || ''}">
-                <textarea class="ep-vtt" placeholder="Paste VTT Subtitles here...">${data.vtt || ''}</textarea>
             `;
-            document.getElementById('episodeList').appendChild(div);
+            epList.appendChild(div);
         }
+
+        function showForm() {
+            editingId = null;
+            seasonCount = 0;
+            document.getElementById('seasonContainer').innerHTML = "";
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('formTitle').innerText = "New Masterpiece";
+            addSeason(); 
+        }
+
+        function hideForm() { document.getElementById('uploadSection').style.display = 'none'; }
 
         function editItem(type, title) {
             const item = fullLibrary[type === 'series' ? 'series' : 'movies'].find(i => i.title === title);
             if (!item) return;
 
             editingId = title;
+            seasonCount = 0;
+            document.getElementById('seasonContainer').innerHTML = "";
             document.getElementById('uploadSection').style.display = 'block';
             document.getElementById('formTitle').innerText = "Edit Masterpiece";
             
@@ -285,35 +344,20 @@
             toggleFields();
 
             if (type === 'series') {
-                document.getElementById('seasons').value = item.seasons;
-                document.getElementById('totalEpisodes').value = item.totalEpisodes;
                 document.getElementById('status').value = item.status;
-                document.getElementById('episodeList').innerHTML = '<label>Episodes</label>';
-                item.episodes.forEach(ep => addEpisode(ep));
+                // If item has the new season-based structure
+                if (item.seasonsData) {
+                    item.seasonsData.forEach(s => addSeason(s));
+                } else {
+                    // Fallback for old single-season structure
+                    addSeason({ seasonNumber: 1, episodes: item.episodes });
+                }
             } else {
                 document.getElementById('movieLink').value = item.videoLink;
                 document.getElementById('movieDownload').value = item.downloadLink || '';
                 document.getElementById('movieVtt').value = item.vtt;
                 document.getElementById('movieDate').value = item.releaseDate;
             }
-            window.scrollTo({ top: document.getElementById('uploadSection').offsetTop, behavior: 'smooth' });
-        }
-
-        async function deleteItem(type, title) {
-            if(!confirm(`Are you sure you want to delete "${title}"?`)) return;
-            const binId = (type === 'series') ? SERIES_BIN : MOVIES_BIN;
-            const updatedList = fullLibrary[type === 'series' ? 'series' : 'movies'].filter(i => i.title !== title);
-            await syncToCloud(binId, updatedList);
-            alert("Deleted successfully");
-            fetchLibrary();
-        }
-
-        async function syncToCloud(binId, data) {
-            return fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                body: JSON.stringify(data)
-            });
         }
 
         async function saveToBoda() {
@@ -324,38 +368,39 @@
             btn.innerText = "SYNCING CLOUD...";
             btn.disabled = true;
 
-            let episodes = [];
-            if (type === 'series') {
-                document.querySelectorAll('.episode-card').forEach(card => {
-                    episodes.push({
-                        title: card.querySelector('.ep-title').value,
-                        description: card.querySelector('.ep-desc').value,
-                        status: card.querySelector('.ep-status').value,
-                        link: card.querySelector('.ep-link').value,
-                        download: card.querySelector('.ep-download').value, // Save the new field
-                        vtt: card.querySelector('.ep-vtt').value
-                    });
-                });
-            }
-
             const payload = {
                 title: document.getElementById('title').value,
                 synopsis: document.getElementById('synopsis').value,
                 cover: document.getElementById('cover').value,
                 backdrop: document.getElementById('backdrop').value,
-                genres: document.getElementById('genres').value.split(','),
+                genres: document.getElementById('genres').value.split(',').map(g => g.trim()),
                 isHero: document.getElementById('isHero').value,
                 timestamp: new Date().toISOString()
             };
 
             if (type === 'series') {
-                payload.seasons = document.getElementById('seasons').value;
-                payload.totalEpisodes = document.getElementById('totalEpisodes').value;
                 payload.status = document.getElementById('status').value;
-                payload.episodes = episodes;
+                const seasonsData = [];
+                document.querySelectorAll('.season-block').forEach((sBlock, idx) => {
+                    const sNum = idx + 1;
+                    const episodes = [];
+                    sBlock.querySelectorAll('.episode-card').forEach(card => {
+                        episodes.push({
+                            title: card.querySelector('.ep-title').value,
+                            description: card.querySelector('.ep-desc').value,
+                            link: card.querySelector('.ep-link').value,
+                            download: card.querySelector('.ep-download').value,
+                            vtt: card.querySelector('.ep-vtt').value,
+                            status: card.querySelector('.ep-status').value
+                        });
+                    });
+                    seasonsData.push({ seasonNumber: sNum, episodes: episodes });
+                });
+                payload.seasonsData = seasonsData;
+                payload.totalSeasons = seasonsData.length;
             } else {
                 payload.videoLink = document.getElementById('movieLink').value;
-                payload.downloadLink = document.getElementById('movieDownload').value; // Save the new field
+                payload.downloadLink = document.getElementById('movieDownload').value;
                 payload.vtt = document.getElementById('movieVtt').value;
                 payload.releaseDate = document.getElementById('movieDate').value;
             }
@@ -369,13 +414,28 @@
             }
 
             try {
-                const res = await syncToCloud(binId, currentData);
-                if (res.ok) {
-                    alert("Cloud Synced Successfully!");
-                    location.reload();
-                }
-            } catch (error) { alert("Error connecting to BODA Cloud."); }
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    body: JSON.stringify(currentData)
+                });
+                if (res.ok) { alert("Cloud Synced Successfully!"); location.reload(); }
+            } catch (error) { alert("Sync Error."); }
             finally { btn.innerText = "Publish to BODA Cloud"; btn.disabled = false; }
+        }
+
+        async function deleteItem(type, title) {
+            if(!confirm(`Delete "${title}"?`)) return;
+            const binId = (type === 'series') ? SERIES_BIN : MOVIES_BIN;
+            const updatedList = fullLibrary[type === 'series' ? 'series' : 'movies'].filter(i => i.title !== title);
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    body: JSON.stringify(updatedList)
+                });
+                location.reload();
+            } catch (e) { alert("Delete failed."); }
         }
 
         window.onload = fetchLibrary;
