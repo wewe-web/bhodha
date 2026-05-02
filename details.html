@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>BODA | Loading...</title>
+    <title>BODA | Details</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -27,175 +27,194 @@
             font-family: var(--main-font);
             margin: 0;
             padding: 0;
-            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
         /* Navigation */
         .top-nav {
             position: fixed;
             top: 0;
-            left: 0;
             width: 100%;
-            padding: 15px 5%;
+            padding: 20px 5%;
             z-index: 1000;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-            display: flex;
-            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
             box-sizing: border-box;
         }
 
         .back-btn {
             color: white;
             text-decoration: none;
-            background: rgba(255,255,255,0.1);
-            padding: 8px 15px;
-            border-radius: 50px;
             font-family: var(--luxury-font);
-            font-size: 0.8rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Hero Section */
-        .hero-bg {
+        /* Cinematic Hero Wrapper */
+        .hero-container {
             width: 100%;
-            height: 55vh;
-            background-size: cover;
-            background-position: center;
+            height: 70vh;
             position: relative;
+            background-color: #000;
+        }
+
+        .hero-media {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .hero-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, var(--black) 5%, rgba(5, 5, 5, 0.4) 50%, rgba(5, 5, 5, 0.1) 100%);
+            background: linear-gradient(to top, var(--black) 5%, transparent 40%),
+                        linear-gradient(to right, var(--black) 10%, transparent 60%);
         }
 
-        /* Responsive Grid */
-        .details-wrapper {
-            max-width: 1200px;
-            margin: -100px auto 0;
-            padding: 0 20px 80px;
+        /* Details Content */
+        .details-content {
+            padding: 0 5% 100px;
+            margin-top: -150px;
             position: relative;
             z-index: 10;
         }
 
-        .main-info {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 40px;
-        }
-
-        .poster-art img {
-            width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .header-text h1 {
-            font-family: var(--luxury-font);
-            font-size: 3.5rem;
-            margin: 0 0 10px;
-            line-height: 1.1;
-        }
-
-        .meta-chips {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .chip {
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold);
-            color: var(--gold);
+        .status-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: black;
             padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
+            border-radius: 2px;
+            font-weight: 800;
+            font-size: 0.7rem;
+            margin-bottom: 15px;
+            font-family: var(--luxury-font);
         }
 
-        /* Episodes Styling */
-        .content-section {
-            margin-top: 40px;
+        .main-title {
+            font-family: var(--luxury-font);
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            margin: 0 0 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        .section-title {
+        .meta-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .synopsis {
+            max-width: 700px;
+            line-height: 1.7;
+            color: #ddd;
+            margin-bottom: 40px;
+        }
+
+        /* Episode List (Netflix Style) */
+        .episode-container {
+            margin-top: 60px;
+        }
+
+        .row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #222;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .row-header h3 {
             font-family: var(--luxury-font);
             color: var(--gold);
-            border-bottom: 1px solid #222;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin: 0;
+            letter-spacing: 2px;
         }
 
-        .season-select {
-            background: var(--gray);
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-family: var(--main-font);
+        .ep-item {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 25px;
+            padding: 20px;
+            border-bottom: 1px solid #1a1a1a;
+            transition: background 0.3s;
             cursor: pointer;
-        }
-
-        .episode-card {
-            background: var(--light-gray);
-            border: 1px solid #222;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
         }
 
-        .episode-card:hover {
-            border-color: var(--gold);
-            background: #222;
+        .ep-item:hover { background: #0d0d0d; }
+
+        .ep-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .ep-meta { flex-grow: 1; padding-right: 20px; }
-        .ep-meta h4 { margin: 0 0 5px; color: #fff; font-size: 1.1rem; cursor: pointer; }
-        .ep-meta h4:hover { color: var(--gold); }
-        .ep-meta p { margin: 0; color: #888; font-size: 0.85rem; line-height: 1.4; }
+        .ep-thumb i { font-size: 2rem; opacity: 0; transition: 0.3s; }
+        .ep-item:hover .ep-thumb i { opacity: 1; }
 
-        .ep-btns { display: flex; gap: 15px; }
-        .ep-dl-btn { background: none; border: none; color: #555; font-size: 1.3rem; cursor: pointer; transition: 0.2s; }
-        .ep-dl-btn:hover { color: var(--gold); transform: scale(1.1); }
+        .ep-info h4 { margin: 0 0 8px; font-size: 1.1rem; }
+        .ep-info p { margin: 0; color: #888; font-size: 0.9rem; line-height: 1.5; }
 
-        /* Mobile Adjustments */
+        /* Mobile Fixes */
         @media (max-width: 768px) {
-            .hero-bg { height: 40vh; }
-            .details-wrapper { margin-top: -50px; padding: 0 15px 50px; }
-            .main-info { grid-template-columns: 1fr; gap: 20px; }
-            .poster-art { display: none; } /* Hide poster on mobile for cleaner look */
-            .header-text h1 { font-size: 2.2rem; text-align: center; }
-            .meta-chips { justify-content: center; }
-            .episode-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .ep-btns { width: 100%; justify-content: space-between; border-top: 1px solid #333; pt: 10px; }
+            .hero-container { height: 50vh; }
+            .details-content { margin-top: -50px; text-align: center; }
+            .meta-info { justify-content: center; }
+            .ep-item { grid-template-columns: 1fr; gap: 15px; padding: 15px 0; }
+            .ep-thumb { width: 100%; }
+            .ep-info { text-align: left; padding: 0 10px; }
         }
     </style>
 </head>
 
 <body>
 
-    <div id="page-content">
-        <div style="height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--gold);">
-            <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+    <nav class="top-nav">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK</a>
+    </nav>
+
+    <div id="loader" style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000;">
+        <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--gold);"></i>
+    </div>
+
+    <div id="main-ui" style="display:none;">
+        <div class="hero-container" id="hero-media-container">
+            <!-- Backdrop or Trailer Inject Here -->
+            <div class="hero-overlay"></div>
+        </div>
+
+        <div class="details-content">
+            <div id="status-target"></div>
+            <h1 class="main-title" id="title-target"></h1>
+            <div class="meta-info" id="meta-target"></div>
+            <p class="synopsis" id="synopsis-target"></p>
+
+            <div id="action-target"></div>
+
+            <div class="episode-container" id="episode-section" style="display:none;">
+                <div class="row-header">
+                    <h3>Episodes</h3>
+                    <select id="season-selector" class="season-select" style="background:#000; color:var(--gold); border:1px solid var(--gold); padding:5px 10px;" onchange="renderEpisodes(this.value)"></select>
+                </div>
+                <div id="ep-list"></div>
+            </div>
         </div>
     </div>
 
     <script>
         const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
-        const SERIES_BIN = "69f3074faaba882197550749";
-        const MOVIES_BIN = "69f307c736566621a80b4134";
+        const BINS = ["69f307faaba882197550749", "69f307c736566621a80b4134"];
 
         async function init() {
             const params = new URLSearchParams(window.location.search);
@@ -203,118 +222,89 @@
             if (!title) { window.location.href = 'index.html'; return; }
 
             try {
-                const [sRes, mRes] = await Promise.all([
-                    fetch(`https://api.jsonbin.io/v3/b/${SERIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY } }),
-                    fetch(`https://api.jsonbin.io/v3/b/${MOVIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY } })
-                ]);
-                const sData = await sRes.json();
-                const mData = await mRes.json();
+                const results = await Promise.all(BINS.map(id => 
+                    fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, { headers: { 'X-Master-Key': API_KEY } }).then(r => r.json())
+                ));
                 
-                const allItems = [...(sData.record || []), ...(mData.record || [])];
+                const allItems = results.flatMap(r => r.record || []);
                 const item = allItems.find(i => i.title === title);
-                const isSeries = (sData.record || []).some(i => i.title === title);
 
-                if (item) renderItem(item, isSeries);
-            } catch (err) { console.error("BODA Load Error", err); }
+                if (item) renderPage(item);
+            } catch (err) { console.error(err); }
         }
 
-        function renderItem(item, isSeries) {
-            const container = document.getElementById('page-content');
-            
-            // Build Season Logic
-            let seasonHTML = '';
-            if (isSeries && item.seasonsData) {
-                seasonHTML = `
-                    <div class="content-section">
-                        <div class="section-title">
-                            <h3>Episodes</h3>
-                            <select class="season-select" onchange="changeSeason(this.value)">
-                                ${item.seasonsData.map(s => `<option value="${s.seasonNumber}">Season ${s.seasonNumber}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div id="ep-list-target"></div>
-                    </div>`;
-            } else if (isSeries && item.episodes) {
-                // Fallback for old data structure
-                seasonHTML = `<div class="content-section"><div class="section-title"><h3>Episodes</h3></div><div id="ep-list-target"></div></div>`;
+        function renderPage(item) {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'block';
+
+            // Media Logic: Trailer vs Backdrop
+            const mediaContainer = document.getElementById('hero-media-container');
+            if (item.trailerLink) {
+                const videoId = item.trailerLink.split('v=')[1] || item.trailerLink.split('/').pop();
+                mediaContainer.innerHTML = `
+                    <iframe class="hero-media" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <div class="hero-overlay"></div>`;
             } else {
-                // Movie Layout
-                seasonHTML = `
-                    <div class="content-section" style="text-align:center;">
-                        <button class="chip" style="padding: 15px 40px; font-size:1rem; cursor:pointer;" onclick="watch('${item.videoLink}')">
-                            <i class="fa-solid fa-play"></i> WATCH NOW
-                        </button>
-                        <button class="chip" style="padding: 15px 40px; font-size:1rem; cursor:pointer; background:transparent; margin-left:10px;" 
-                                onclick="saveVideo('${item.downloadLink}', '${item.title}')">
-                            <i class="fa-solid fa-download"></i> SAVE
-                        </button>
-                    </div>`;
+                mediaContainer.style.backgroundImage = `url('${item.backdrop}')`;
+                mediaContainer.style.backgroundSize = 'cover';
+                mediaContainer.style.backgroundPosition = 'center';
             }
 
-            container.innerHTML = `
-                <nav class="top-nav"><a href="index.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i> HOME</a></nav>
-                <div class="hero-bg" style="background-image: url('${item.backdrop}')"><div class="hero-overlay"></div></div>
-                
-                <div class="details-wrapper">
-                    <div class="main-info">
-                        <div class="poster-art"><img src="${item.cover}"></div>
-                        <div class="header-text">
-                            <div class="meta-chips">
-                                <span class="chip">${isSeries ? 'Series' : 'Movie'}</span>
-                                ${item.genres.map(g => `<span class="chip" style="border:none; background:rgba(255,255,255,0.05); color:#aaa;">${g}</span>`).join('')}
-                            </div>
-                            <h1>${item.title}</h1>
-                            <p style="color:#aaa; line-height:1.6;">${item.synopsis || 'No synopsis available.'}</p>
-                            ${seasonHTML}
-                        </div>
-                    </div>
-                </div>`;
+            document.getElementById('title-target').innerText = item.title;
+            document.getElementById('status-target').innerHTML = `<span class="status-badge">${item.status || 'RELEASED'}</span>`;
+            document.getElementById('synopsis-target').innerText = item.synopsis || "No description available.";
+            document.getElementById('meta-target').innerHTML = `
+                <span>${item.year || '2026'}</span>
+                <span>|</span>
+                <span>${item.genres ? item.genres.join(', ') : 'Cinema'}</span>
+            `;
 
-            if (isSeries) {
-                window.currentItem = item; // Store globally for switching
+            if (item.seasonsData || item.episodes) {
+                document.getElementById('episode-section').style.display = 'block';
+                window.currentData = item;
+                setupSeasons(item);
+            } else {
+                document.getElementById('action-target').innerHTML = `
+                    <button onclick="window.location.href='watch.html?video=${encodeURIComponent(item.videoLink)}'" 
+                            style="background:white; color:black; border:none; padding:15px 50px; font-weight:700; cursor:pointer; font-family:var(--luxury-font);">
+                        <i class="fa-solid fa-play"></i> PLAY MOVIE
+                    </button>`;
+            }
+        }
+
+        function setupSeasons(item) {
+            const selector = document.getElementById('season-selector');
+            if (item.seasonsData) {
+                selector.innerHTML = item.seasonsData.map(s => `<option value="${s.seasonNumber}">Season ${s.seasonNumber}</option>`).join('');
+                renderEpisodes(item.seasonsData[0].seasonNumber);
+            } else {
+                selector.style.display = 'none';
                 renderEpisodes(1);
             }
         }
 
         function renderEpisodes(seasonNum) {
-            const target = document.getElementById('ep-list-target');
+            const list = document.getElementById('ep-list');
             let eps = [];
             
-            if (window.currentItem.seasonsData) {
-                const season = window.currentItem.seasonsData.find(s => s.seasonNumber == seasonNum);
-                eps = season ? season.episodes : [];
+            if (window.currentData.seasonsData) {
+                const s = window.currentData.seasonsData.find(x => x.seasonNumber == seasonNum);
+                eps = s ? s.episodes : [];
             } else {
-                eps = window.currentItem.episodes || [];
+                eps = window.currentData.episodes || [];
             }
 
-            target.innerHTML = eps.map((ep, i) => `
-                <div class="episode-card">
-                    <div class="ep-meta">
-                        <h4 onclick="watch('${ep.link}')">E${i+1}: ${ep.title || 'Untitled Episode'}</h4>
-                        <p>${ep.description || 'Watch the latest installment of this masterpiece.'}</p>
+            list.innerHTML = eps.map((ep, i) => `
+                <div class="ep-item" onclick="window.location.href='watch.html?video=${encodeURIComponent(ep.link)}'">
+                    <div class="ep-thumb" style="background-image:url('${ep.thumbnail || window.currentData.cover}')">
+                        <i class="fa-solid fa-play-circle"></i>
                     </div>
-                    <div class="ep-btns">
-                        <button class="ep-dl-btn" onclick="saveVideo('${ep.download}', '${window.currentItem.title} S${seasonNum}E${i+1}')">
-                            <i class="fa-solid fa-circle-arrow-down"></i>
-                        </button>
+                    <div class="ep-info">
+                        <h4>${i+1}. ${ep.title || 'Episode ' + (i+1)}</h4>
+                        <p>${ep.description || 'Watch the next chapter of ' + window.currentData.title + '.'}</p>
                     </div>
                 </div>
             `).join('');
-        }
-
-        function changeSeason(val) { renderEpisodes(val); }
-
-        function watch(link) { window.location.href = `watch.html?video=${encodeURIComponent(link)}`; }
-
-        async function saveVideo(url, title) {
-            if (!url || url === 'undefined') { alert("Download link unavailable."); return; }
-            
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({ type: 'CACHE_VIDEO', url, title });
-                alert(`Starting download: ${title}`);
-            } else {
-                alert("Please refresh and try again.");
-            }
         }
 
         window.onload = init;
