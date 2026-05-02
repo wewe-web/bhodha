@@ -285,6 +285,18 @@
         const SERIES_BIN = "69f3074faaba882197550749";
         const MOVIES_BIN = "69f307c736566621a80b4134";
 
+        // Register Service Worker for Internal Downloads
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+            
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data.type === 'DOWNLOAD_COMPLETE') {
+                    alert(`BODA: ${event.data.title} is now available in your offline library.`);
+                    updateDownloadStatus(event.data.title, 'Completed');
+                }
+            });
+        }
+
         async function fetchDetails() {
             const params = new URLSearchParams(window.location.search);
             const targetTitle = params.get('title');
@@ -322,23 +334,25 @@
             }
         }
 
-        function triggerRealDownload(directMp4Url, contentTitle, posterUrl) {
+        function triggerInternalDownload(directMp4Url, contentTitle, posterUrl) {
             if (!directMp4Url || directMp4Url === "" || directMp4Url === "undefined") {
-                alert("A direct download link for this title hasn't been added yet.");
+                alert("Download not available yet.");
                 return;
             }
 
-            const link = document.createElement('a');
-            link.href = directMp4Url;
-            link.setAttribute('download', `${contentTitle.replace(/\s+/g, '_')}.mp4`);
-            link.target = '_blank'; 
-            link.rel = 'noopener noreferrer';
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Communicate with sw.js instead of opening a link
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'CACHE_VIDEO',
+                    url: directMp4Url,
+                    title: contentTitle
+                });
+                alert(`Saving ${contentTitle} to app storage...`);
+            } else {
+                alert("Please refresh the app to enable downloads.");
+            }
 
-            // LocalStorage metadata sync
+            // LocalStorage persistence for Library UI
             let currentDownloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
             if (!currentDownloads.find(d => d.title === contentTitle)) {
                 currentDownloads.push({
@@ -346,9 +360,18 @@
                     poster: posterUrl,
                     date: new Date().toLocaleDateString(),
                     url: directMp4Url,
-                    status: 'Completed'
+                    status: 'Downloading'
                 });
                 localStorage.setItem('boda_downloads', JSON.stringify(currentDownloads));
+            }
+        }
+
+        function updateDownloadStatus(title, status) {
+            let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
+            let item = downloads.find(d => d.title === title);
+            if (item) {
+                item.status = status;
+                localStorage.setItem('boda_downloads', JSON.stringify(downloads));
             }
         }
 
@@ -362,8 +385,8 @@
                     <button class="watch-btn" onclick="watch('${item.videoLink}', '${encodeURIComponent(item.vtt || "")}')">
                         <i class="fa-solid fa-play"></i> WATCH NOW
                     </button>
-                    <button class="download-btn" onclick="triggerRealDownload('${item.downloadLink || ""}', '${item.title}', '${item.cover}')">
-                        <i class="fa-solid fa-download"></i> DOWNLOAD MP4
+                    <button class="download-btn" onclick="triggerInternalDownload('${item.downloadLink || ""}', '${item.title}', '${item.cover}')">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> SAVE TO APP
                     </button>
                 `;
             } else {
@@ -380,7 +403,7 @@
                                 <p>${ep.description || 'Watch the latest chapter of this BODA original.'}</p>
                             </div>
                             <div class="ep-actions">
-                                <button class="dl-icon-btn" onclick="event.stopPropagation(); triggerRealDownload('${ep.download || ""}', '${item.title} EP${index + 1}', '${item.cover}')" title="Download to MP4">
+                                <button class="dl-icon-btn" onclick="event.stopPropagation(); triggerInternalDownload('${ep.download || ""}', '${item.title} EP${index + 1}', '${item.cover}')" title="Save to App">
                                     <i class="fa-solid fa-circle-down"></i>
                                 </button>
                             </div>
