@@ -7,6 +7,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BODA | Premier Online Cinema</title>
+    
+    <!-- PWA Manifest for App Download -->
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
     
@@ -22,7 +25,7 @@
             --gray: #121212;
             --luxury-font: 'Cinzel', serif;
             --main-font: 'Poppins', sans-serif;
-            --glass: rgba(10, 10, 10, 0.85);
+            --glass: rgba(10, 10, 10, 0.95);
         }
 
         body {
@@ -31,14 +34,13 @@
             font-family: var(--main-font);
             margin: 0;
             overflow-x: hidden;
-            padding-bottom: 90px; /* Space for mobile nav */
+            padding-bottom: 90px;
         }
 
         @media (min-width: 769px) {
-            body { padding-bottom: 0; }
+            body { padding-bottom: 0; padding-top: 80px; }
         }
 
-        /* Luxury Header with Glassmorphism */
         header {
             display: flex;
             align-items: center;
@@ -53,37 +55,36 @@
             z-index: 1000;
             border-bottom: 1px solid rgba(212, 175, 55, 0.3);
             box-sizing: border-box;
-            gap: 20px;
         }
 
         .logo-box img {
-            height: 40px;
+            height: 35px;
             cursor: pointer;
             filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.4));
         }
 
         .search-area {
             flex-grow: 1;
-            max-width: 500px;
+            max-width: 400px;
             position: relative;
+            margin: 0 20px;
         }
 
         #smartSearch {
             width: 100%;
-            padding: 12px 15px 12px 45px;
-            border-radius: 8px;
-            border: 1px solid rgba(212, 175, 55, 0.5);
+            padding: 10px 15px 10px 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
             background: rgba(255, 255, 255, 0.05);
             color: white;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
             transition: 0.3s;
         }
 
         #smartSearch:focus {
+            border-color: var(--gold);
             background: rgba(255, 255, 255, 0.1);
-            border-color: var(--gold-bright);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
         }
 
         .search-area i {
@@ -92,54 +93,26 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--gold);
+            font-size: 0.8rem;
         }
 
-        #searchResults {
-            position: absolute;
-            top: 110%;
-            left: 0;
-            width: 100%;
-            background: #0a0a0a;
-            border: 1px solid var(--gold);
-            border-radius: 8px;
-            z-index: 2000;
-            max-height: 400px;
-            overflow-y: auto;
-            display: none;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-        }
-
-        .search-item {
-            display: flex;
-            padding: 12px;
-            border-bottom: 1px solid #1a1a1a;
-            cursor: pointer;
-            gap: 15px;
-            transition: 0.2s;
-        }
-
-        .search-item:hover { background: #151515; }
-        .search-item img { width: 100px; height: 60px; object-fit: cover; border-radius: 4px; }
-        .search-info h4 { margin: 0; color: var(--gold); font-family: var(--luxury-font); font-size: 0.85rem; }
-
-        /* Premium Navigation */
-        nav { display: flex; align-items: center; }
+        nav { display: flex; align-items: center; gap: 20px; }
         nav a {
             color: #ccc;
             text-decoration: none;
-            margin: 0 15px;
             font-family: var(--luxury-font);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             letter-spacing: 1px;
-            transition: 0.3s;
             text-transform: uppercase;
+            transition: 0.3s;
+            cursor: pointer;
         }
 
         nav a:hover, nav a.active { color: var(--gold); }
 
-        /* Hero Cinema Section */
+        /* Hero & Grid */
         #hero-slider {
-            height: 85vh;
+            height: 80vh;
             display: flex;
             align-items: flex-end;
             position: relative;
@@ -150,137 +123,89 @@
         .hero-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, var(--black) 10%, transparent 60%),
-                        linear-gradient(to right, var(--black) 5%, transparent 50%);
+            background: linear-gradient(to top, var(--black) 15%, transparent 70%);
         }
 
         .hero-content {
             position: relative;
             z-index: 10;
-            padding: 0 5% 60px;
-            width: 100%;
-        }
-
-        .hero-content h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-family: var(--luxury-font);
-            margin: 0;
-            color: white;
-            line-height: 1.1;
-            text-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            padding: 0 5% 80px;
         }
 
         .play-btn {
             background: var(--gold);
             color: black;
             border: none;
-            padding: 14px 35px;
-            font-size: 0.9rem;
+            padding: 12px 30px;
             font-weight: 700;
             font-family: var(--luxury-font);
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 25px;
-            transition: 0.3s;
+            margin-top: 20px;
             display: inline-flex;
             align-items: center;
             gap: 10px;
         }
 
-        .play-btn:hover { background: var(--gold-bright); transform: translateY(-3px); }
-
-        /* Content Rows */
         .section-title {
             font-family: var(--luxury-font);
             color: var(--gold);
             padding: 40px 5% 15px;
-            font-size: 1.2rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
         }
 
         .grid-row {
             display: flex;
             overflow-x: auto;
-            padding: 0 5% 30px;
-            gap: 20px;
+            padding: 0 5% 20px;
+            gap: 15px;
             scrollbar-width: none;
         }
 
-        .grid-row::-webkit-scrollbar { display: none; }
-
         .card {
-            min-width: 180px; 
-            height: 270px;
-            background: #0a0a0a;
-            border-radius: 4px;
-            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: pointer;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            min-width: 160px;
+            height: 240px;
+            border-radius: 8px;
             overflow: hidden;
+            position: relative;
+            transition: 0.3s;
+            cursor: pointer;
         }
 
-        .card:hover { transform: scale(1.08) translateY(-10px); z-index: 10; }
+        .card:hover { transform: scale(1.05); }
         .card img { width: 100%; height: 100%; object-fit: cover; }
 
-        .card-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 10px 10px;
-            background: linear-gradient(transparent, black);
-            text-align: center;
-        }
-
-        .card-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .original-tag {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--gold);
-            color: black;
-            font-size: 0.5rem;
-            font-weight: 900;
-            padding: 2px 6px;
-            border-radius: 2px;
-            font-family: var(--luxury-font);
-        }
-
-        /* Mobile Adaptation */
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            header { padding: 10px 15px; flex-direction: column; gap: 10px; }
-            .logo-box { width: 100%; text-align: center; }
-            .search-area { width: 100%; }
-
+            header { 
+                padding: 10px 5%;
+                justify-content: center;
+            }
+            .logo-box { position: absolute; left: 5%; }
+            .logo-box img { height: 25px; }
+            .search-area { margin: 0 0 0 40px; width: 100%; }
+            
             nav {
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 width: 100%;
-                background: #050505;
-                justify-content: space-around;
+                background: #080808;
                 padding: 15px 0;
-                border-top: 1px solid rgba(212, 175, 55, 0.3);
-                z-index: 2000;
+                justify-content: space-around;
+                border-top: 1px solid rgba(212, 175, 55, 0.2);
+                gap: 0;
             }
-
-            nav a { font-size: 0.6rem; display: flex; flex-direction: column; align-items: center; gap: 5px; margin: 0; }
-            nav a i { font-size: 1.2rem; color: var(--gold); }
-            #hero-slider { height: 55vh; }
-            .card { min-width: 140px; height: 210px; }
+            nav a {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 0.6rem;
+                gap: 5px;
+            }
+            nav a i { font-size: 1.1rem; }
+            #hero-slider { height: 60vh; }
         }
     </style>
 </head>
@@ -294,153 +219,119 @@
 
         <div class="search-area">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="smartSearch" placeholder="Search Masterpieces..." autocomplete="off">
-            <div id="searchResults"></div>
+            <input type="text" id="smartSearch" placeholder="Search films..." autocomplete="off">
+            <div id="searchResults" style="position:absolute; width:100%; background:#111; top:110%; display:none; border:1px solid var(--gold); border-radius:8px; z-index:2000;"></div>
         </div>
 
         <nav>
-            <a href="index.html" class="active"><i class="fa-solid fa-house"></i>Home</a>
-            <a href="series.html"><i class="fa-solid fa-tv"></i>Series</a>
-            <a href="movies.html"><i class="fa-solid fa-film"></i>Movies</a>
-            <a href="dashboard.html"><i class="fa-solid fa-user-shield"></i>Admin</a>
+            <a href="index.html" class="active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="series.html"><i class="fa-solid fa-tv"></i><span>Series</span></a>
+            <a href="movies.html"><i class="fa-solid fa-film"></i><span>Movies</span></a>
+            <a onclick="adminAccess()"><i class="fa-solid fa-user-shield"></i><span>Admin</span></a>
         </nav>
     </header>
 
     <section id="hero-slider">
         <div class="hero-overlay"></div>
-        <div class="hero-content" id="hero-content">
-            <!-- Dynamic Hero Content -->
-        </div>
+        <div class="hero-content" id="hero-content"></div>
     </section>
 
     <div id="main-content">
-        <h2 class="section-title"><i class="fa-solid fa-star"></i> Newly Released</h2>
+        <h2 class="section-title"><i class="fa-solid fa-star"></i> New Arrivals</h2>
         <div class="grid-row" id="newly-released"></div>
 
-        <h2 class="section-title"><i class="fa-solid fa-fire"></i> Trending Now</h2>
+        <h2 class="section-title"><i class="fa-solid fa-fire"></i> Trending</h2>
         <div class="grid-row" id="ongoing-titles"></div>
 
-        <h2 class="section-title"><i class="fa-solid fa-calendar-days"></i> Coming Soon</h2>
+        <h2 class="section-title"><i class="fa-solid fa-calendar"></i> Coming Soon</h2>
         <div class="grid-row" id="upcoming-titles"></div>
     </div>
 
     <script>
+        // PWA Registration for "Download" Capability
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
         const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
         const SERIES_BIN = "69f3074faaba882197550749";
         const MOVIES_BIN = "69f307c736566621a80b4134";
 
         let allItems = [];
 
+        // Admin Security
+        function adminAccess() {
+            const pass = prompt("Enter Admin Passkey:");
+            if (pass === "iamtheadminof1227") {
+                window.location.href = 'dashboard.html';
+            } else {
+                alert("Access Denied.");
+            }
+        }
+
         async function loadContent() {
             try {
-                const [seriesRes, moviesRes] = await Promise.all([
+                const [sRes, mRes] = await Promise.all([
                     fetch(`https://api.jsonbin.io/v3/b/${SERIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY }}),
                     fetch(`https://api.jsonbin.io/v3/b/${MOVIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY }})
                 ]);
+                const sData = await sRes.json();
+                const mData = await mRes.json();
 
-                const sData = await seriesRes.json();
-                const mData = await moviesRes.json();
-
-                allItems = [
-                    ...(Array.isArray(sData.record) ? sData.record : [sData.record]),
-                    ...(Array.isArray(mData.record) ? mData.record : [mData.record])
-                ].filter(item => item && item.title);
-
-                renderRows(allItems);
-                updateHero(allItems);
-
-            } catch (err) {
-                console.error("Connection Failed:", err);
-            }
+                allItems = [...(sData.record || []), ...(mData.record || [])].filter(i => i && i.title);
+                
+                renderData(allItems);
+                setHero(allItems);
+            } catch (e) { console.error(e); }
         }
 
-        function renderRows(items) {
-            const newRow = document.getElementById('newly-released');
-            const ongoingRow = document.getElementById('ongoing-titles');
-            const upcomingRow = document.getElementById('upcoming-titles');
+        function renderData(items) {
+            const rows = {
+                'newly-released': document.getElementById('newly-released'),
+                'ongoing-titles': document.getElementById('ongoing-titles'),
+                'upcoming-titles': document.getElementById('upcoming-titles')
+            };
 
             items.forEach(item => {
-                const isOriginal = item.status === "Ongoing" ? '<div class="original-tag">BODA ORIGINAL</div>' : '';
-                const cardHtml = `
+                const card = `
                     <div class="card" onclick="location.href='details.html?title=${encodeURIComponent(item.title)}'">
-                        ${isOriginal}
                         <img src="${item.cover}" alt="${item.title}" loading="lazy">
-                        <div class="card-info">
-                            <div class="card-title">${item.title}</div>
-                        </div>
-                    </div>
-                `;
+                    </div>`;
+                
+                if (item.status === "Ongoing") rows['ongoing-titles'].innerHTML += card;
+                else if (item.status === "Upcoming") rows['upcoming-titles'].innerHTML += card;
 
-                if (item.status === "Ongoing") ongoingRow.innerHTML += cardHtml;
-                else if (item.status === "Upcoming") upcomingRow.innerHTML += cardHtml;
-
-                // Logic for "New" (last 7 days)
-                const releaseDate = new Date(item.timestamp);
-                const diffTime = Math.abs(new Date() - releaseDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                if (diffDays <= 7) newRow.innerHTML += cardHtml;
+                const isNew = (new Date() - new Date(item.timestamp)) / (1000*60*60*24) <= 7;
+                if (isNew) rows['newly-released'].innerHTML += card;
             });
         }
 
-        function updateHero(items) {
+        function setHero(items) {
             const hero = items.find(i => i.isHero === "YES") || items[0];
-            if (hero) {
-                const heroSection = document.getElementById('hero-slider');
-                heroSection.style.backgroundImage = `url('${hero.backdrop || hero.cover}')`;
-                
-                document.getElementById('hero-content').innerHTML = `
-                    <p style="color:var(--gold); font-family:var(--luxury-font); letter-spacing:4px; font-size:0.8rem; margin-bottom:10px;">BODA EXCLUSIVE</p>
-                    <h1>${hero.title}</h1>
-                    <p style="max-width: 600px; color: #bbb; font-size: 0.95rem; margin-top: 15px; line-height: 1.6;">
-                        ${hero.synopsis ? hero.synopsis.substring(0, 160) + '...' : 'A premium cinematic experience curated specifically for our members.'}
-                    </p>
-                    <button class="play-btn" onclick="location.href='details.html?title=${encodeURIComponent(hero.title)}'">
-                        <i class="fa-solid fa-play"></i> STREAM NOW
-                    </button>
-                `;
-            }
+            if (!hero) return;
+            const container = document.getElementById('hero-slider');
+            container.style.backgroundImage = `url('${hero.backdrop || hero.cover}')`;
+            document.getElementById('hero-content').innerHTML = `
+                <h1 style="font-family:var(--luxury-font); font-size:3rem; margin:0;">${hero.title}</h1>
+                <button class="play-btn" onclick="location.href='details.html?title=${encodeURIComponent(hero.title)}'">
+                    <i class="fa-solid fa-play"></i> WATCH NOW
+                </button>
+            `;
         }
 
-        // Search Logic
-        const searchInput = document.getElementById('smartSearch');
-        const searchResults = document.getElementById('searchResults');
-
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
+        // Search Listener
+        document.getElementById('smartSearch').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const resBox = document.getElementById('searchResults');
+            if (val.length < 2) { resBox.style.display = 'none'; return; }
             
-            if (term === "iamtheadminof1227") {
-                window.location.href = 'dashboard.html';
-                return;
-            }
-
-            if (term.length < 2) {
-                searchResults.style.display = 'none';
-                return;
-            }
-
-            const matches = allItems.filter(i => i.title.toLowerCase().includes(term));
-
-            if (matches.length > 0) {
-                searchResults.innerHTML = matches.map(item => `
-                    <div class="search-item" onclick="location.href='details.html?title=${encodeURIComponent(item.title)}'">
-                        <img src="${item.backdrop || item.cover}">
-                        <div class="search-info">
-                            <h4>${item.title}</h4>
-                            <span style="font-size: 0.7rem; color: #666;">${item.genres || 'Cinema'}</span>
-                        </div>
-                    </div>
-                `).join('');
-                searchResults.style.display = 'block';
-            } else {
-                searchResults.style.display = 'none';
-            }
-        });
-
-        // Close search on outside click
-        document.addEventListener('click', (e) => {
-            if (!document.querySelector('.search-area').contains(e.target)) {
-                searchResults.style.display = 'none';
-            }
+            const filtered = allItems.filter(i => i.title.toLowerCase().includes(val));
+            resBox.innerHTML = filtered.map(i => `
+                <div style="padding:10px; border-bottom:1px solid #222; cursor:pointer;" onclick="location.href='details.html?title=${encodeURIComponent(i.title)}'">
+                    ${i.title}
+                </div>
+            `).join('');
+            resBox.style.display = filtered.length ? 'block' : 'none';
         });
 
         window.onload = loadContent;
