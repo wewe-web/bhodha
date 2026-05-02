@@ -8,177 +8,245 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BODA | Professional Theater</title>
 
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-    <link href="https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css" rel="stylesheet">
+    <!-- Plyr API Style -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
 
     <style>
-        :root { --gold: #D4AF37; --black: #050505; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--black); overflow: hidden; font-family: 'Poppins', sans-serif; min-height: -webkit-fill-available; }
-        .video-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: #000; }
-        .video-js { width: 100% !important; height: 100% !important; }
-        .vjs-matrix.video-js { color: var(--gold); }
-
-        .video-js .vjs-big-play-button {
-            background-color: rgba(212, 175, 55, 0.2) !important;
-            border: 2px solid var(--gold) !important;
-            border-radius: 50%; width: 80px; height: 80px;
-            line-height: 76px; top: 50%; left: 50%;
-            margin-top: -40px; margin-left: -40px;
-            backdrop-filter: blur(10px);
+        :root { 
+            --gold: #D4AF37; 
+            --black: #050505;
+            /* Customizing Plyr to Gold */
+            --plyr-color-main: var(--gold);
+            --plyr-video-background: #000;
         }
 
-        .vjs-play-progress, .vjs-volume-level { background-color: var(--gold) !important; }
-
-        .player-nav, .lock-wrapper { position: absolute; z-index: 100; opacity: 0; visibility: hidden; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .player-nav { top: env(safe-area-inset-top, 20px); left: 20px; }
-        .lock-wrapper { top: 50%; right: 20px; transform: translateY(-50%); }
-        .container-active .player-nav, .container-active .lock-wrapper { opacity: 1; visibility: visible; }
-
-        body.is-locked .player-nav, body.is-locked .vjs-control-bar, body.is-locked .vjs-big-play-button { 
-            pointer-events: none !important; opacity: 0 !important; visibility: hidden !important;
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--black); font-family: 'Poppins', sans-serif; 
+            min-height: -webkit-fill-available; overflow: hidden;
         }
 
-        .btn-ui { background: rgba(0, 0, 0, 0.5); color: white; border: 1px solid rgba(212, 175, 55, 0.5); border-radius: 50px; backdrop-filter: blur(15px); cursor: pointer; transition: 0.3s; -webkit-tap-highlight-color: transparent; }
-        .btn-back { text-decoration: none; padding: 10px 20px; font-size: 0.8rem; font-family: 'Cinzel', serif; display: flex; align-items: center; gap: 8px; }
-        .btn-lock { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        /* Fixed Navigation - This ensures it stays visible after exiting fullscreen */
+        .global-ui {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.4s ease;
+        }
 
-        body.is-locked .lock-wrapper { opacity: 0.2; visibility: visible; pointer-events: auto; }
-        body.is-locked .btn-lock { border-color: #ff4444; color: #ff4444; background: rgba(0,0,0,0.8); }
+        .player-nav {
+            position: absolute;
+            top: env(safe-area-inset-top, 20px);
+            left: 20px;
+            pointer-events: auto;
+        }
 
-        #loader { position: fixed; inset: 0; background: var(--black); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
-        .gold-spinner { width: 30px; height: 30px; border: 2px solid rgba(212, 175, 55, 0.1); border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .lock-wrapper {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            pointer-events: auto;
+        }
+
+        .btn-ui { 
+            background: rgba(0, 0, 0, 0.6); 
+            color: white; 
+            border: 1px solid rgba(212, 175, 55, 0.5); 
+            border-radius: 50px; 
+            backdrop-filter: blur(15px); 
+            cursor: pointer; 
+            transition: 0.3s; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        .btn-back { 
+            text-decoration: none; 
+            padding: 10px 20px; 
+            font-size: 0.8rem; 
+            font-family: 'Cinzel', serif; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: white;
+        }
+
+        .btn-lock { 
+            width: 45px; height: 45px; 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+
+        /* Active/Idle Logic */
+        .ui-hidden { opacity: 0; visibility: hidden; }
+        
+        body.is-locked .player-nav, 
+        body.is-locked .plyr__controls { 
+            display: none !important; 
+        }
+
+        body.is-locked .btn-lock { 
+            border-color: #ff4444; color: #ff4444; background: rgba(0,0,0,0.8);
+            opacity: 0.3;
+        }
+
+        /* Loader */
+        #loader { 
+            position: fixed; inset: 0; background: var(--black); 
+            display: flex; flex-direction: column; justify-content: center; 
+            align-items: center; z-index: 2000; 
+        }
+
+        .gold-spinner { 
+            width: 30px; height: 30px; 
+            border: 2px solid rgba(212, 175, 55, 0.1); 
+            border-top: 2px solid var(--gold); 
+            border-radius: 50%; 
+            animation: spin 0.8s linear infinite; 
+        }
+
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Plyr Overrides */
+        .plyr--full-ui input[type=range] { color: var(--gold); }
+        .plyr__control--overlaid { background: rgba(212, 175, 55, 0.2); border: 1px solid var(--gold); }
     </style>
 </head>
 
-<body class="container-active">
+<body>
 
     <div id="loader">
         <div class="gold-spinner"></div>
-        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; letter-spacing: 2px; font-size: 0.7rem;">ESTABLISHING SECURE LINK</p>
+        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; letter-spacing: 2px; font-size: 0.6rem;">INITIALIZING CINEMA</p>
     </div>
 
-    <nav class="player-nav">
-        <a href="javascript:history.back()" class="btn-ui btn-back">
-            <i class="fa-solid fa-arrow-left"></i> EXIT
-        </a>
-    </nav>
+    <!-- UI Layer -->
+    <div class="global-ui" id="uiLayer">
+        <nav class="player-nav">
+            <a href="javascript:history.back()" class="btn-ui btn-back">
+                <i class="fa-solid fa-arrow-left"></i> EXIT
+            </a>
+        </nav>
 
-    <div class="lock-wrapper">
-        <button class="btn-ui btn-lock" id="lockBtn">
-            <i class="fa-solid fa-lock-open"></i>
-        </button>
+        <div class="lock-wrapper">
+            <button class="btn-ui btn-lock" id="lockBtn">
+                <i class="fa-solid fa-lock-open"></i>
+            </button>
+        </div>
     </div>
 
-    <div class="video-container" id="playerWrapper">
-        <video id="boda-player" class="video-js vjs-big-play-centered vjs-matrix" crossorigin="anonymous" playsinline controls preload="auto"></video>
+    <div class="video-container">
+        <video id="player" playsinline controls crossorigin="anonymous">
+            <source src="" type="video/mp4" />
+        </video>
     </div>
 
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js"></script>
-
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
-        let rawVideoUrl = params.get('video');
+        const rawVideoUrl = params.get('video');
         const vttUrl = params.get('vtt');
         const isOfflineMode = params.get('offline') === 'true';
 
-        const player = videojs('boda-player', {
-            autoplay: true,
-            responsive: true,
-            fluid: true,
-            userActions: { hotkeys: true },
-            controlBar: {
-                children: [
-                    'playToggle', 'volumePanel', 'currentTimeDisplay', 
-                    'timeDivider', 'durationDisplay', 'progressControl', 
-                    'playbackRateMenuButton', 'subsCapsButton', 'fullscreenToggle',
-                ],
-            },
+        // Initialize Plyr
+        const player = new Plyr('#player', {
+            controls: [
+                'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 
+                'captions', 'settings', 'pip', 'airplay', 'fullscreen'
+            ],
+            settings: ['quality', 'speed'],
+            keyboard: { focused: true, global: true },
+            tooltips: { controls: true, seek: true }
         });
 
-        player.controlBar.addChild('QualitySelector');
-
-        async function initPlayer() {
+        async function setupSource() {
             if (!rawVideoUrl) return;
             const decodedUrl = decodeURIComponent(decodeURIComponent(rawVideoUrl));
+            const videoElement = document.getElementById('player');
 
             if (isOfflineMode) {
-                // Fetch from Cache Storage for Offline Playback
                 const cache = await caches.open('boda-videos');
                 const cachedResponse = await cache.match(decodedUrl);
-
                 if (cachedResponse) {
                     const blob = await cachedResponse.blob();
-                    const localUrl = URL.createObjectURL(blob);
-                    player.src({ src: localUrl, type: 'video/mp4' });
+                    videoElement.src = URL.createObjectURL(blob);
                 } else {
                     alert("Media not found in local storage.");
                 }
             } else {
-                player.src({ src: decodedUrl, type: 'video/mp4' });
+                videoElement.src = decodedUrl;
             }
 
             if (vttUrl && vttUrl !== "null") {
-                player.addRemoteTextTrack({
-                    kind: 'captions', srclang: 'en', label: 'English',
-                    src: decodeURIComponent(vttUrl), default: true
-                }, false);
+                const track = document.createElement('track');
+                track.kind = 'captions';
+                track.label = 'English';
+                track.srclang = 'en';
+                track.src = decodeURIComponent(vttUrl);
+                track.default = true;
+                videoElement.appendChild(track);
             }
         }
 
-        initPlayer();
+        setupSource();
 
-        // UI & Interaction Logic
-        player.on('ready', () => {
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 800);
-        });
-
-        player.on('fullscreenchange', () => {
-            if (player.isFullscreen() && screen.orientation && screen.orientation.lock) {
+        // Screen Orientation & Fullscreen Logic
+        player.on('enterfullscreen', () => {
+            if (screen.orientation && screen.orientation.lock) {
                 screen.orientation.lock('landscape').catch(() => {});
             }
         });
 
+        player.on('exitfullscreen', () => {
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+            // Force UI update to ensure Exit button is visible
+            handleUserActivity();
+        });
+
+        // Loader removal
+        player.on('ready', () => {
+            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000);
+        });
+
+        // Lock & UI Controls
         const lockBtn = document.getElementById('lockBtn');
+        const uiLayer = document.getElementById('uiLayer');
         let isLocked = false;
-        let lockTimer;
+        let uiTimer;
 
         lockBtn.addEventListener('click', () => {
-            if (!isLocked) {
-                isLocked = true;
+            isLocked = !isLocked;
+            if (isLocked) {
                 document.body.classList.add('is-locked');
                 lockBtn.innerHTML = '<i class="fa-solid fa-lock"></i>';
                 if (navigator.vibrate) navigator.vibrate(40);
+                // Hide UI immediately when locked
+                uiLayer.classList.add('ui-hidden');
+            } else {
+                document.body.classList.remove('is-locked');
+                lockBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
+                handleUserActivity();
             }
         });
 
-        const startUnlock = () => {
-            if (!isLocked) return;
-            lockTimer = setTimeout(() => {
-                isLocked = false;
-                document.body.classList.remove('is-locked');
-                lockBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
-                if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-                handleUserActivity();
-            }, 2000); 
-        };
-
-        const stopUnlock = () => clearTimeout(lockTimer);
-        lockBtn.addEventListener('mousedown', startUnlock);
-        lockBtn.addEventListener('touchstart', startUnlock);
-        window.addEventListener('mouseup', stopUnlock);
-        window.addEventListener('touchend', stopUnlock);
-
-        let uiTimer;
         function handleUserActivity() {
-            if (isLocked) return;
-            document.body.classList.add('container-active');
+            if (isLocked) {
+                // Show only the lock button briefly when locked and screen is touched
+                uiLayer.classList.remove('ui-hidden');
+                clearTimeout(uiTimer);
+                uiTimer = setTimeout(() => { if(isLocked) uiLayer.classList.add('ui-hidden'); }, 2000);
+                return;
+            }
+
+            uiLayer.classList.remove('ui-hidden');
             clearTimeout(uiTimer);
             uiTimer = setTimeout(() => {
-                if (!player.paused()) document.body.classList.remove('container-active');
+                if (player.playing) uiLayer.classList.add('ui-hidden');
             }, 3500);
         }
 
