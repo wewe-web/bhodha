@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BODA | About & Install</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="manifest" href="manifest.json">
@@ -24,184 +26,21 @@
             font-family: var(--main-font);
             margin: 0;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
+        /* Fixed Navigation Header */
         .nav-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
             padding: 20px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0,0,0,0.8);
-            border-bottom: 1px solid #222;
-        }
-
-        .back-btn {
-            color: var(--gold);
-            text-decoration: none;
-            font-family: var(--luxury-font);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* About Section */
-        .hero {
-            padding: 80px 5%;
-            text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('boda.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-
-        .hero h1 {
-            font-family: var(--luxury-font);
-            font-size: 3.5rem;
-            color: var(--gold);
-            margin: 0;
-        }
-
-        /* Installation Card */
-        .install-container {
-            max-width: 800px;
-            margin: -50px auto 100px;
-            padding: 0 20px;
-        }
-
-        .install-card {
-            background: var(--gray);
-            border-radius: 15px;
-            padding: 40px;
-            border: 1px solid var(--gold);
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .install-card h2 {
-            font-family: var(--luxury-font);
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .install-card p {
-            color: #aaa;
-            margin-bottom: 30px;
-        }
-
-        .btn-install {
-            background: var(--gold);
-            color: black;
-            border: none;
-            padding: 18px 40px;
-            font-family: var(--luxury-font);
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border-radius: 50px;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .btn-install:hover {
-            background: white;
-            transform: scale(1.05);
-        }
-
-        .btn-install:disabled {
-            background: #444;
-            color: #888;
-            cursor: not-allowed;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        .feat-box i { font-size: 2rem; color: var(--gold); margin-bottom: 10px; }
-    </style>
-</head>
-<body>
-
-    <header class="nav-header">
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK</a>
-        <img src="logo.png" height="35" alt="Boda Logo">
-    </header>
-
-    <section class="hero">
-        <h1>BODA CINEMA</h1>
-        <p style="letter-spacing: 3px; color: #ccc;">ULTIMATE K-MEDIA EXPERIENCE</p>
-    </section>
-
-    <div class="install-container">
-        <div class="install-card">
-            <h2>Download the App</h2>
-            <p>Install Boda on your device for a smoother experience, offline library access, and faster loading.</p>
-            
-            <button id="installBtn" class="btn-install">
-                <i class="fa-solid fa-cloud-arrow-down"></i> INSTALL BODA APP
-            </button>
-
-            <div class="features">
-                <div class="feat-box">
-                    <i class="fa-solid fa-film"></i>
-                    <h4>Offline Play</h4>
-                </div>
-                <div class="feat-box">
-                    <i class="fa-solid fa-gauge-high"></i>
-                    <h4>No Lag</h4>
-                </div>
-                <div class="feat-box">
-                    <i class="fa-solid fa-mobile-screen"></i>
-                    <h4>Full Screen</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        // Listen for the browser's PWA install prompt
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // Show the button now that the app is ready to be installed
-            installBtn.style.display = 'inline-flex';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('Boda was installed');
-                }
-                deferredPrompt = null;
-            } else {
-                alert("Boda is already installed or your browser doesn't support installation. Check your browser menu for 'Install App'.");
-            }
-        });
-
-        // Hide button if already installed
-        window.addEventListener('appinstalled', () => {
-            installBtn.disabled = true;
-            installBtn.innerHTML = '<i class="fa-solid fa-check"></i> INSTALLED';
-        });
-
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
-        }
-    </script>
-</body>
-</html>
-            z-index: 100;
             background: linear-gradient(to bottom, rgba(5,5,5,0.9), transparent);
+            z-index: 100;
+            box-sizing: border-box;
         }
 
         .back-link {
@@ -214,19 +53,22 @@
             padding: 8px 15px;
             border-radius: 4px;
             transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .back-link:hover { background: var(--gold); color: black; }
 
         /* Hero Section */
         .about-hero {
-            height: 70vh;
+            height: 60vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(rgba(5,5,5,0.6), rgba(5,5,5,1)), url('boda.jpg');
+            background: linear-gradient(rgba(5,5,5,0.4), rgba(5,5,5,1)), url('boda.jpg');
             background-size: cover;
             background-position: center;
         }
@@ -239,90 +81,30 @@
             text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* App Download Section */
-        .download-box {
+        .about-hero p {
+            letter-spacing: 5px;
+            color: #888;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        /* Combined Install & Download Section */
+        .content-wrap {
+            max-width: 900px;
+            margin: -100px auto 50px;
+            padding: 0 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 20px;
             padding: 40px;
-            max-width: 800px;
-            margin: -150px auto 50px;
             text-align: center;
-            position: relative;
-            z-index: 10;
             box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-        }
-
-        .download-box h2 {
-            font-family: var(--luxury-font);
-            color: var(--gold);
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .download-box p {
-            color: #bbb;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-        }
-
-        .app-btn {
-            background: var(--gold);
-            color: black;
-            text-decoration: none;
-            padding: 20px 45px;
-            border-radius: 50px;
-            font-family: var(--luxury-font);
-            font-weight: bold;
-            font-size: 1.1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-        }
-
-        .app-btn:hover {
-            transform: scale(1.05) translateY(-5px);
-            background: white;
-            box-shadow: 0 20px 40px rgba(255,255,255,0.2);
-        }
-
-        /* Features */
-        .features-grid {
-            max-width: 1000px;
-            margin: 50px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            padding: 0 5%;
-        }
-
-        .feat-item {
-            background: #111;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #222;
-        }
-
-        .feat-item i {
-            font-size: 2.5rem;
-            color: var(--gold);
-            margin-bottom: 15px;
-        }
-
-        .feat-item h3 { font-family: var(--luxury-font); margin: 10px 0; }
-
-        .feat-item p { color: #777; font-size: 0.9rem; line-height: 1.6; }
-
-        footer {
-            text-align: center;
-            padding: 60px;
-            border-top: 1px solid #1a1a1a;
-            color: #444;
-            font-size: 0.8rem;
         }
 
         .version-tag {
@@ -334,6 +116,94 @@
             margin-bottom: 20px;
             display: inline-block;
         }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .app-btn {
+            background: var(--gold);
+            color: black;
+            text-decoration: none;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-family: var(--luxury-font);
+            font-weight: bold;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.4s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .app-btn:hover {
+            transform: scale(1.05) translateY(-3px);
+            background: white;
+        }
+
+        .app-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+
+        .app-btn.secondary:hover {
+            background: var(--gold);
+            color: black;
+        }
+
+        /* Vision Section */
+        .vision-text {
+            margin-top: 60px;
+            text-align: center;
+            color: #ccc;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+        }
+
+        .feat-item {
+            background: #111;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #222;
+            transition: 0.3s;
+        }
+
+        .feat-item:hover { border-color: var(--gold); transform: translateY(-5px); }
+
+        .feat-item i { font-size: 2.2rem; color: var(--gold); margin-bottom: 15px; }
+
+        .feat-item h3 { font-family: var(--luxury-font); margin: 10px 0; font-size: 1.2rem; }
+
+        .feat-item p { color: #666; font-size: 0.9rem; }
+
+        footer {
+            text-align: center;
+            padding: 60px;
+            border-top: 1px solid #1a1a1a;
+            color: #444;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .btn-group { flex-direction: column; }
+            .app-btn { width: 100%; justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -344,218 +214,97 @@
     </header>
 
     <section class="about-hero">
-        <h1>BODA CLIENT</h1>
-        <p style="letter-spacing: 5px; color: #888; text-transform: uppercase;">The Ultimate Streaming Engine</p>
+        <p>The Ultimate Streaming Engine</p>
+        <h1>BODA CINEMA</h1>
     </section>
 
-    <div class="download-box">
-        <span class="version-tag">STABLE v2.0.4 - WINDOWS & MAC</span>
-        <h2>Masterpiece Conversion</h2>
-        <p>Unlock the power to convert HLS streams into permanent 1080p MP4 files. The Boda App allows you to watch your cinematic collection anywhere, anytime—even without an internet connection.</p>
-        
-        <a href="Boda_Setup.exe" class="app-btn">
-            <i class="fa-solid fa-download"></i> DOWNLOAD BODA APP
-        </a>
+    <div class="content-wrap">
+        <div class="main-card">
+            <span class="version-tag">STABLE v2.0.4</span>
+            <h2>Experience Perfection</h2>
+            <p>Install the Boda App for seamless offline access, 4K adaptive streaming, and professional-grade MP4 conversion on all your devices.</p>
+            
+            <div class="btn-group">
+                <!-- PWA Install Button -->
+                <button id="installBtn" class="app-btn">
+                    <i class="fa-solid fa-mobile-screen-button"></i> INSTALL MOBILE APP
+                </button>
 
-        <div style="margin-top: 25px; display: flex; justify-content: center; gap: 20px; color: #555; font-size: 0.8rem;">
-            <span><i class="fa-brands fa-windows"></i> Windows 10/11</span>
-            <span><i class="fa-brands fa-apple"></i> macOS 12+</span>
-        </div>
-    </div>
+                <!-- Desktop Client Download -->
+                <a href="Boda_Setup.exe" class="app-btn secondary">
+                    <i class="fa-brands fa-windows"></i> DOWNLOAD FOR PC
+                </a>
+            </div>
 
-    <div class="features-grid">
-        <div class="feat-item">
-            <i class="fa-solid fa-file-video"></i>
-            <h3>MP4 Converter</h3>
-            <p>Automatically stitches HLS segments into a single, high-quality MP4 file saved to your device.</p>
-        </div>
-        <div class="feat-item">
-            <i class="fa-solid fa-gauge-high"></i>
-            <h3>Turbo Downloads</h3>
-            <p>Utilizes multi-thread downloading to saturate your bandwidth for the fastest possible saves.</p>
-        </div>
-        <div class="feat-item">
-            <i class="fa-solid fa-shield-halved"></i>
-            <h3>Direct Integration</h3>
-            <p>Registered as a system protocol handler to work seamlessly with the Boda Web Dashboard.</p>
-        </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2026 BODA CINEMA. All rights reserved.</p>
-        <p>Your portal to premium Korean entertainment.</p>
-    </footer>
-
-</body>
-</html>
-            z-index: 100;
-            background: linear-gradient(to bottom, rgba(5,5,5,0.8), transparent);
-        }
-
-        .back-link {
-            color: white;
-            text-decoration: none;
-            font-family: var(--luxury-font);
-            letter-spacing: 2px;
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-
-        .back-link:hover { color: var(--gold); }
-
-        /* Hero Section */
-        .about-hero {
-            height: 60vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(rgba(5,5,5,0.7), rgba(5,5,5,1)), url('boda.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-
-        .about-hero h1 {
-            font-family: var(--luxury-font);
-            font-size: 4rem;
-            margin: 0;
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
-
-        .about-hero p {
-            font-size: 1.2rem;
-            color: #888;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        /* Content Sections */
-        .content-container {
-            max-width: 900px;
-            margin: -100px auto 100px;
-            padding: 0 5%;
-            position: relative;
-            z-index: 10;
-        }
-
-        .card {
-            background: var(--gray);
-            padding: 50px;
-            border-radius: 15px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            line-height: 1.8;
-        }
-
-        .card h2 {
-            font-family: var(--luxury-font);
-            color: var(--gold);
-            font-size: 2rem;
-            margin-top: 0;
-        }
-
-        .card p {
-            color: #ccc;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-
-        /* Features Grid */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
-        }
-
-        .feature-item {
-            text-align: center;
-            padding: 30px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        .feature-item:hover {
-            background: rgba(212, 175, 55, 0.05);
-            transform: translateY(-10px);
-        }
-
-        .feature-item i {
-            font-size: 2.5rem;
-            color: var(--gold);
-            margin-bottom: 20px;
-        }
-
-        .feature-item h4 {
-            font-family: var(--luxury-font);
-            margin: 10px 0;
-            font-size: 1.2rem;
-        }
-
-        /* Footer */
-        .about-footer {
-            text-align: center;
-            padding: 50px;
-            border-top: 1px solid #222;
-            color: #555;
-            font-size: 0.8rem;
-        }
-
-        @media (max-width: 768px) {
-            .about-hero h1 { font-size: 2.5rem; }
-            .card { padding: 30px; }
-        }
-    </style>
-</head>
-<body>
-
-    <header class="nav-header">
-        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> BACK TO CINEMA</a>
-        <img src="logo.png" alt="Boda Logo" height="40">
-    </header>
-
-    <section class="about-hero">
-        <p>Defining the Future of Media</p>
-        <h1>THE BODA VISION</h1>
-    </section>
-
-    <div class="content-container">
-        <div class="card">
-            <h2>Luxury in Every Frame</h2>
-            <p>
-                BODA is not just a streaming platform; it is a curated experience designed for those who appreciate the artistry of storytelling. Our mission is to bridge the gap between masterpiece content and the viewers who seek it, providing a high-fidelity environment that respects the cinematic vision of every director.
-            </p>
-            <p>
-                Founded in 2026, BODA specializes in the distribution of premium Asian media, ensuring that every stream is adaptive, every download is seamless, and every subtitle is precise.
-            </p>
-
-            <div class="feature-grid">
-                <div class="feature-item">
-                    <i class="fa-solid fa-bolt"></i>
-                    <h4>Speed</h4>
-                    <p>Optimized HLS delivery for zero-buffer immersion.</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fa-solid fa-clapperboard"></i>
-                    <h4>Quality</h4>
-                    <p>Native 4K and 1080p support with manual selectors.</p>
-                </div>
-                <div class="feature-item">
-                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                    <h4>Offline</h4>
-                    <p>True MP4 conversion via the Boda Desktop App.</p>
-                </div>
+            <div style="color: #555; font-size: 0.8rem;">
+                Available on Android, iOS, Windows, and macOS
             </div>
         </div>
+
+        <div class="vision-text">
+            <h2 style="font-family: var(--luxury-font); color: var(--gold);">The Boda Vision</h2>
+            <p>Founded in 2026, BODA specializes in the distribution of premium media, ensuring that every stream is adaptive, every download is seamless, and every cinematic detail is preserved.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feat-item">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+                <h3>Offline Mode</h3>
+                <p>Convert HLS segments into single, high-quality MP4 files for local playback.</p>
+            </div>
+            <div class="feat-item">
+                <i class="fa-solid fa-gauge-high"></i>
+                <h3>Turbo Speed</h3>
+                <p>Proprietary engine optimized for zero-buffer immersion and fast saves.</p>
+            </div>
+            <div class="feat-item">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h3>Protocol Sync</h3>
+                <p>Deep integration between web dashboard and desktop client for effortless management.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 BODA CINEMA. All rights reserved.</p>
+            <p>Handcrafted for the ultimate viewer experience.</p>
+        </footer>
     </div>
 
-    <footer class="about-footer">
-        <p>&copy; 2026 BODA CINEMA. All rights reserved.</p>
-        <p>Handcrafted for the ultimate viewer experience.</p>
-    </footer>
+    <script>
+        // --- PWA INSTALL LOGIC ---
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
 
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'inline-flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the Boda install');
+                }
+                deferredPrompt = null;
+            } else {
+                alert("Installation is handled by your browser. Look for 'Add to Home Screen' or 'Install' in your browser menu.");
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installBtn.innerHTML = '<i class="fa-solid fa-check"></i> APP INSTALLED';
+            installBtn.disabled = true;
+        });
+
+        // --- SERVICE WORKER REGISTRATION ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('Boda Service Worker Active'))
+                .catch(err => console.log('SW Registration Failed', err));
+        }
+    </script>
 </body>
-  </html>
+</html>
