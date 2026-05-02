@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>BODA | Loading Masterpiece...</title>
+    <title>BODA | Loading...</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -15,7 +15,8 @@
         :root {
             --gold: #D4AF37;
             --black: #050505;
-            --gray: #1a1a1a;
+            --gray: #111;
+            --light-gray: #1a1a1a;
             --luxury-font: 'Cinzel', serif;
             --main-font: 'Poppins', sans-serif;
         }
@@ -26,257 +27,168 @@
             font-family: var(--main-font);
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* Navigation */
-        .back-nav {
-            position: absolute;
-            top: 20px;
-            left: 5%;
-            z-index: 100;
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 5%;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
         }
 
         .back-btn {
-            background: rgba(0, 0, 0, 0.6);
             color: white;
             text-decoration: none;
-            padding: 10px 25px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
             border-radius: 50px;
-            border: 1px solid var(--gold);
             font-family: var(--luxury-font);
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
         }
 
-        .back-btn:hover {
-            background: var(--gold);
-            color: black;
-            transform: translateX(-5px);
-        }
-
-        /* Hero Backdrop */
+        /* Hero Section */
         .hero-bg {
             width: 100%;
-            height: 65vh;
+            height: 55vh;
             background-size: cover;
             background-position: center;
             position: relative;
-            display: flex;
-            align-items: flex-end;
         }
 
         .hero-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, var(--black) 10%, rgba(5, 5, 5, 0.4) 50%, rgba(5, 5, 5, 0.1) 100%);
+            inset: 0;
+            background: linear-gradient(to top, var(--black) 5%, rgba(5, 5, 5, 0.4) 50%, rgba(5, 5, 5, 0.1) 100%);
         }
 
-        .hero-content {
+        /* Responsive Grid */
+        .details-wrapper {
+            max-width: 1200px;
+            margin: -100px auto 0;
+            padding: 0 20px 80px;
             position: relative;
             z-index: 10;
-            padding: 0 5% 60px;
-            max-width: 900px;
         }
 
-        .hero-content h1 {
+        .main-info {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+        }
+
+        .poster-art img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .header-text h1 {
             font-family: var(--luxury-font);
-            font-size: 4rem;
-            margin: 0 0 15px 0;
-            color: white;
-            text-shadow: 2px 2px 25px rgba(0, 0, 0, 0.9);
+            font-size: 3.5rem;
+            margin: 0 0 10px;
             line-height: 1.1;
         }
 
-        .meta-tags {
+        .meta-chips {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 20px;
-            font-size: 0.9rem;
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        .badge {
-            border: 1px solid var(--gold);
-            padding: 3px 12px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-        }
-
-        /* Layout Grid */
-        .details-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 50px;
-            padding: 0 5% 80px;
-            margin-top: -80px;
-        }
-
-        .poster-box img {
-            width: 100%;
-            border-radius: 12px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-            position: relative;
-            z-index: 20;
-            transition: 0.5s;
-        }
-
-        .synopsis-box h3 {
-            font-family: var(--luxury-font);
-            color: var(--gold);
-            border-bottom: 1px solid #333;
-            padding-bottom: 15px;
-            font-size: 1.5rem;
-            margin-top: 0;
-        }
-
-        .synopsis-text {
-            color: #bbb;
-            line-height: 1.8;
-            font-size: 1.05rem;
-            margin-bottom: 40px;
-        }
-
-        /* Action Buttons */
-        .action-section {
-            margin-top: 30px;
-            display: flex;
-            gap: 15px;
             flex-wrap: wrap;
         }
 
-        .watch-btn,
-        .download-btn {
-            border: none;
-            padding: 16px 40px;
-            font-family: var(--luxury-font);
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .watch-btn {
-            background: var(--gold);
-            color: black;
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
-        }
-
-        .watch-btn:hover {
-            background: white;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
-        }
-
-        .download-btn {
-            background: #222;
-            color: white;
-            border: 1px solid #444;
-        }
-
-        .download-btn:hover {
-            border-color: var(--gold);
+        .chip {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold);
             color: var(--gold);
-            transform: translateY(-3px);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
-        /* Episodes */
-        .episode-container h3 {
+        /* Episodes Styling */
+        .content-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
             font-family: var(--luxury-font);
             color: var(--gold);
-            margin-bottom: 20px;
-        }
-
-        .episode-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .ep-row {
-            background: #0f0f0f;
-            padding: 20px;
-            border-radius: 10px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
-            transition: 0.3s;
-            border: 1px solid #1a1a1a;
         }
 
-        .ep-row:hover {
-            border-color: var(--gold);
-            background: #161616;
-            transform: scale(1.01);
-        }
-
-        .ep-info h4 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: white;
-        }
-
-        .ep-info p {
-            margin: 8px 0 0;
-            font-size: 0.85rem;
-            color: #777;
-            line-height: 1.5;
-        }
-
-        .ep-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .dl-icon-btn {
-            background: none;
-            border: none;
-            color: #444;
-            font-size: 1.4rem;
-            cursor: pointer;
-            transition: 0.3s;
-            padding: 10px;
-        }
-
-        .dl-icon-btn:hover {
+        .season-select {
+            background: var(--gray);
             color: var(--gold);
-            transform: translateY(-2px);
+            border: 1px solid var(--gold);
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-family: var(--main-font);
+            cursor: pointer;
         }
 
-        @media (max-width: 992px) {
-            .details-grid { grid-template-columns: 1fr; }
-            .poster-box { display: none; }
-            .hero-content h1 { font-size: 2.8rem; }
-            .hero-bg { height: 50vh; }
-            .details-grid { margin-top: 20px; }
+        .episode-card {
+            background: var(--light-gray);
+            border: 1px solid #222;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .episode-card:hover {
+            border-color: var(--gold);
+            background: #222;
+        }
+
+        .ep-meta { flex-grow: 1; padding-right: 20px; }
+        .ep-meta h4 { margin: 0 0 5px; color: #fff; font-size: 1.1rem; cursor: pointer; }
+        .ep-meta h4:hover { color: var(--gold); }
+        .ep-meta p { margin: 0; color: #888; font-size: 0.85rem; line-height: 1.4; }
+
+        .ep-btns { display: flex; gap: 15px; }
+        .ep-dl-btn { background: none; border: none; color: #555; font-size: 1.3rem; cursor: pointer; transition: 0.2s; }
+        .ep-dl-btn:hover { color: var(--gold); transform: scale(1.1); }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero-bg { height: 40vh; }
+            .details-wrapper { margin-top: -50px; padding: 0 15px 50px; }
+            .main-info { grid-template-columns: 1fr; gap: 20px; }
+            .poster-art { display: none; } /* Hide poster on mobile for cleaner look */
+            .header-text h1 { font-size: 2.2rem; text-align: center; }
+            .meta-chips { justify-content: center; }
+            .episode-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .ep-btns { width: 100%; justify-content: space-between; border-top: 1px solid #333; pt: 10px; }
         }
     </style>
 </head>
 
 <body>
 
-    <div id="content-loader">
+    <div id="page-content">
         <div style="height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--gold);">
-            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <i class="fas fa-circle-notch fa-spin fa-2x"></i>
         </div>
     </div>
 
@@ -285,10 +197,10 @@
         const SERIES_BIN = "69f3074faaba882197550749";
         const MOVIES_BIN = "69f307c736566621a80b4134";
 
-        async function fetchDetails() {
+        async function init() {
             const params = new URLSearchParams(window.location.search);
-            const targetTitle = params.get('title');
-            if (!targetTitle) { window.location.href = 'index.html'; return; }
+            const title = params.get('title');
+            if (!title) { window.location.href = 'index.html'; return; }
 
             try {
                 const [sRes, mRes] = await Promise.all([
@@ -297,111 +209,115 @@
                 ]);
                 const sData = await sRes.json();
                 const mData = await mRes.json();
-                const items = [...(Array.isArray(sData.record) ? sData.record : [sData.record]), ...(Array.isArray(mData.record) ? mData.record : [mData.record])];
-                const item = items.find(i => i.title === targetTitle);
-                const type = (Array.isArray(sData.record) ? sData.record : [sData.record]).includes(item) ? 'series' : 'movie';
-                if (item) renderPage(item, type);
-            } catch (err) { console.error(err); }
+                
+                const allItems = [...(sData.record || []), ...(mData.record || [])];
+                const item = allItems.find(i => i.title === title);
+                const isSeries = (sData.record || []).some(i => i.title === title);
+
+                if (item) renderItem(item, isSeries);
+            } catch (err) { console.error("BODA Load Error", err); }
         }
 
-        // CRITICAL: This function prevents the "Jump"
-        function triggerInternalDownload(event, url, title, poster) {
-            // STOP the browser from following any link or refreshing
-            event.preventDefault();
-            event.stopPropagation();
-
-            if (!url || url === "undefined") {
-                alert("Download link not available.");
-                return;
-            }
-
-            // Signal the Service Worker
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'CACHE_VIDEO',
-                    url: url,
-                    title: title
-                });
-                alert(`Saving "${title}" to your BODA library...`);
+        function renderItem(item, isSeries) {
+            const container = document.getElementById('page-content');
+            
+            // Build Season Logic
+            let seasonHTML = '';
+            if (isSeries && item.seasonsData) {
+                seasonHTML = `
+                    <div class="content-section">
+                        <div class="section-title">
+                            <h3>Episodes</h3>
+                            <select class="season-select" onchange="changeSeason(this.value)">
+                                ${item.seasonsData.map(s => `<option value="${s.seasonNumber}">Season ${s.seasonNumber}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div id="ep-list-target"></div>
+                    </div>`;
+            } else if (isSeries && item.episodes) {
+                // Fallback for old data structure
+                seasonHTML = `<div class="content-section"><div class="section-title"><h3>Episodes</h3></div><div id="ep-list-target"></div></div>`;
             } else {
-                alert("Service Worker not ready. Try refreshing the page once.");
-            }
-
-            // Update Local Library
-            let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
-            if (!downloads.find(d => d.title === title)) {
-                downloads.push({ title, poster, date: new Date().toLocaleDateString(), status: 'Downloading', url: url });
-                localStorage.setItem('boda_downloads', JSON.stringify(downloads));
-            }
-        }
-
-        async function downloadVideo(videoUrl, title, poster) {
-    console.log("Starting real download...");
-    
-    // 1. Open the video cache
-    const cache = await caches.open('boda-videos');
-    
-    // 2. Fetch the video and put it in cache
-    // This physically saves the MP4/HLS file to the user's storage
-    try {
-        await cache.add(videoUrl);
-        
-        // 3. Save the metadata to localStorage so it appears in the Library
-        let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
-        downloads.push({
-            title: title,
-            url: videoUrl,
-            poster: poster,
-            date: new Date().toLocaleDateString()
-        });
-        localStorage.setItem('boda_downloads', JSON.stringify(downloads));
-        
-        alert("Masterpiece saved for offline viewing!");
-    } catch (error) {
-        alert("Download failed. Make sure you have an internet connection to start the download.");
-    }
-}
-
-        function renderPage(item, type) {
-            const container = document.getElementById('content-loader');
-            let actions = '';
-            let bottom = '';
-
-            if (type === 'movie') {
-                actions = `
-                    <button class="watch-btn" onclick="watch('${item.videoLink}')"><i class="fa-solid fa-play"></i> WATCH</button>
-                    <button class="download-btn" onclick="triggerInternalDownload(event, '${item.downloadLink}', '${item.title}', '${item.cover}')">
-                        <i class="fa-solid fa-cloud-arrow-down"></i> SAVE TO APP
-                    </button>`;
-            } else {
-                bottom = '<div class="episode-container"><h3>Episodes</h3>';
-                item.episodes.forEach((ep, i) => {
-                    bottom += `
-                        <div class="ep-row">
-                            <div onclick="watch('${ep.link}')"><h4>EP ${i+1}: ${ep.title}</h4></div>
-                            <button class="dl-icon-btn" onclick="triggerInternalDownload(event, '${ep.download}', '${item.title} E${i+1}', '${item.cover}')">
-                                <i class="fa-solid fa-circle-down"></i>
-                            </button>
-                        </div>`;
-                });
-                bottom += '</div>';
+                // Movie Layout
+                seasonHTML = `
+                    <div class="content-section" style="text-align:center;">
+                        <button class="chip" style="padding: 15px 40px; font-size:1rem; cursor:pointer;" onclick="watch('${item.videoLink}')">
+                            <i class="fa-solid fa-play"></i> WATCH NOW
+                        </button>
+                        <button class="chip" style="padding: 15px 40px; font-size:1rem; cursor:pointer; background:transparent; margin-left:10px;" 
+                                onclick="saveVideo('${item.downloadLink}', '${item.title}')">
+                            <i class="fa-solid fa-download"></i> SAVE
+                        </button>
+                    </div>`;
             }
 
             container.innerHTML = `
-                <nav class="back-nav"><a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> HOME</a></nav>
-                <div class="hero-bg" style="background-image: url('${item.backdrop}')">
-                    <div class="hero-overlay"></div>
-                    <div class="hero-content"><h1>${item.title}</h1><div class="action-section">${actions}</div></div>
-                </div>
-                <div class="details-grid">
-                    <div class="poster-box"><img src="${item.cover}"></div>
-                    <div class="synopsis-box"><h3>Synopsis</h3><p>${item.synopsis || "No synopsis."}</p>${bottom}</div>
+                <nav class="top-nav"><a href="index.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i> HOME</a></nav>
+                <div class="hero-bg" style="background-image: url('${item.backdrop}')"><div class="hero-overlay"></div></div>
+                
+                <div class="details-wrapper">
+                    <div class="main-info">
+                        <div class="poster-art"><img src="${item.cover}"></div>
+                        <div class="header-text">
+                            <div class="meta-chips">
+                                <span class="chip">${isSeries ? 'Series' : 'Movie'}</span>
+                                ${item.genres.map(g => `<span class="chip" style="border:none; background:rgba(255,255,255,0.05); color:#aaa;">${g}</span>`).join('')}
+                            </div>
+                            <h1>${item.title}</h1>
+                            <p style="color:#aaa; line-height:1.6;">${item.synopsis || 'No synopsis available.'}</p>
+                            ${seasonHTML}
+                        </div>
+                    </div>
                 </div>`;
+
+            if (isSeries) {
+                window.currentItem = item; // Store globally for switching
+                renderEpisodes(1);
+            }
         }
 
+        function renderEpisodes(seasonNum) {
+            const target = document.getElementById('ep-list-target');
+            let eps = [];
+            
+            if (window.currentItem.seasonsData) {
+                const season = window.currentItem.seasonsData.find(s => s.seasonNumber == seasonNum);
+                eps = season ? season.episodes : [];
+            } else {
+                eps = window.currentItem.episodes || [];
+            }
+
+            target.innerHTML = eps.map((ep, i) => `
+                <div class="episode-card">
+                    <div class="ep-meta">
+                        <h4 onclick="watch('${ep.link}')">E${i+1}: ${ep.title || 'Untitled Episode'}</h4>
+                        <p>${ep.description || 'Watch the latest installment of this masterpiece.'}</p>
+                    </div>
+                    <div class="ep-btns">
+                        <button class="ep-dl-btn" onclick="saveVideo('${ep.download}', '${window.currentItem.title} S${seasonNum}E${i+1}')">
+                            <i class="fa-solid fa-circle-arrow-down"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeSeason(val) { renderEpisodes(val); }
+
         function watch(link) { window.location.href = `watch.html?video=${encodeURIComponent(link)}`; }
-        window.onload = fetchDetails;
+
+        async function saveVideo(url, title) {
+            if (!url || url === 'undefined') { alert("Download link unavailable."); return; }
+            
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'CACHE_VIDEO', url, title });
+                alert(`Starting download: ${title}`);
+            } else {
+                alert("Please refresh and try again.");
+            }
+        }
+
+        window.onload = init;
     </script>
 </body>
-
 </html>
