@@ -29,59 +29,64 @@
         .video-container {
             width: 100vw; height: 100vh;
             display: flex; justify-content: center; align-items: center;
+            background: #000;
         }
 
         .video-js { width: 100% !important; height: 100% !important; }
         .vjs-matrix.video-js { color: var(--gold); }
 
+        /* Custom Big Play Button */
         .video-js .vjs-big-play-button {
-            background-color: rgba(212, 175, 55, 0.3) !important;
+            background-color: rgba(212, 175, 55, 0.2) !important;
             border: 2px solid var(--gold) !important;
-            border-radius: 50%; width: 90px; height: 90px;
-            line-height: 86px; top: 50%; left: 50%;
-            margin-top: -45px; margin-left: -45px;
-            backdrop-filter: blur(5px);
+            border-radius: 50%; width: 80px; height: 80px;
+            line-height: 76px; top: 50%; left: 50%;
+            margin-top: -40px; margin-left: -40px;
+            backdrop-filter: blur(10px);
         }
 
         .vjs-play-progress, .vjs-volume-level { background-color: var(--gold) !important; }
 
-        /* Navigation & Controls */
+        /* UI Overlays */
         .player-nav, .lock-wrapper {
             position: absolute; z-index: 100;
-            opacity: 0; visibility: hidden; transition: 0.4s ease;
+            opacity: 0; visibility: hidden; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .player-nav { top: env(safe-area-inset-top, 30px); left: 30px; }
+        .player-nav { top: env(safe-area-inset-top, 20px); left: 20px; }
         .lock-wrapper { top: 50%; right: 20px; transform: translateY(-50%); }
 
         .container-active .player-nav, 
         .container-active .lock-wrapper { opacity: 1; visibility: visible; }
 
-        /* Lock State */
+        /* Lock Logic */
         body.is-locked .player-nav,
         body.is-locked .vjs-control-bar,
         body.is-locked .vjs-big-play-button { 
-            display: none !important; 
+            pointer-events: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
         }
 
         .btn-ui {
-            background: rgba(0, 0, 0, 0.6); color: white;
-            border: 1px solid var(--gold); border-radius: 50px;
-            backdrop-filter: blur(10px); cursor: pointer; transition: 0.3s;
+            background: rgba(0, 0, 0, 0.5); color: white;
+            border: 1px solid rgba(212, 175, 55, 0.5); border-radius: 50px;
+            backdrop-filter: blur(15px); cursor: pointer; transition: 0.3s;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn-back {
-            text-decoration: none; padding: 12px 25px;
-            font-family: 'Cinzel', serif; display: flex; align-items: center; gap: 10px;
+            text-decoration: none; padding: 10px 20px; font-size: 0.8rem;
+            font-family: 'Cinzel', serif; display: flex; align-items: center; gap: 8px;
         }
 
         .btn-lock {
-            width: 50px; height: 50px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
         }
 
-        body.is-locked .lock-wrapper { opacity: 0.3; visibility: visible; }
-        body.is-locked .btn-lock { border-color: #ff4444; color: #ff4444; }
+        body.is-locked .lock-wrapper { opacity: 0.2; visibility: visible; pointer-events: auto; }
+        body.is-locked .btn-lock { border-color: #ff4444; color: #ff4444; background: rgba(0,0,0,0.8); }
 
         #loader {
             position: fixed; inset: 0; background: var(--black);
@@ -90,10 +95,10 @@
         }
 
         .gold-spinner {
-            width: 40px; height: 40px;
-            border: 3px solid rgba(212, 175, 55, 0.1);
-            border-top: 3px solid var(--gold); border-radius: 50%;
-            animation: spin 1s linear infinite;
+            width: 30px; height: 30px;
+            border: 2px solid rgba(212, 175, 55, 0.1);
+            border-top: 2px solid var(--gold); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -104,39 +109,39 @@
 
     <div id="loader">
         <div class="gold-spinner"></div>
-        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; letter-spacing: 3px; font-size: 0.8rem;">INITIALIZING MASTERPIECE</p>
+        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; letter-spacing: 2px; font-size: 0.7rem;">ESTABLISHING SECURE LINK</p>
     </div>
 
     <nav class="player-nav">
         <a href="javascript:history.back()" class="btn-ui btn-back">
-            <i class="fa-solid fa-arrow-left"></i> EXIT THEATER
+            <i class="fa-solid fa-arrow-left"></i> EXIT
         </a>
     </nav>
 
     <div class="lock-wrapper">
-        <button class="btn-ui btn-lock" id="lockBtn" title="Hold to Unlock">
+        <button class="btn-ui btn-lock" id="lockBtn">
             <i class="fa-solid fa-lock-open"></i>
         </button>
     </div>
 
     <div class="video-container" id="playerWrapper">
-        <video id="boda-player" class="video-js vjs-big-play-centered vjs-matrix" crossorigin="anonymous" controls preload="auto"></video>
+        <video id="boda-player" class="video-js vjs-big-play-centered vjs-matrix" crossorigin="anonymous" playsinline controls preload="auto"></video>
     </div>
 
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
     <script src="https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js"></script>
 
     <script>
+        // Use URLSearchParams but handle the full string for complex MP4 tokens
         const params = new URLSearchParams(window.location.search);
-        const videoUrl = params.get('video');
+        let rawVideoUrl = params.get('video');
         const vttUrl = params.get('vtt');
-        const isOffline = params.get('offline') === 'true';
 
         const player = videojs('boda-player', {
-            autoplay: false,
+            autoplay: true,
             responsive: true,
             fluid: true,
-            playbackRates: [0.5, 1, 1.25, 1.5, 2],
+            userActions: { hotkeys: true },
             controlBar: {
                 children: [
                     'playToggle', 'volumePanel', 'currentTimeDisplay', 
@@ -148,13 +153,16 @@
 
         player.controlBar.addChild('QualitySelector');
 
-        if (videoUrl) {
+        if (rawVideoUrl) {
+            // Decode twice to handle potential double-encoding of complex tokens
+            const decodedUrl = decodeURIComponent(decodeURIComponent(rawVideoUrl));
+            
             player.src({
-                src: decodeURIComponent(videoUrl),
-                type: isOffline ? 'video/mp4' : 'application/x-mpegURL'
+                src: decodedUrl,
+                type: 'video/mp4' // Force MP4 for these direct links
             });
 
-            if (vttUrl && vttUrl !== "null" && vttUrl !== "") {
+            if (vttUrl && vttUrl !== "null") {
                 player.addRemoteTextTrack({
                     kind: 'captions', srclang: 'en', label: 'English',
                     src: decodeURIComponent(vttUrl), default: true
@@ -162,59 +170,52 @@
             }
         }
 
-        // --- LANDSCAPE & FULLSCREEN LOGIC ---
+        // --- MOBILE LANDSCAPE LOGIC ---
         player.on('fullscreenchange', () => {
-            if (player.isFullscreen()) {
-                if (screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(() => {
-                        console.log("Orientation lock not supported on this browser.");
-                    });
-                }
-            } else {
-                if (screen.orientation && screen.orientation.unlock) {
-                    screen.orientation.unlock();
-                }
+            if (player.isFullscreen() && screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
             }
         });
 
-        // --- SCREEN LOCK LOGIC ---
+        // --- THE LOCK SYSTEM ---
         const lockBtn = document.getElementById('lockBtn');
         let isLocked = false;
         let lockTimer;
 
+        // Toggle Lock
         lockBtn.addEventListener('click', () => {
             if (!isLocked) {
                 isLocked = true;
                 document.body.classList.add('is-locked');
                 lockBtn.innerHTML = '<i class="fa-solid fa-lock"></i>';
-                if (navigator.vibrate) navigator.vibrate(50);
+                if (navigator.vibrate) navigator.vibrate(40);
             }
         });
 
-        // Long press to unlock
-        const startUnlock = () => {
+        // Long Press to Unlock
+        const startUnlock = (e) => {
             if (!isLocked) return;
             lockTimer = setTimeout(() => {
                 isLocked = false;
                 document.body.classList.remove('is-locked');
                 lockBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
-                if (navigator.vibrate) navigator.vibrate([50, 50]);
+                if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
                 handleUserActivity();
-            }, 2000); // 2 seconds hold
+            }, 2000); 
         };
 
-        const cancelUnlock = () => clearTimeout(lockTimer);
+        const stopUnlock = () => clearTimeout(lockTimer);
 
         lockBtn.addEventListener('mousedown', startUnlock);
-        lockBtn.addEventListener('mouseup', cancelUnlock);
         lockBtn.addEventListener('touchstart', startUnlock);
-        lockBtn.addEventListener('touchend', cancelUnlock);
+        window.addEventListener('mouseup', stopUnlock);
+        window.addEventListener('touchend', stopUnlock);
 
-        // --- UI UTILITIES ---
+        // --- UI VISIBILITY ---
         player.on('ready', () => {
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
-            }, 500);
+            }, 800);
         });
 
         let uiTimer;
@@ -226,12 +227,12 @@
                 if (!player.paused()) {
                     document.body.classList.remove('container-active');
                 }
-            }, 3000);
+            }, 3500);
         }
 
-        window.addEventListener('mousemove', handleUserActivity);
-        window.addEventListener('touchstart', handleUserActivity);
-        player.on('play', handleUserActivity);
+        ['mousemove', 'touchstart', 'click'].forEach(evt => 
+            window.addEventListener(evt, handleUserActivity)
+        );
     </script>
 </body>
 </html>
