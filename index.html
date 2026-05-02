@@ -55,7 +55,6 @@
             cursor: pointer;
         }
 
-        /* SEARCH AREA & RESULTS BOX */
         .search-area {
             flex-grow: 1;
             max-width: 400px;
@@ -129,9 +128,6 @@
             font-size: 0.9rem;
         }
 
-        .search-info div { margin-bottom: 2px; }
-
-        /* NAV & BUTTONS */
         nav { display: flex; align-items: center; }
 
         nav a {
@@ -159,7 +155,6 @@
             white-space: nowrap;
         }
 
-        /* HERO & GRID */
         #hero-slider {
             height: 70vh;
             display: flex;
@@ -273,7 +268,7 @@
         const SERIES_BIN = "69f3074faaba882197550749";
         const MOVIES_BIN = "69f307c736566621a80b4134";
 
-        let allItems = []; // Global search database
+        let allItems = [];
 
         async function loadContent() {
             try {
@@ -325,7 +320,7 @@
                 document.getElementById('hero-slider').style.background = `linear-gradient(to bottom, rgba(0,0,0,0.3), var(--black)), url('${hero.backdrop}') center/cover`;
                 document.getElementById('hero-content').innerHTML = `
                     <h1 style="font-size: 3.2rem; font-family: var(--luxury-font); margin:0; text-shadow: 2px 2px 10px rgba(0,0,0,0.8);">${hero.title}</h1>
-                    <p style="max-width: 550px; color: #ddd; font-size: 1rem; margin-bottom: 20px;">${hero.synopsis.substring(0, 140)}...</p>
+                    <p style="max-width: 550px; color: #ddd; font-size: 1rem; margin-bottom: 20px;">${hero.synopsis ? hero.synopsis.substring(0, 140) + '...' : ''}</p>
                     <button class="app-dl" onclick="location.href='details.html?title=${encodeURIComponent(hero.title)}'">
                         <i class="fa-solid fa-play"></i> START WATCHING
                     </button>
@@ -333,7 +328,6 @@
             }
         }
 
-        // SEARCH FUNCTIONALITY
         const searchInput = document.getElementById('smartSearch');
         const searchResults = document.getElementById('searchResults');
 
@@ -359,8 +353,6 @@
                         <div class="search-info">
                             <h4>${item.title} (${item.year || '2026'})</h4>
                             <div>Genres: ${item.genres || 'Masterpiece'}</div>
-                            <div>Episode Number: ${item.episodeNumber || '1'}</div>
-                            <div>Season Number: ${item.seasonNumber || '1'}</div>
                         </div>
                     </div>
                 `).join('');
@@ -370,7 +362,6 @@
             }
         });
 
-        // Hide search if user clicks away
         document.addEventListener('click', (e) => {
             if (!document.querySelector('.search-area').contains(e.target)) {
                 searchResults.style.display = 'none';
@@ -379,11 +370,26 @@
 
         window.onload = loadContent;
 
+        // --- SERVICE WORKER REGISTRATION FIX ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('Boda SW Active'))
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then(reg => {
+                        console.log('Boda SW Active:', reg.scope);
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('Update available. Please refresh.');
+                                }
+                            };
+                        };
+                    })
                     .catch(err => console.log('SW Failed', err));
+            });
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                window.location.reload();
             });
         }
     </script>
