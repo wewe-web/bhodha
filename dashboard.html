@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -41,7 +40,6 @@
             text-align: center;
         }
 
-        /* Dashboard List Styling */
         .content-manager { margin-bottom: 40px; }
         .list-item {
             display: flex;
@@ -60,7 +58,6 @@
         .action-btns { display: flex; gap: 10px; }
         .delete-btn { color: var(--danger); cursor: pointer; background: none; border: none; font-size: 1.1rem; }
 
-        /* Floating Plus Button */
         .add-toggle {
             position: fixed;
             bottom: 30px;
@@ -79,7 +76,6 @@
             z-index: 100;
         }
 
-        /* Form Styling */
         #uploadSection { display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; color: var(--gold); font-weight: 600; font-size: 0.9rem; }
@@ -101,6 +97,9 @@
             background: #1a1a1a; border-radius: 0 5px 5px 0;
         }
         .episode-card input, .episode-card textarea, .episode-card select { margin-bottom: 10px; }
+        
+        /* Highlight for the new field */
+        .download-field { border: 1px solid #444 !important; background: #151515 !important; }
     </style>
 </head>
 
@@ -109,7 +108,6 @@
     <div class="admin-container">
         <h1>BODA Admin Studio</h1>
 
-        <!-- Content Manager (View/Edit/Delete) -->
         <div class="content-manager">
             <h2>Current Library</h2>
             <div id="libraryList">
@@ -117,7 +115,6 @@
             </div>
         </div>
 
-        <!-- Hidden Upload/Edit Form -->
         <div id="uploadSection">
             <h2 id="formTitle">Upload New Content</h2>
             <div class="form-group">
@@ -166,7 +163,9 @@
                             <option>Completed</option>
                             <option>Upcoming</option>
                         </select>
-                        <input type="text" class="ep-link" placeholder="m3u8 link">
+                        <input type="text" class="ep-link" placeholder="Stream Link (m3u8)">
+                        <!-- NEW MP4 DOWNLOAD FIELD -->
+                        <input type="text" class="ep-download" placeholder="Download Link (Direct MP4 URL)" class="download-field">
                         <textarea class="ep-vtt" placeholder="Paste VTT Subtitles here..."></textarea>
                     </div>
                 </div>
@@ -175,7 +174,9 @@
 
             <!-- Movie Fields -->
             <div id="movieFields" style="display:none;">
-                <div class="form-group"><label>Video Link (m3u8)</label><input type="text" id="movieLink"></div>
+                <div class="form-group"><label>Stream Link (m3u8)</label><input type="text" id="movieLink"></div>
+                <!-- NEW MOVIE MP4 DOWNLOAD FIELD -->
+                <div class="form-group"><label>Download Link (Direct MP4 URL)</label><input type="text" id="movieDownload" class="download-field"></div>
                 <div class="form-group"><label>Movie Subtitle (VTT)</label><textarea id="movieVtt"></textarea></div>
                 <div class="form-group"><label>Release Date</label><input type="date" id="movieDate"></div>
             </div>
@@ -240,9 +241,7 @@
             window.scrollTo({ top: document.getElementById('uploadSection').offsetTop, behavior: 'smooth' });
         }
 
-        function hideForm() {
-            document.getElementById('uploadSection').style.display = 'none';
-        }
+        function hideForm() { document.getElementById('uploadSection').style.display = 'none'; }
 
         function toggleFields() {
             const type = document.getElementById('mediaType').value;
@@ -261,6 +260,7 @@
                     <option ${data.status === 'Upcoming' ? 'selected' : ''}>Upcoming</option>
                 </select>
                 <input type="text" class="ep-link" placeholder="m3u8 link" value="${data.link || ''}">
+                <input type="text" class="ep-download" placeholder="Download Link (Direct MP4 URL)" value="${data.download || ''}">
                 <textarea class="ep-vtt" placeholder="Paste VTT Subtitles here...">${data.vtt || ''}</textarea>
             `;
             document.getElementById('episodeList').appendChild(div);
@@ -292,6 +292,7 @@
                 item.episodes.forEach(ep => addEpisode(ep));
             } else {
                 document.getElementById('movieLink').value = item.videoLink;
+                document.getElementById('movieDownload').value = item.downloadLink || '';
                 document.getElementById('movieVtt').value = item.vtt;
                 document.getElementById('movieDate').value = item.releaseDate;
             }
@@ -302,7 +303,6 @@
             if(!confirm(`Are you sure you want to delete "${title}"?`)) return;
             const binId = (type === 'series') ? SERIES_BIN : MOVIES_BIN;
             const updatedList = fullLibrary[type === 'series' ? 'series' : 'movies'].filter(i => i.title !== title);
-            
             await syncToCloud(binId, updatedList);
             alert("Deleted successfully");
             fetchLibrary();
@@ -332,6 +332,7 @@
                         description: card.querySelector('.ep-desc').value,
                         status: card.querySelector('.ep-status').value,
                         link: card.querySelector('.ep-link').value,
+                        download: card.querySelector('.ep-download').value, // Save the new field
                         vtt: card.querySelector('.ep-vtt').value
                     });
                 });
@@ -354,11 +355,11 @@
                 payload.episodes = episodes;
             } else {
                 payload.videoLink = document.getElementById('movieLink').value;
+                payload.downloadLink = document.getElementById('movieDownload').value; // Save the new field
                 payload.vtt = document.getElementById('movieVtt').value;
                 payload.releaseDate = document.getElementById('movieDate').value;
             }
 
-            // Update existing or add new
             let currentData = fullLibrary[type === 'series' ? 'series' : 'movies'];
             if (editingId) {
                 const idx = currentData.findIndex(i => i.title === editingId);
@@ -378,15 +379,6 @@
         }
 
         window.onload = fetchLibrary;
-
-        if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Boda Service Worker Registered'))
-      .catch(err => console.log('Service Worker Registration Failed', err));
-  });
-}
     </script>
-
 </body>
 </html>
