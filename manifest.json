@@ -1,22 +1,22 @@
 {
-    "name": "Boda Cinema",
-    "short_name": "Boda",
-    "description": "Stream and download the finest Korean media.",
-    "start_url": "/index.html",
-    "display": "standalone",
-    "background_color": "#050505",
-    "theme_color": "#D4AF37",
-    "icons": [
-      {
-        "src": "logo.png",
-        "sizes": "192x192",
-        "type": "image/png",
-        "purpose": "any maskable"
-      },
-      {
-        "src": "logo.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ]
-  }
+  "name": "Boda Cinema",
+  "short_name": "Boda",
+  "start_url": "./index.html", 
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#D4AF37",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
