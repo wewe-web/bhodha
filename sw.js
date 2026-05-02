@@ -1,14 +1,19 @@
 const CACHE_NAME = 'boda-v1';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './details.html',
-  './watch.html',
-  './logo.png',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css'
+  '/',
+  '/index.html',
+  '/library.html',
+  '/watch.html',
+  '/manifest.json',
+  'https://vjs.zencdn.net/8.10.0/video-js.css',
+  'https://vjs.zencdn.net/8.10.0/video.min.js',
+  'https://unpkg.com/@silvermine/videojs-quality-selector/dist/css/quality-selector.css',
+  'https://unpkg.com/@silvermine/videojs-quality-selector/dist/js/silvermine-videojs-quality-selector.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
+  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400&display=swap'
 ];
 
-// 1. Install & Cache UI Assets
+// Install: Cache UI assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -18,7 +23,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// 2. Activate & Clean Old Caches
+// Activate: Cleanup old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -27,39 +32,16 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. The "Offline Fix": Intercept Network Requests
+// Fetch: Serve from Cache, Fallback to Network
 self.addEventListener('fetch', (event) => {
-  // Ignore external API calls to JSONBin so we don't break them
-  if (event.request.url.includes('api.jsonbin.io')) return;
+  // Skip cross-origin video requests (handled by watch.html logic)
+  if (event.request.url.includes('.mp4') || event.request.url.includes('.m3u8')) {
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // Return the cached file if found, otherwise try the network
-      return response || fetch(event.request).catch(() => {
-        // If both fail (offline and not cached), return the cached index.html
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
+      return response || fetch(event.request);
     })
   );
-});
-
-// 4. Handle Video Downloads (from your trigger function)
-self.addEventListener('message', (event) => {
-  if (event.data.type === 'CACHE_VIDEO') {
-    const { url, title } = event.data;
-    
-    caches.open('boda-videos').then((cache) => {
-      fetch(url).then((response) => {
-        if (response.ok) {
-          cache.put(url, response);
-          // Notify the UI
-          self.clients.matchAll().then(clients => {
-            clients.forEach(client => client.postMessage({ type: 'DOWNLOAD_COMPLETE', title }));
-          });
-        }
-      });
-    });
-  }
 });
