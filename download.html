@@ -3,253 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BODA | My Library</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --gold: #D4AF37; 
-            --black: #050505; 
-            --card-bg: #121212;
-        }
-
-        body { 
-            background: var(--black); 
-            color: white; 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            padding: env(safe-area-inset-top) 5% 80px; 
-            -webkit-tap-highlight-color: transparent;
-        }
+        :root { --gold: #D4AF37; --black: #050505; }
+        body { background: var(--black); color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px 5% 80px; }
         
-        .header-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            background: var(--black);
-            z-index: 100;
-        }
+        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: sticky; top: 0; background: var(--black); z-index: 100; padding: 10px 0; }
+        h1 { font-family: 'Cinzel', serif; font-size: 1.4rem; letter-spacing: 2px; }
 
-        h1 { 
-            font-family: 'Cinzel', serif; 
-            color: white; 
-            margin: 0; 
-            font-size: 1.4rem; 
-            letter-spacing: 2px;
-        }
+        .select-toggle { color: var(--gold); font-weight: 600; cursor: pointer; font-size: 0.9rem; border: 1px solid var(--gold); padding: 4px 12px; border-radius: 20px; }
+        .select-toggle.active { background: var(--gold); color: black; }
 
-        .download-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 15px; 
-        }
+        .download-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .dl-card { position: relative; border-radius: 8px; transition: 0.3s; cursor: pointer; }
+        .dl-card.selected { transform: scale(0.9); }
+        .dl-card.selected::after { content: "\f058"; family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; top: 10px; left: 10px; color: var(--gold); font-size: 1.5rem; z-index: 30; }
+
+        .dl-thumb { width: 100%; aspect-ratio: 16/9; background-size: cover; border-radius: 8px; position: relative; border: 1px solid #222; }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--gold); }
         
-        .dl-card { 
-            background: transparent; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            transition: transform 0.2s ease; 
-            position: relative;
-        }
+        .dl-info h3 { font-size: 0.9rem; margin: 8px 0 4px; color: #efefef; }
+        .offline-tag { color: #4CAF50; font-size: 0.7rem; font-weight: 600; }
 
-        .dl-card.selected { 
-            outline: 2px solid var(--gold);
-            transform: scale(0.95);
-        }
-
-        .dl-thumb { 
-            width: 100%; 
-            aspect-ratio: 16/9;
-            background-size: cover; 
-            background-position: center;
-            border-radius: 8px;
-            position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            background-color: #222;
-        }
-
-        .thumb-overlay {
-            position: absolute;
-            bottom: 5px;
-            right: 8px;
-            background: rgba(0,0,0,0.7);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            color: white;
-            z-index: 5;
-        }
-
-        .progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: var(--gold);
-            z-index: 10;
-            border-radius: 0 0 0 8px;
-        }
-
-        .dl-info { padding: 10px 2px; }
-        
-        .dl-info h3 { 
-            margin: 0; 
-            font-size: 0.9rem; 
-            font-weight: 400;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            color: #efefef;
-        }
-        
-        .meta-info { 
-            font-size: 0.7rem; 
-            color: #777; 
-            margin-top: 4px; 
-            display: flex; 
-            align-items: center;
-            gap: 8px;
-        }
-
-        .offline-tag {
-            color: #4CAF50;
-            font-weight: 600;
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255, 68, 68, 0.9);
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            z-index: 20;
-        }
-        .selected .delete-btn { display: flex; }
-
-        .empty-state { 
-            text-align: center; 
-            color: #444; 
-            padding-top: 150px; 
-            grid-column: 1/-1; 
-        }
-
-        .empty-state i { font-size: 3rem; margin-bottom: 10px; }
-
-        ::-webkit-scrollbar { width: 0px; }
-
+        #deleteBar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #ff4444; color: white; padding: 12px 30px; border-radius: 30px; display: none; font-weight: 600; box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 1000; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="header-area">
-        <a href="index.html" style="color: white; text-decoration: none;"><i class="fa-solid fa-chevron-left"></i></a>
+        <a href="index.html" style="color: white;"><i class="fa-solid fa-chevron-left"></i></a>
         <h1>LIBRARY</h1>
-        <i class="fa-solid fa-ellipsis-vertical" style="color: #666;"></i>
+        <div id="selectBtn" class="select-toggle" onclick="toggleSelectMode()">SELECT</div>
     </div>
 
-    <div class="download-grid" id="downloadGrid">
-        <!-- JS content -->
-    </div>
+    <div class="download-grid" id="downloadGrid"></div>
+
+    <button id="deleteBar" onclick="deleteSelected()">DELETE SELECTED</button>
 
     <script>
-        function loadDownloads() {
+        let isSelectMode = false;
+
+        function toggleSelectMode() {
+            isSelectMode = !isSelectMode;
+            const btn = document.getElementById('selectBtn');
+            const deleteBar = document.getElementById('deleteBar');
+            
+            btn.innerText = isSelectMode ? "CANCEL" : "SELECT";
+            btn.classList.toggle('active');
+            
+            if (!isSelectMode) {
+                document.querySelectorAll('.dl-card').forEach(c => c.classList.remove('selected'));
+                deleteBar.style.display = 'none';
+            }
+        }
+
+        async function loadDownloads() {
             const grid = document.getElementById('downloadGrid');
-            // Retrieves the list we updated in the details.html logic
             const downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
 
             if (downloads.length === 0) {
-                grid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fa-solid fa-cloud-moon"></i>
-                    <p>Your collection is empty.</p>
-                </div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding-top:100px; color:#555;">
+                    <i class="fa-solid fa-folder-open" style="font-size:3rem;"></i><p>Empty Library</p></div>`;
                 return;
             }
 
-            grid.innerHTML = downloads.map((item, index) => {
-                const progress = item.progress || 100;
-                
-                // Ensure the URL is safely encoded for the click handler
-                const safeUrl = encodeURIComponent(item.url || "");
-                
-                return `
-                <div class="dl-card" id="card-${index}" onclick="handleCardClick(${index}, '${safeUrl}')">
-                    <div class="delete-btn" onclick="event.stopPropagation(); deleteDownload(${index})">
-                        <i class="fa-solid fa-xmark"></i>
-                    </div>
-                    
+            grid.innerHTML = downloads.map((item, index) => `
+                <div class="dl-card" id="card-${index}" onclick="handleCardClick(${index}, '${item.url}')">
                     <div class="dl-thumb" style="background-image: url('${item.poster}')">
-                        <div class="thumb-overlay">MP4</div>
-                        <div class="progress-bar" style="width: ${progress}%"></div>
+                        <div class="progress-bar" style="width: 100%"></div>
                     </div>
-
                     <div class="dl-info">
                         <h3>${item.title}</h3>
-                        <div class="meta-info">
-                            <span class="offline-tag"><i class="fa-solid fa-bolt"></i> Ready</span>
-                            <span>${item.date}</span>
-                        </div>
+                        <span class="offline-tag"><i class="fa-solid fa-circle-check"></i> OFFLINE READY</span>
                     </div>
-                </div>`;
-            }).join('');
-
-            setupLongPress();
+                </div>
+            `).join('');
         }
 
-        function handleCardClick(index, videoUrl) {
+        function handleCardClick(index, url) {
             const card = document.getElementById(`card-${index}`);
             
-            // If in selection mode, toggle selection
-            if (document.querySelector('.selected')) {
+            if (isSelectMode) {
                 card.classList.toggle('selected');
-                return;
+                const selectedCount = document.querySelectorAll('.dl-card.selected').length;
+                document.getElementById('deleteBar').style.display = selectedCount > 0 ? 'block' : 'none';
+                document.getElementById('deleteBar').innerText = `DELETE SELECTED (${selectedCount})`;
+            } else {
+                // REAL OFFLINE PLAYBACK: Pass the URL. 
+                // The Service Worker (sw.js) will intercept this URL and serve it from Cache.
+                window.location.href = `watch.html?video=${encodeURIComponent(url)}&offline=true`;
             }
-            
-            if (!videoUrl || videoUrl === "undefined" || videoUrl === "") {
-                alert("This file path is missing. Please re-download from the details page.");
-                return;
-            }
-
-            // Play the direct MP4 link in the watch player
-            // We pass 'offline=true' so the player knows to treat it as a direct file, not m3u8
-            window.location.href = `watch.html?video=${videoUrl}&offline=true`;
         }
 
-        function setupLongPress() {
-            const cards = document.querySelectorAll('.dl-card');
-            cards.forEach(card => {
-                let timer;
-                card.addEventListener('touchstart', () => {
-                    timer = setTimeout(() => {
-                        card.classList.add('selected');
-                        if (navigator.vibrate) navigator.vibrate(40);
-                    }, 600);
-                });
-                card.addEventListener('touchend', () => clearTimeout(timer));
-                card.addEventListener('touchmove', () => clearTimeout(timer));
-            });
-        }
+        async function deleteSelected() {
+            if (!confirm("Permanently delete selected files?")) return;
 
-        function deleteDownload(index) {
-            if(!confirm("Remove this masterpiece from your library?")) return;
-            
             let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
-            downloads.splice(index, 1);
-            localStorage.setItem('boda_downloads', JSON.stringify(downloads));
+            const selectedCards = document.querySelectorAll('.dl-card.selected');
+            const cache = await caches.open('boda-videos');
+
+            for (let card of selectedCards) {
+                const index = parseInt(card.id.split('-')[1]);
+                const videoUrl = downloads[index].url;
+                
+                // 1. Remove from real browser cache
+                await cache.delete(videoUrl);
+                
+                // 2. Mark for removal from list
+                downloads[index] = null; 
+            }
+
+            // 3. Save updated list
+            const remaining = downloads.filter(d => d !== null);
+            localStorage.setItem('boda_downloads', JSON.stringify(remaining));
+            
+            toggleSelectMode();
             loadDownloads();
         }
 
