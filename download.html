@@ -46,17 +46,19 @@
                 return;
             }
 
-            grid.innerHTML = downloads.map(item => `
-                <div class="dl-card">
-                    <div class="dl-thumb" style="background-image: url('${item.poster}')"></div>
-                    <div class="dl-info">
-                        <h3>${item.title}</h3>
-                        <a href="watch.html?video=${encodeURIComponent(item.localPath)}&offline=true" class="play-offline">
-                            <i class="fa-solid fa-play"></i> PLAY OFFLINE
-                        </a>
-                    </div>
-                </div>
-            `).join('');
+            // In your loop that generates the download cards:
+grid.innerHTML = downloads.map(item => `
+    <div class="dl-card">
+        <div class="dl-thumb" style="background-image: url('${item.poster}')"></div>
+        <div class="dl-info">
+            <h3>${item.title}</h3>
+            <!-- Point to the local MP4 file created by FFmpeg -->
+            <a href="watch.html?video=${encodeURIComponent(item.localPath)}&offline=true" class="play-offline">
+                <i class="fa-solid fa-circle-play"></i> WATCH DOWNLOAD
+            </a>
+        </div>
+    </div>
+`).join('');
         }
 
         window.onload = loadDownloads;
