@@ -30,7 +30,6 @@
             overflow-x: hidden;
         }
 
-        /* Navigation */
         .top-nav {
             position: fixed;
             top: 0;
@@ -49,20 +48,22 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
         }
 
-        /* Cinematic Hero Wrapper */
         .hero-container {
             width: 100%;
             height: 70vh;
             position: relative;
             background-color: #000;
+            background-size: cover;
+            background-position: center;
         }
 
         .hero-media {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            border: none;
         }
 
         .hero-overlay {
@@ -72,7 +73,6 @@
                         linear-gradient(to right, var(--black) 10%, transparent 60%);
         }
 
-        /* Details Content */
         .details-content {
             padding: 0 5% 100px;
             margin-top: -150px;
@@ -90,13 +90,14 @@
             font-size: 0.7rem;
             margin-bottom: 15px;
             font-family: var(--luxury-font);
+            text-transform: uppercase;
         }
 
         .main-title {
             font-family: var(--luxury-font);
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-size: clamp(2.2rem, 8vw, 4.5rem);
             margin: 0 0 15px;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
 
         .meta-info {
@@ -114,10 +115,7 @@
             margin-bottom: 40px;
         }
 
-        /* Episode List (Netflix Style) */
-        .episode-container {
-            margin-top: 60px;
-        }
+        .episode-container { margin-top: 60px; }
 
         .row-header {
             display: flex;
@@ -141,7 +139,7 @@
             gap: 25px;
             padding: 20px;
             border-bottom: 1px solid #1a1a1a;
-            transition: background 0.3s;
+            transition: 0.3s;
             cursor: pointer;
             align-items: center;
         }
@@ -154,26 +152,23 @@
             background-size: cover;
             background-position: center;
             border-radius: 4px;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .ep-thumb i { font-size: 2rem; opacity: 0; transition: 0.3s; }
-        .ep-item:hover .ep-thumb i { opacity: 1; }
+        .ep-thumb i { font-size: 2.5rem; color: rgba(255,255,255,0.8); }
 
-        .ep-info h4 { margin: 0 0 8px; font-size: 1.1rem; }
+        .ep-info h4 { margin: 0 0 8px; font-size: 1.1rem; color: var(--gold); }
         .ep-info p { margin: 0; color: #888; font-size: 0.9rem; line-height: 1.5; }
 
-        /* Mobile Fixes */
         @media (max-width: 768px) {
-            .hero-container { height: 50vh; }
-            .details-content { margin-top: -50px; text-align: center; }
+            .hero-container { height: 55vh; }
+            .details-content { margin-top: -80px; text-align: center; }
             .meta-info { justify-content: center; }
-            .ep-item { grid-template-columns: 1fr; gap: 15px; padding: 15px 0; }
-            .ep-thumb { width: 100%; }
-            .ep-info { text-align: left; padding: 0 10px; }
+            .ep-item { grid-template-columns: 1fr; gap: 10px; padding: 15px 0; }
+            .ep-info { text-align: left; padding: 0 5px; }
+            .synopsis { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -181,16 +176,16 @@
 <body>
 
     <nav class="top-nav">
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK</a>
+        <div class="back-btn" onclick="window.location.href='index.html'"><i class="fa-solid fa-arrow-left"></i> BACK</div>
     </nav>
 
-    <div id="loader" style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000;">
+    <div id="loader" style="height: 100vh; display: flex; flex-direction:column; align-items: center; justify-content: center; background: #000; gap: 20px;">
         <i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--gold);"></i>
+        <span style="font-family:var(--luxury-font); color:var(--gold); letter-spacing:2px; font-size:0.8rem;">LOADING CINEMA</span>
     </div>
 
     <div id="main-ui" style="display:none;">
         <div class="hero-container" id="hero-media-container">
-            <!-- Backdrop or Trailer Inject Here -->
             <div class="hero-overlay"></div>
         </div>
 
@@ -205,7 +200,7 @@
             <div class="episode-container" id="episode-section" style="display:none;">
                 <div class="row-header">
                     <h3>Episodes</h3>
-                    <select id="season-selector" class="season-select" style="background:#000; color:var(--gold); border:1px solid var(--gold); padding:5px 10px;" onchange="renderEpisodes(this.value)"></select>
+                    <select id="season-selector" onchange="renderEpisodes(this.value)" style="background:#000; color:var(--gold); border:1px solid var(--gold); padding:5px 10px; font-family:var(--main-font); border-radius:4px;"></select>
                 </div>
                 <div id="ep-list"></div>
             </div>
@@ -214,68 +209,95 @@
 
     <script>
         const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
-        const BINS = ["69f307faaba882197550749", "69f307c736566621a80b4134"];
+        const BINS = ["69f3074faaba882197550749", "69f307c736566621a80b4134"];
 
         async function init() {
             const params = new URLSearchParams(window.location.search);
             const title = params.get('title');
-            if (!title) { window.location.href = 'index.html'; return; }
+            
+            if (!title) {
+                window.location.href = 'index.html';
+                return;
+            }
 
             try {
-                const results = await Promise.all(BINS.map(id => 
-                    fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, { headers: { 'X-Master-Key': API_KEY } }).then(r => r.json())
-                ));
+                // Fetch data from both bins
+                const fetches = BINS.map(id => 
+                    fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, {
+                        headers: { 'X-Master-Key': API_KEY }
+                    }).then(r => r.ok ? r.json() : null)
+                );
+
+                const responses = await Promise.all(fetches);
                 
-                const allItems = results.flatMap(r => r.record || []);
+                // Merge records and find the item
+                const allItems = responses
+                    .filter(r => r && r.record)
+                    .flatMap(r => Array.isArray(r.record) ? r.record : []);
+                
                 const item = allItems.find(i => i.title === title);
 
-                if (item) renderPage(item);
-            } catch (err) { console.error(err); }
+                if (item) {
+                    renderPage(item);
+                } else {
+                    alert("Content not found.");
+                    window.location.href = 'index.html';
+                }
+            } catch (err) {
+                console.error("Initialization Error:", err);
+                document.getElementById('loader').innerHTML = `<p style="color:red;">Error loading content. Please refresh.</p>`;
+            }
         }
 
         function renderPage(item) {
+            window.currentData = item;
             document.getElementById('loader').style.display = 'none';
             document.getElementById('main-ui').style.display = 'block';
 
-            // Media Logic: Trailer vs Backdrop
             const mediaContainer = document.getElementById('hero-media-container');
-            if (item.trailerLink) {
-                const videoId = item.trailerLink.split('v=')[1] || item.trailerLink.split('/').pop();
+            
+            // Handle Trailer or Backdrop
+            if (item.trailerLink && item.trailerLink.includes('youtube')) {
+                const videoId = item.trailerLink.split('v=')[1]?.split('&')[0] || item.trailerLink.split('/').pop();
                 mediaContainer.innerHTML = `
-                    <iframe class="hero-media" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe class="hero-media" 
+                        src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0" 
+                        allow="autoplay; encrypted-media">
+                    </iframe>
                     <div class="hero-overlay"></div>`;
             } else {
-                mediaContainer.style.backgroundImage = `url('${item.backdrop}')`;
-                mediaContainer.style.backgroundSize = 'cover';
-                mediaContainer.style.backgroundPosition = 'center';
+                mediaContainer.style.backgroundImage = `url('${item.backdrop || item.cover}')`;
             }
 
             document.getElementById('title-target').innerText = item.title;
             document.getElementById('status-target').innerHTML = `<span class="status-badge">${item.status || 'RELEASED'}</span>`;
-            document.getElementById('synopsis-target').innerText = item.synopsis || "No description available.";
+            document.getElementById('synopsis-target').innerText = item.synopsis || "No synopsis available.";
+            
             document.getElementById('meta-target').innerHTML = `
                 <span>${item.year || '2026'}</span>
-                <span>|</span>
-                <span>${item.genres ? item.genres.join(', ') : 'Cinema'}</span>
+                <span style="color:var(--gold)">|</span>
+                <span>${item.genres ? item.genres.join(' • ') : 'Featured'}</span>
             `;
 
+            // Check if it's a Series or Movie
             if (item.seasonsData || item.episodes) {
                 document.getElementById('episode-section').style.display = 'block';
-                window.currentData = item;
                 setupSeasons(item);
             } else {
                 document.getElementById('action-target').innerHTML = `
                     <button onclick="window.location.href='watch.html?video=${encodeURIComponent(item.videoLink)}'" 
-                            style="background:white; color:black; border:none; padding:15px 50px; font-weight:700; cursor:pointer; font-family:var(--luxury-font);">
-                        <i class="fa-solid fa-play"></i> PLAY MOVIE
+                            style="background:white; color:black; border:none; padding:15px 45px; font-weight:700; cursor:pointer; font-family:var(--luxury-font); border-radius:2px; display:flex; align-items:center; gap:10px; margin: 0 auto;">
+                        <i class="fa-solid fa-play"></i> PLAY NOW
                     </button>`;
             }
         }
 
         function setupSeasons(item) {
             const selector = document.getElementById('season-selector');
-            if (item.seasonsData) {
-                selector.innerHTML = item.seasonsData.map(s => `<option value="${s.seasonNumber}">Season ${s.seasonNumber}</option>`).join('');
+            if (item.seasonsData && Array.isArray(item.seasonsData)) {
+                selector.innerHTML = item.seasonsData.map(s => 
+                    `<option value="${s.seasonNumber}">Season ${s.seasonNumber}</option>`
+                ).join('');
                 renderEpisodes(item.seasonsData[0].seasonNumber);
             } else {
                 selector.style.display = 'none';
@@ -294,14 +316,19 @@
                 eps = window.currentData.episodes || [];
             }
 
+            if (!eps || eps.length === 0) {
+                list.innerHTML = `<p style="padding:20px; color:#666;">No episodes available for this season yet.</p>`;
+                return;
+            }
+
             list.innerHTML = eps.map((ep, i) => `
                 <div class="ep-item" onclick="window.location.href='watch.html?video=${encodeURIComponent(ep.link)}'">
-                    <div class="ep-thumb" style="background-image:url('${ep.thumbnail || window.currentData.cover}')">
-                        <i class="fa-solid fa-play-circle"></i>
+                    <div class="ep-thumb" style="background-image:linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${ep.thumbnail || window.currentData.cover}')">
+                        <i class="fa-solid fa-circle-play"></i>
                     </div>
                     <div class="ep-info">
                         <h4>${i+1}. ${ep.title || 'Episode ' + (i+1)}</h4>
-                        <p>${ep.description || 'Watch the next chapter of ' + window.currentData.title + '.'}</p>
+                        <p>${ep.description || 'Watch the latest installment of ' + window.currentData.title + '.'}</p>
                     </div>
                 </div>
             `).join('');
