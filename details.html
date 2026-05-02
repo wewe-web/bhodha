@@ -149,7 +149,7 @@
             margin-bottom: 40px;
         }
 
-        /* Buttons Section */
+        /* Action Buttons */
         .action-section {
             margin-top: 30px;
             display: flex;
@@ -197,13 +197,14 @@
             transform: translateY(-3px);
         }
 
-        /* Episode List */
-        .episode-container {
-            margin-top: 50px;
+        /* Episodes */
+        .episode-container h3 {
+            font-family: var(--luxury-font);
+            color: var(--gold);
+            margin-bottom: 20px;
         }
 
         .episode-list {
-            margin-top: 25px;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -262,25 +263,11 @@
         }
 
         @media (max-width: 992px) {
-            .details-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .poster-box {
-                display: none;
-            }
-
-            .hero-content h1 {
-                font-size: 2.8rem;
-            }
-
-            .hero-bg {
-                height: 50vh;
-            }
-
-            .details-grid {
-                margin-top: 20px;
-            }
+            .details-grid { grid-template-columns: 1fr; }
+            .poster-box { display: none; }
+            .hero-content h1 { font-size: 2.8rem; }
+            .hero-bg { height: 50vh; }
+            .details-grid { margin-top: 20px; }
         }
     </style>
 </head>
@@ -288,7 +275,9 @@
 <body>
 
     <div id="content-loader">
-        <!-- Content Injected via Script -->
+        <div style="height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--gold);">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+        </div>
     </div>
 
     <script>
@@ -323,159 +312,112 @@
                 if (item) {
                     document.title = `BODA | ${item.title}`;
                     renderPage(item, type);
+                } else {
+                    document.getElementById('content-loader').innerHTML = "<p style='text-align:center; padding-top:100px;'>Content not found.</p>";
                 }
 
             } catch (err) {
                 console.error("Critical Data Error:", err);
+                document.getElementById('content-loader').innerHTML = "<p style='text-align:center; padding-top:100px;'>Error loading data.</p>";
             }
         }
 
-        // --- UPDATED REAL DOWNLOAD LOGIC ---
-function triggerRealDownload(directMp4Url, contentTitle, posterUrl) {
-    // Check if the link exists and isn't just an empty string or placeholder
-    if (!directMp4Url || directMp4Url === "undefined" || directMp4Url === "") {
-        alert("A direct download link for this title hasn't been added yet. Please check the Admin Dashboard.");
-        return;
-    }
+        function triggerRealDownload(directMp4Url, contentTitle, posterUrl) {
+            if (!directMp4Url || directMp4Url === "" || directMp4Url === "undefined") {
+                alert("A direct download link for this title hasn't been added yet.");
+                return;
+            }
 
-    // 1. UI Feedback: Let the user know the process is starting
-    alert(`BODA: Requesting ${contentTitle}.mp4 from server...`);
+            const link = document.createElement('a');
+            link.href = directMp4Url;
+            link.setAttribute('download', `${contentTitle.replace(/\s+/g, '_')}.mp4`);
+            link.target = '_blank'; 
+            link.rel = 'noopener noreferrer';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-    // 2. Create the download trigger
-    const link = document.createElement('a');
-    link.href = directMp4Url;
-    
-    // Suggest a filename (works best if the server allows CORS)
-    link.setAttribute('download', `${contentTitle.replace(/\s+/g, '_')}.mp4`);
-    
-    // Security and behavior settings
-    link.target = '_blank'; 
-    link.rel = 'noopener noreferrer';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+            // LocalStorage metadata sync
+            let currentDownloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
+            if (!currentDownloads.find(d => d.title === contentTitle)) {
+                currentDownloads.push({
+                    title: contentTitle,
+                    poster: posterUrl,
+                    date: new Date().toLocaleDateString(),
+                    url: directMp4Url,
+                    status: 'Completed'
+                });
+                localStorage.setItem('boda_downloads', JSON.stringify(currentDownloads));
+            }
+        }
 
-    // 3. Save metadata for the "Downloads" PWA page
-    let currentDownloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
-    
-    const newEntry = {
-        title: contentTitle,
-        poster: posterUrl,
-        date: new Date().toLocaleDateString(),
-        url: directMp4Url, // Storing the link so they can re-download later if needed
-        status: 'Completed'
-    };
+        function renderPage(item, type) {
+            const container = document.getElementById('content-loader');
+            let bottomContent = '';
+            let mainActions = '';
 
-    // Prevent duplicate entries in the local library
-    if (!currentDownloads.find(d => d.title === contentTitle)) {
-        currentDownloads.push(newEntry);
-        localStorage.setItem('boda_downloads', JSON.stringify(currentDownloads));
-    }
-}
-
-function renderPage(item, type) {
-    const container = document.getElementById('content-loader');
-    let bottomContent = '';
-    let mainActions = '';
-
-    if (type === 'movie') {
-        // Use item.downloadLink (the new MP4 field) for the download button
-        mainActions = `
-            <button class="watch-btn" onclick="watch('${item.videoLink}', '${encodeURIComponent(item.vtt)}')">
-                <i class="fa-solid fa-play"></i> WATCH NOW
-            </button>
-            <button class="download-btn" onclick="triggerRealDownload('${item.downloadLink || ""}', '${item.title}', '${item.cover}')">
-                <i class="fa-solid fa-download"></i> DOWNLOAD MP4
-            </button>
-        `;
-    } else {
-        bottomContent = `
-            <div class="episode-container">
-                <h3>Episodes</h3>
-                <div class="episode-list">
-        `;
-        item.episodes.forEach((ep, index) => {
-            // Use ep.download (the new MP4 field per episode)
-            bottomContent += `
-                <div class="ep-row">
-                    <div class="ep-info" onclick="watch('${ep.link}', '${encodeURIComponent(ep.vtt)}')">
-                        <h4>EPISODE ${index + 1}: ${ep.title || 'Untitled'}</h4>
-                        <p>${ep.description || 'Watch the latest chapter of this BODA original.'}</p>
-                    </div>
-                    <div class="ep-actions">
-                        <button class="dl-icon-btn" onclick="event.stopPropagation(); triggerRealDownload('${ep.download || ""}', '${item.title} EP${index + 1}', '${item.cover}')" title="Download to MP4">
-                            <i class="fa-solid fa-circle-down"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        bottomContent += `</div></div>`;
-    }
-
-    // ... (rest of your existing innerHTML template remains the same)
-    container.innerHTML = `
-        <nav class="back-nav">
-            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> HOME</a>
-        </nav>
-        <div class="hero-bg" style="background-image: url('${item.backdrop}')">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <div class="meta-tags">
-                    <span class="badge">${type}</span>
-                    <span>${item.genres.join(' • ')}</span>
-                    ${item.status ? `<span>• ${item.status}</span>` : ''}
-                </div>
-                <h1>${item.title}</h1>
-                <p style="color: #aaa; font-size: 1.1rem; margin-top:-5px;">${item.timestamp ? new Date(item.timestamp).getFullYear() : '2026'}</p>
-                <div class="action-section">
-                    ${mainActions}
-                </div>
-            </div>
-        </div>
-        <div class="details-grid">
-            <div class="poster-box">
-                <img src="${item.cover}" alt="Poster Artwork">
-            </div>
-            <div class="synopsis-box">
-                <h3>Synopsis</h3>
-                <p class="synopsis-text">${item.synopsis}</p>
-                ${bottomContent}
-            </div>
-        </div>
-    `;
-}
+            if (type === 'movie') {
+                mainActions = `
+                    <button class="watch-btn" onclick="watch('${item.videoLink}', '${encodeURIComponent(item.vtt || "")}')">
+                        <i class="fa-solid fa-play"></i> WATCH NOW
+                    </button>
+                    <button class="download-btn" onclick="triggerRealDownload('${item.downloadLink || ""}', '${item.title}', '${item.cover}')">
+                        <i class="fa-solid fa-download"></i> DOWNLOAD MP4
+                    </button>
+                `;
+            } else {
+                bottomContent = `
+                    <div class="episode-container">
+                        <h3>Episodes</h3>
+                        <div class="episode-list">
+                `;
+                item.episodes.forEach((ep, index) => {
+                    bottomContent += `
+                        <div class="ep-row">
+                            <div class="ep-info" onclick="watch('${ep.link}', '${encodeURIComponent(ep.vtt || "")}')">
+                                <h4>EPISODE ${index + 1}: ${ep.title || 'Untitled'}</h4>
+                                <p>${ep.description || 'Watch the latest chapter of this BODA original.'}</p>
+                            </div>
+                            <div class="ep-actions">
+                                <button class="dl-icon-btn" onclick="event.stopPropagation(); triggerRealDownload('${ep.download || ""}', '${item.title} EP${index + 1}', '${item.cover}')" title="Download to MP4">
+                                    <i class="fa-solid fa-circle-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                bottomContent += `</div></div>`;
+            }
 
             container.innerHTML = `
                 <nav class="back-nav">
                     <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> HOME</a>
                 </nav>
-
                 <div class="hero-bg" style="background-image: url('${item.backdrop}')">
                     <div class="hero-overlay"></div>
                     <div class="hero-content">
                         <div class="meta-tags">
                             <span class="badge">${type}</span>
-                            <span>${item.genres.join(' • ')}</span>
+                            <span>${item.genres ? item.genres.join(' • ') : 'Action • Drama'}</span>
                             ${item.status ? `<span>• ${item.status}</span>` : ''}
                         </div>
                         <h1>${item.title}</h1>
-                        <p style="color: #aaa; font-size: 1.1rem; margin-top:-5px;">${item.timestamp ? new Date(item.timestamp).getFullYear() : '2026'}</p>
-                        
+                        <p style="color: #aaa; font-size: 1.1rem; margin-top:-5px;">
+                            ${item.timestamp ? new Date(item.timestamp).getFullYear() : '2026'}
+                        </p>
                         <div class="action-section">
                             ${mainActions}
                         </div>
                     </div>
                 </div>
-
                 <div class="details-grid">
                     <div class="poster-box">
                         <img src="${item.cover}" alt="Poster Artwork">
                     </div>
                     <div class="synopsis-box">
                         <h3>Synopsis</h3>
-                        <p class="synopsis-text">${item.synopsis}</p>
+                        <p class="synopsis-text">${item.synopsis || "No synopsis available."}</p>
                         ${bottomContent}
                     </div>
                 </div>
@@ -484,7 +426,7 @@ function renderPage(item, type) {
 
         function watch(link, vtt) {
             if (!link || link === "undefined" || link === "") {
-                alert("This cinematic journey is currently being prepared. Check back soon!");
+                alert("This cinematic journey is currently being prepared.");
                 return;
             }
             window.location.href = `watch.html?video=${encodeURIComponent(link)}&vtt=${vtt}`;
