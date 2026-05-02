@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -31,11 +30,9 @@
             font-family: var(--main-font);
             margin: 0;
             overflow-x: hidden;
-            /* Extra padding for mobile bottom nav */
             padding-bottom: 80px; 
         }
 
-        /* Desktop users don't need the bottom padding */
         @media (min-width: 769px) {
             body { padding-bottom: 0; }
         }
@@ -58,6 +55,7 @@
             cursor: pointer;
         }
 
+        /* SEARCH AREA & RESULTS BOX */
         .search-area {
             flex-grow: 1;
             max-width: 400px;
@@ -84,10 +82,57 @@
             color: var(--gold);
         }
 
-        nav {
-            display: flex;
-            align-items: center;
+        #searchResults {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 100%;
+            background: #111;
+            border: 1px solid var(--gold);
+            border-radius: 12px;
+            z-index: 2000;
+            max-height: 450px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
         }
+
+        .search-item {
+            display: flex;
+            padding: 12px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            gap: 15px;
+            transition: 0.2s;
+        }
+
+        .search-item:hover { background: #1a1a1a; }
+
+        .search-item img {
+            width: 110px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+
+        .search-info {
+            flex: 1;
+            font-size: 0.75rem;
+            color: #bbb;
+        }
+
+        .search-info h4 {
+            margin: 0 0 4px 0;
+            color: var(--gold);
+            font-family: var(--luxury-font);
+            font-size: 0.9rem;
+        }
+
+        .search-info div { margin-bottom: 2px; }
+
+        /* NAV & BUTTONS */
+        nav { display: flex; align-items: center; }
 
         nav a {
             color: white;
@@ -114,7 +159,7 @@
             white-space: nowrap;
         }
 
-        /* Hero */
+        /* HERO & GRID */
         #hero-slider {
             height: 70vh;
             display: flex;
@@ -128,16 +173,13 @@
             width: 100%;
         }
 
-        /* Layout Grids */
         .section-title {
             font-family: var(--luxury-font);
             color: var(--gold);
             padding: 25px 5% 10px;
             font-size: 1.4rem;
             letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
 
         .grid-row {
@@ -145,85 +187,44 @@
             overflow-x: auto;
             padding: 0 5% 20px;
             gap: 15px;
-            scroll-behavior: smooth;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            scrollbar-width: none;
         }
 
         .grid-row::-webkit-scrollbar { display: none; }
 
         .card {
-            min-width: 160px;
-            max-width: 160px;
-            height: 240px;
-            background: #1a1a1a;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-            border: 1px solid transparent;
-            flex-shrink: 0;
-            position: relative;
+            min-width: 160px; max-width: 160px; height: 240px;
+            background: #1a1a1a; border-radius: 10px;
+            transition: 0.3s ease; cursor: pointer;
+            border: 1px solid transparent; position: relative;
         }
 
         .card:hover { border-color: var(--gold); transform: scale(1.05); }
         .card img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 
         .card-title {
-            padding: 8px;
-            font-size: 0.75rem;
-            text-align: center;
-            color: var(--gold);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            background: rgba(0,0,0,0.7);
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
+            padding: 8px; font-size: 0.75rem; text-align: center;
+            color: var(--gold); overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap; background: rgba(0,0,0,0.7);
+            position: absolute; bottom: 0; width: 100%;
+            border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
         }
 
-        /* RESPONSIVE MOBILE FIXES */
         @media (max-width: 768px) {
-            header {
-                padding: 10px 15px;
-                flex-wrap: wrap;
-            }
-            
+            header { padding: 10px 15px; flex-wrap: wrap; }
             .logo-box { order: 1; }
             .app-dl { order: 2; font-size: 0.7rem; padding: 6px 12px; }
             .search-area { order: 3; width: 100%; max-width: none; margin-top: 8px; }
 
-            /* Bottom Navigation for Mobile */
             nav {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: #000;
-                justify-content: space-around;
-                padding: 12px 0;
-                border-top: 1px solid var(--gold);
-                z-index: 2000;
+                position: fixed; bottom: 0; left: 0; width: 100%;
+                background: #000; justify-content: space-around;
+                padding: 12px 0; border-top: 1px solid var(--gold); z-index: 2000;
             }
 
-            nav a { 
-                font-size: 0.65rem; 
-                margin: 0; 
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-            }
-            
-            nav a i { font-size: 1.3rem; margin: 0; }
-
+            nav a { font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 0; }
+            nav a i { font-size: 1.3rem; }
             #hero-slider { height: 45vh; }
-            .hero-content h1 { font-size: 1.8rem !important; }
-            .hero-content p { display: none; }
-            
-            .section-title { font-size: 1.1rem; }
             .card { min-width: 130px; height: 195px; }
         }
     </style>
@@ -238,7 +239,8 @@
 
         <div class="search-area">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="smartSearch" placeholder="Search Masterpieces...">
+            <input type="text" id="smartSearch" placeholder="Search Masterpieces..." autocomplete="off">
+            <div id="searchResults"></div>
         </div>
 
         <nav>
@@ -254,9 +256,7 @@
     </header>
 
     <section id="hero-slider" style="background: url('boda.jpg') center/cover;">
-        <div class="hero-content" id="hero-content">
-            <!-- Loaded by JS -->
-        </div>
+        <div class="hero-content" id="hero-content"></div>
     </section>
 
     <h2 class="section-title"><i class="fa-solid fa-fire-flame-curved"></i> Newly Released</h2>
@@ -273,11 +273,7 @@
         const SERIES_BIN = "69f3074faaba882197550749";
         const MOVIES_BIN = "69f307c736566621a80b4134";
 
-        document.getElementById('smartSearch').addEventListener('input', (e) => {
-            if (e.target.value === "iamtheadminof1227") {
-                window.location.href = 'dashboard.html';
-            }
-        });
+        let allItems = []; // Global search database
 
         async function loadContent() {
             try {
@@ -289,7 +285,7 @@
                 const sData = await seriesRes.json();
                 const mData = await moviesRes.json();
 
-                const allItems = [
+                allItems = [
                     ...(Array.isArray(sData.record) ? sData.record : [sData.record]),
                     ...(Array.isArray(mData.record) ? mData.record : [mData.record])
                 ].filter(item => item && item.title);
@@ -337,16 +333,59 @@
             }
         }
 
+        // SEARCH FUNCTIONALITY
+        const searchInput = document.getElementById('smartSearch');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            
+            if (term === "iamtheadminof1227") {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            if (term.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const matches = allItems.filter(i => i.title.toLowerCase().includes(term));
+
+            if (matches.length > 0) {
+                searchResults.innerHTML = matches.map(item => `
+                    <div class="search-item" onclick="location.href='details.html?title=${encodeURIComponent(item.title)}'">
+                        <img src="${item.backdrop || item.cover}" alt="backdrop">
+                        <div class="search-info">
+                            <h4>${item.title} (${item.year || '2026'})</h4>
+                            <div>Genres: ${item.genres || 'Masterpiece'}</div>
+                            <div>Episode Number: ${item.episodeNumber || '1'}</div>
+                            <div>Season Number: ${item.seasonNumber || '1'}</div>
+                        </div>
+                    </div>
+                `).join('');
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        // Hide search if user clicks away
+        document.addEventListener('click', (e) => {
+            if (!document.querySelector('.search-area').contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
         window.onload = loadContent;
 
         if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Boda Service Worker Registered'))
-      .catch(err => console.log('Service Worker Registration Failed', err));
-  });
-}
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Boda SW Active'))
+                    .catch(err => console.log('SW Failed', err));
+            });
+        }
     </script>
 </body>
-
 </html>
