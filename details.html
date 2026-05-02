@@ -335,6 +335,33 @@
             }
         }
 
+        async function downloadVideo(videoUrl, title, poster) {
+    console.log("Starting real download...");
+    
+    // 1. Open the video cache
+    const cache = await caches.open('boda-videos');
+    
+    // 2. Fetch the video and put it in cache
+    // This physically saves the MP4/HLS file to the user's storage
+    try {
+        await cache.add(videoUrl);
+        
+        // 3. Save the metadata to localStorage so it appears in the Library
+        let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
+        downloads.push({
+            title: title,
+            url: videoUrl,
+            poster: poster,
+            date: new Date().toLocaleDateString()
+        });
+        localStorage.setItem('boda_downloads', JSON.stringify(downloads));
+        
+        alert("Masterpiece saved for offline viewing!");
+    } catch (error) {
+        alert("Download failed. Make sure you have an internet connection to start the download.");
+    }
+}
+
         function renderPage(item, type) {
             const container = document.getElementById('content-loader');
             let actions = '';
