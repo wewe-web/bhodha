@@ -3,16 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BODA | Loading Masterpiece...</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -291,7 +288,7 @@
 <body>
 
     <div id="content-loader">
-        <!-- Luxury Content Injected via Script -->
+        <!-- Content Injected via Script -->
     </div>
 
     <script>
@@ -333,30 +330,40 @@
             }
         }
 
-        // --- THE APP DOWNLOAD LOGIC ---
-        function triggerAppDownload(videoUrl, contentTitle, posterUrl) {
-    // 1. Tell the Boda App to start downloading
-    const customUri = `boda-dl://download?url=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(contentTitle)}`;
-    window.location.href = customUri;
+        // --- REAL DOWNLOAD LOGIC ---
+        function triggerRealDownload(videoUrl, contentTitle, posterUrl) {
+            if (!videoUrl || videoUrl === "undefined") {
+                alert("Download link not available yet.");
+                return;
+            }
 
-    // 2. Save "Receipt" to LocalStorage for the Downloads page
-    let currentDownloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
-    
-    const newEntry = {
-        title: contentTitle,
-        poster: posterUrl,
-        // Assuming your app saves it to a specific local folder
-        localPath: `C:/BodaDownloads/${contentTitle}.mp4`, 
-        date: new Date().toLocaleDateString()
-    };
+            // 1. Create a hidden download link
+            const link = document.createElement('a');
+            link.href = videoUrl;
+            link.download = `${contentTitle}.mp4`; // Forces browser to try and download
+            link.target = '_blank'; // Opens in new tab if browser can't force download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-    // Prevent duplicates
-    if (!currentDownloads.find(d => d.title === contentTitle)) {
-        currentDownloads.push(newEntry);
-        localStorage.setItem('boda_downloads', JSON.stringify(currentDownloads));
-        alert("Preparing download in the Boda App...");
-    }
-}
+            // 2. Save metadata to LocalStorage for your "Downloads" page
+            let currentDownloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
+            
+            const newEntry = {
+                title: contentTitle,
+                poster: posterUrl,
+                date: new Date().toLocaleDateString(),
+                status: 'Completed'
+            };
+
+            // Avoid duplicates in the list
+            if (!currentDownloads.find(d => d.title === contentTitle)) {
+                currentDownloads.push(newEntry);
+                localStorage.setItem('boda_downloads', JSON.stringify(currentDownloads));
+            }
+            
+            alert(`BODA: Starting download for ${contentTitle}... Check your browser's download manager.`);
+        }
 
         function renderPage(item, type) {
             const container = document.getElementById('content-loader');
@@ -369,7 +376,7 @@
                     <button class="watch-btn" onclick="watch('${item.videoLink}', '${encodeURIComponent(item.vtt)}')">
                         <i class="fa-solid fa-play"></i> WATCH NOW
                     </button>
-                    <button class="download-btn" onclick="triggerAppDownload('${item.videoLink}', '${item.title}')">
+                    <button class="download-btn" onclick="triggerRealDownload('${item.videoLink}', '${item.title}', '${item.cover}')">
                         <i class="fa-solid fa-download"></i> DOWNLOAD MP4
                     </button>
                 `;
@@ -387,7 +394,7 @@
                                 <p>${ep.description || 'Watch the latest chapter of this BODA original.'}</p>
                             </div>
                             <div class="ep-actions">
-                                <button class="dl-icon-btn" onclick="triggerAppDownload('${ep.link}', '${item.title} EP${index + 1}')" title="Download to MP4">
+                                <button class="dl-icon-btn" onclick="triggerRealDownload('${ep.link}', '${item.title} EP${index + 1}', '${item.cover}')" title="Download to MP4">
                                     <i class="fa-solid fa-circle-down"></i>
                                 </button>
                             </div>
@@ -441,14 +448,6 @@
         }
 
         window.onload = fetchDetails;
-
-        if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Boda Service Worker Registered'))
-      .catch(err => console.log('Service Worker Registration Failed', err));
-  });
-}
     </script>
 </body>
 
