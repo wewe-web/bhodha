@@ -7,164 +7,201 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BODA | My Library</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --black: #050505; }
+        :root { 
+            --gold: #D4AF37; 
+            --black: #050505; 
+            --card-bg: #121212;
+            --bilibili-pink: #fb7299; /* Optional: Bilibili's signature accent if you want variety */
+        }
+
         body { 
             background: var(--black); 
             color: white; 
             font-family: 'Poppins', sans-serif; 
             margin: 0; 
-            padding: env(safe-area-inset-top) 5% 50px; 
+            padding: env(safe-area-inset-top) 5% 80px; 
+            -webkit-tap-highlight-color: transparent;
         }
         
+        /* Bilibili Style Header */
         .header-area {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #222;
             padding: 20px 0;
-            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background: var(--black);
+            z-index: 100;
         }
 
-        h1 { font-family: 'Cinzel', serif; color: var(--gold); margin: 0; font-size: 1.5rem; }
-        
-        .download-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        h1 { 
+            font-family: 'Cinzel', serif; 
+            color: white; 
+            margin: 0; 
+            font-size: 1.4rem; 
+            letter-spacing: 2px;
+        }
+
+        /* Grid Layout: Closer to Bilibili's dense but clean grid */
+        .download-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 15px; 
+        }
         
         .dl-card { 
-            background: #111; 
-            border-radius: 15px; 
+            background: transparent; 
+            border-radius: 8px; 
             overflow: hidden; 
-            border: 1px solid #222; 
-            transition: transform 0.3s, border-color 0.3s; 
+            transition: transform 0.2s ease; 
             position: relative;
-            user-select: none; /* Prevents text selection during long press */
         }
-        
-        .dl-card.selected { border-color: #ff4444; transform: scale(0.98); }
 
-        /* The Backdrop/Video Representation */
+        .dl-card.selected { 
+            outline: 2px solid var(--gold);
+            transform: scale(0.95);
+        }
+
+        /* Thumbnail - Bilibili uses 16:9 aspect ratio usually */
         .dl-thumb { 
             width: 100%; 
-            height: 180px; 
+            aspect-ratio: 16/9;
             background-size: cover; 
             background-position: center;
+            border-radius: 8px;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            background-color: #222;
         }
 
-        .dl-thumb::after {
-            content: "";
+        /* Overlay for Info on Thumb */
+        .thumb-overlay {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            bottom: 5px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: white;
+            z-index: 5;
         }
 
-        /* Progress Bar for "Real" download feel */
-        .progress-container {
+        .progress-bar {
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 100%;
-            height: 4px;
-            background: #222;
-            z-index: 2;
+            height: 3px;
+            background: var(--gold);
+            z-index: 10;
+            border-radius: 0 0 0 8px;
         }
-        .progress-fill { height: 100%; background: var(--gold); transition: width 0.3s; }
 
-        .dl-info { padding: 15px; position: relative; }
-        .dl-info h3 { margin: 0; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dl-info { padding: 10px 2px; }
         
-        .meta-info { font-size: 0.75rem; color: #888; margin-top: 5px; display: flex; justify-content: space-between; }
-
-        .play-offline { 
+        .dl-info h3 { 
+            margin: 0; 
+            font-size: 0.9rem; 
+            font-weight: 400;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: #efefef;
+        }
+        
+        .meta-info { 
+            font-size: 0.7rem; 
+            color: #777; 
+            margin-top: 4px; 
             display: flex; 
-            align-items: center; 
+            align-items: center;
             gap: 8px;
-            margin-top: 15px; 
-            color: var(--gold); 
-            text-decoration: none; 
-            font-size: 0.8rem; 
-            font-weight: bold;
-            text-transform: uppercase;
         }
 
-        /* Delete UI */
-        .delete-overlay {
+        /* Action/Delete UI */
+        .delete-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 5px;
+            right: 5px;
             background: rgba(255, 68, 68, 0.9);
             color: white;
-            width: 35px;
-            height: 35px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: none;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            z-index: 5;
+            font-size: 0.8rem;
+            z-index: 20;
         }
-        .selected .delete-overlay { display: flex; }
+        .selected .delete-btn { display: flex; }
 
-        .empty-state { text-align: center; color: #555; padding-top: 100px; grid-column: 1/-1; }
+        .empty-state { 
+            text-align: center; 
+            color: #444; 
+            padding-top: 150px; 
+            grid-column: 1/-1; 
+        }
+
+        .empty-state i { font-size: 3rem; margin-bottom: 10px; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 0px; }
+
     </style>
 </head>
 <body>
 
     <div class="header-area">
-        <a href="index.html" style="color: var(--gold); text-decoration: none;"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="index.html" style="color: white; text-decoration: none;"><i class="fa-solid fa-chevron-left"></i></a>
         <h1>LIBRARY</h1>
-        <div style="width: 20px;"></div> <!-- Spacer -->
+        <i class="fa-solid fa-ellipsis-vertical" style="color: #666;"></i>
     </div>
 
     <div class="download-grid" id="downloadGrid">
-        <!-- JS will populate this -->
+        <!-- JS content -->
     </div>
 
     <script>
         function loadDownloads() {
             const grid = document.getElementById('downloadGrid');
+            // This is the data we saved in the details page
             const downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
 
             if (downloads.length === 0) {
-                grid.innerHTML = `<div class="empty-state">
-                    <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                    <h3>No Masterpieces Found</h3>
-                    <p>Download content to watch offline.</p>
+                grid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-cloud-moon"></i>
+                    <p>Your collection is empty.</p>
                 </div>`;
                 return;
             }
 
             grid.innerHTML = downloads.map((item, index) => {
-                // Mocking file size and progress for display
-                const size = item.size || "1.2 GB"; 
-                const progress = item.isDownloading ? item.progress : 100;
+                const progress = item.progress || 100;
                 
                 return `
-                <div class="dl-card" id="card-${index}" oncontextmenu="return false;">
-                    <div class="delete-overlay" onclick="deleteDownload(${index})">
-                        <i class="fa-solid fa-trash"></i>
+                <div class="dl-card" id="card-${index}" onclick="handleCardClick(${index}, '${encodeURIComponent(item.videoUrl)}')">
+                    <div class="delete-btn" onclick="event.stopPropagation(); deleteDownload(${index})">
+                        <i class="fa-solid fa-xmark"></i>
                     </div>
                     
                     <div class="dl-thumb" style="background-image: url('${item.poster}')">
-                        ${progress < 100 ? `<span style="z-index:3; font-weight:bold;">${progress}%</span>` : ''}
-                        <div class="progress-container">
-                            <div class="progress-fill" style="width: ${progress}%"></div>
-                        </div>
+                        <div class="thumb-overlay">${item.duration || 'HD'}</div>
+                        <div class="progress-bar" style="width: ${progress}%"></div>
                     </div>
 
                     <div class="dl-info">
                         <h3>${item.title}</h3>
                         <div class="meta-info">
-                            <span>MP4 VIDEO</span>
-                            <span>${size}</span>
+                            <span><i class="fa-regular fa-circle-check"></i> Saved</span>
+                            <span>${item.date}</span>
                         </div>
-                        <a href="watch.html?video=${encodeURIComponent(item.localPath)}&offline=true" class="play-offline">
-                            <i class="fa-solid fa-play"></i> Play Offline
-                        </a>
                     </div>
                 </div>`;
             }).join('');
@@ -172,37 +209,38 @@
             setupLongPress();
         }
 
-        // Long Press Logic for Mobile
+        function handleCardClick(index, videoUrl) {
+            const card = document.getElementById(`card-${index}`);
+            // If already in selection mode (long pressed), toggle selection instead of playing
+            if (document.querySelector('.selected')) {
+                card.classList.toggle('selected');
+                return;
+            }
+            
+            // Otherwise, play the video
+            window.location.href = `watch.html?video=${videoUrl}&offline=true`;
+        }
+
         function setupLongPress() {
             const cards = document.querySelectorAll('.dl-card');
             cards.forEach(card => {
-                let pressTimer;
-
-                const start = () => {
-                    pressTimer = window.setTimeout(() => {
-                        card.classList.toggle('selected');
-                        if (window.navigator.vibrate) window.navigator.vibrate(50);
-                    }, 600); // 0.6 seconds long press
-                };
-
-                const cancel = () => clearTimeout(pressTimer);
-
-                card.addEventListener("mousedown", start);
-                card.addEventListener("touchstart", start);
-                card.addEventListener("click", cancel);
-                card.addEventListener("mouseout", cancel);
-                card.addEventListener("touchend", cancel);
-                card.addEventListener("touchleave", cancel);
+                let timer;
+                card.addEventListener('touchstart', () => {
+                    timer = setTimeout(() => {
+                        card.classList.add('selected');
+                        if (navigator.vibrate) navigator.vibrate(40);
+                    }, 600);
+                });
+                card.addEventListener('touchend', () => clearTimeout(timer));
+                card.addEventListener('touchmove', () => clearTimeout(timer));
             });
         }
 
         function deleteDownload(index) {
             let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
-            if (confirm(`Remove "${downloads[index].title}" from library?`)) {
-                downloads.splice(index, 1);
-                localStorage.setItem('boda_downloads', JSON.stringify(downloads));
-                loadDownloads();
-            }
+            downloads.splice(index, 1);
+            localStorage.setItem('boda_downloads', JSON.stringify(downloads));
+            loadDownloads();
         }
 
         window.onload = loadDownloads;
