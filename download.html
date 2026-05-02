@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,29 +10,118 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #D4AF37; --black: #050505; }
-        body { background: var(--black); color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 5% 5%; }
-        h1 { font-family: 'Cinzel', serif; color: var(--gold); border-bottom: 1px solid #222; padding-bottom: 20px; }
-        
-        .download-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
-        .dl-card { background: #111; border-radius: 12px; overflow: hidden; border: 1px solid #222; transition: 0.3s; position: relative; }
-        .dl-card:hover { border-color: var(--gold); transform: translateY(-5px); }
-        .dl-thumb { width: 100%; height: 160px; background-size: cover; background-position: center; }
-        .dl-info { padding: 15px; }
-        .dl-info h3 { margin: 0; font-size: 1rem; color: white; }
-        .play-offline { 
-            display: inline-block; margin-top: 10px; color: var(--gold); 
-            text-decoration: none; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px;
+        body { 
+            background: var(--black); 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            padding: env(safe-area-inset-top) 5% 50px; 
         }
-        .empty-state { text-align: center; color: #555; margin-top: 100px; }
+        
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        h1 { font-family: 'Cinzel', serif; color: var(--gold); margin: 0; font-size: 1.5rem; }
+        
+        .download-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
+        .dl-card { 
+            background: #111; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 1px solid #222; 
+            transition: transform 0.3s, border-color 0.3s; 
+            position: relative;
+            user-select: none; /* Prevents text selection during long press */
+        }
+        
+        .dl-card.selected { border-color: #ff4444; transform: scale(0.98); }
+
+        /* The Backdrop/Video Representation */
+        .dl-thumb { 
+            width: 100%; 
+            height: 180px; 
+            background-size: cover; 
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dl-thumb::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        }
+
+        /* Progress Bar for "Real" download feel */
+        .progress-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #222;
+            z-index: 2;
+        }
+        .progress-fill { height: 100%; background: var(--gold); transition: width 0.3s; }
+
+        .dl-info { padding: 15px; position: relative; }
+        .dl-info h3 { margin: 0; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .meta-info { font-size: 0.75rem; color: #888; margin-top: 5px; display: flex; justify-content: space-between; }
+
+        .play-offline { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            margin-top: 15px; 
+            color: var(--gold); 
+            text-decoration: none; 
+            font-size: 0.8rem; 
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Delete UI */
+        .delete-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 68, 68, 0.9);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+        }
+        .selected .delete-overlay { display: flex; }
+
+        .empty-state { text-align: center; color: #555; padding-top: 100px; grid-column: 1/-1; }
     </style>
 </head>
 <body>
 
-    <a href="index.html" style="color: #666; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i> BACK</a>
-    <h1>Offline Library</h1>
+    <div class="header-area">
+        <a href="index.html" style="color: var(--gold); text-decoration: none;"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1>LIBRARY</h1>
+        <div style="width: 20px;"></div> <!-- Spacer -->
+    </div>
 
     <div class="download-grid" id="downloadGrid">
-        <!-- Downloads will appear here -->
+        <!-- JS will populate this -->
     </div>
 
     <script>
@@ -42,23 +130,79 @@
             const downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
 
             if (downloads.length === 0) {
-                grid.innerHTML = '<div class="empty-state"><h3>No masterpieces downloaded yet.</h3><p>Your offline library is empty.</p></div>';
+                grid.innerHTML = `<div class="empty-state">
+                    <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <h3>No Masterpieces Found</h3>
+                    <p>Download content to watch offline.</p>
+                </div>`;
                 return;
             }
 
-            // In your loop that generates the download cards:
-grid.innerHTML = downloads.map(item => `
-    <div class="dl-card">
-        <div class="dl-thumb" style="background-image: url('${item.poster}')"></div>
-        <div class="dl-info">
-            <h3>${item.title}</h3>
-            <!-- Point to the local MP4 file created by FFmpeg -->
-            <a href="watch.html?video=${encodeURIComponent(item.localPath)}&offline=true" class="play-offline">
-                <i class="fa-solid fa-circle-play"></i> WATCH DOWNLOAD
-            </a>
-        </div>
-    </div>
-`).join('');
+            grid.innerHTML = downloads.map((item, index) => {
+                // Mocking file size and progress for display
+                const size = item.size || "1.2 GB"; 
+                const progress = item.isDownloading ? item.progress : 100;
+                
+                return `
+                <div class="dl-card" id="card-${index}" oncontextmenu="return false;">
+                    <div class="delete-overlay" onclick="deleteDownload(${index})">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+                    
+                    <div class="dl-thumb" style="background-image: url('${item.poster}')">
+                        ${progress < 100 ? `<span style="z-index:3; font-weight:bold;">${progress}%</span>` : ''}
+                        <div class="progress-container">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="dl-info">
+                        <h3>${item.title}</h3>
+                        <div class="meta-info">
+                            <span>MP4 VIDEO</span>
+                            <span>${size}</span>
+                        </div>
+                        <a href="watch.html?video=${encodeURIComponent(item.localPath)}&offline=true" class="play-offline">
+                            <i class="fa-solid fa-play"></i> Play Offline
+                        </a>
+                    </div>
+                </div>`;
+            }).join('');
+
+            setupLongPress();
+        }
+
+        // Long Press Logic for Mobile
+        function setupLongPress() {
+            const cards = document.querySelectorAll('.dl-card');
+            cards.forEach(card => {
+                let pressTimer;
+
+                const start = () => {
+                    pressTimer = window.setTimeout(() => {
+                        card.classList.toggle('selected');
+                        if (window.navigator.vibrate) window.navigator.vibrate(50);
+                    }, 600); // 0.6 seconds long press
+                };
+
+                const cancel = () => clearTimeout(pressTimer);
+
+                card.addEventListener("mousedown", start);
+                card.addEventListener("touchstart", start);
+                card.addEventListener("click", cancel);
+                card.addEventListener("mouseout", cancel);
+                card.addEventListener("touchend", cancel);
+                card.addEventListener("touchleave", cancel);
+            });
+        }
+
+        function deleteDownload(index) {
+            let downloads = JSON.parse(localStorage.getItem('boda_downloads') || '[]');
+            if (confirm(`Remove "${downloads[index].title}" from library?`)) {
+                downloads.splice(index, 1);
+                localStorage.setItem('boda_downloads', JSON.stringify(downloads));
+                loadDownloads();
+            }
         }
 
         window.onload = loadDownloads;
