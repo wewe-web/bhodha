@@ -16,6 +16,7 @@
         :root { 
             --gold: #D4AF37; 
             --black: #050505;
+            --surface: #121212;
             --plyr-color-main: var(--gold);
         }
 
@@ -25,50 +26,57 @@
             color: white; overflow-x: hidden;
         }
 
+        /* Top Header */
         .theater-header {
             display: flex; align-items: center; padding: 15px 20px;
-            background: linear-gradient(to bottom, #111, transparent);
+            background: linear-gradient(to bottom, #1a1a1a, transparent);
             gap: 15px; z-index: 10;
         }
-        .theater-header h2 { font-family: 'Cinzel'; font-size: 1rem; color: var(--gold); margin: 0; text-transform: uppercase; }
+        .theater-header h2 { font-family: 'Cinzel'; font-size: 0.9rem; color: var(--gold); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .video-wrapper { width: 100%; background: #000; position: relative; }
+        /* Video Area */
+        .video-wrapper { width: 100%; background: #000; position: sticky; top: 0; z-index: 100; }
 
-        .info-container { padding: 20px; }
-        .ep-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .ep-number { font-family: 'Cinzel'; color: var(--gold); font-size: 1.1rem; }
+        /* Info Area */
+        .info-container { padding: 15px 20px; border-bottom: 1px solid #222; }
+        .main-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
+        
+        .actions-bar { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
         
         .like-btn {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
-            color: white; padding: 8px 18px; border-radius: 20px; cursor: pointer;
-            transition: 0.3s; font-family: 'Cinzel'; font-size: 0.7rem;
+            background: #222; border: 1px solid #333;
+            color: white; padding: 6px 16px; border-radius: 18px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; font-size: 0.8rem; transition: 0.2s;
         }
-        .like-btn.active { background: var(--gold); color: black; }
+        .like-btn.active { background: var(--gold); color: black; border-color: var(--gold); }
 
-        .description { font-size: 0.85rem; color: #bbb; line-height: 1.6; margin: 15px 0; }
+        .description { font-size: 0.85rem; color: #aaa; margin-top: 12px; display: none; } /* Hidden by default */
 
-        .next-label { font-family: 'Cinzel'; color: var(--gold); font-size: 0.9rem; margin: 25px 0 10px; border-left: 3px solid var(--gold); padding-left: 10px; }
-        .next-episodes { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
-        .next-episodes::-webkit-scrollbar { display: none; }
+        /* Playlist Section (YouTube Style) */
+        .playlist-header { padding: 15px 20px 5px; font-family: 'Cinzel'; color: var(--gold); font-size: 0.8rem; letter-spacing: 1px; }
         
-        .next-card {
-            min-width: 160px; aspect-ratio: 16/9; background: #111; border-radius: 8px;
-            overflow: hidden; border: 1px solid #333; position: relative; flex-shrink: 0;
-            transition: 0.3s;
+        .playlist-item {
+            display: flex; gap: 12px; padding: 10px 20px; transition: background 0.2s; text-decoration: none; color: inherit;
         }
-        .next-card:active { transform: scale(0.95); border-color: var(--gold); }
-        .next-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-        .next-card .card-info { position: absolute; bottom: 8px; left: 10px; font-size: 0.7rem; font-family: 'Cinzel'; color: white; }
+        .playlist-item:active { background: #1a1a1a; }
+        
+        .thumb-box { 
+            width: 140px; aspect-ratio: 16/9; background: #222; border-radius: 8px; 
+            flex-shrink: 0; overflow: hidden; position: relative;
+        }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-box .duration { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,0.8); font-size: 10px; padding: 2px 4px; border-radius: 2px; }
 
-        .global-ui { position: fixed; inset: 0; pointer-events: none; z-index: 1000; transition: opacity 0.4s; }
-        .lock-wrapper { position: absolute; top: 50%; right: 20px; transform: translateY(-50%); pointer-events: auto; }
-        .btn-ui { background: rgba(0,0,0,0.6); color: white; border: 1px solid var(--gold); border-radius: 50px; cursor: pointer; backdrop-filter: blur(5px); }
-        .btn-lock { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
-        .ui-hidden { opacity: 0; visibility: hidden; }
+        .item-details { flex-grow: 1; }
+        .item-details h4 { margin: 0; font-size: 0.85rem; line-height: 1.3; font-weight: 400; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .item-details p { margin: 4px 0 0; font-size: 0.7rem; color: #888; }
 
-        #loader { position: fixed; inset: 0; background: var(--black); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; transition: opacity 0.5s ease; }
-        .gold-spinner { width: 40px; height: 40px; border: 3px solid rgba(212,175,55,0.1); border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        /* Loader */
+        #loader { position: fixed; inset: 0; background: var(--black); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; }
+        .gold-spinner { width: 35px; height: 35px; border: 3px solid rgba(212,175,55,0.1); border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .ui-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     </style>
 </head>
 
@@ -76,19 +84,13 @@
 
     <div id="loader">
         <div class="gold-spinner"></div>
-        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; letter-spacing: 2px; font-size: 0.7rem;">LOADING MASTERPIECE</p>
     </div>
 
-    <div class="global-ui" id="uiLayer">
-        <div class="lock-wrapper">
-            <button class="btn-ui btn-lock" id="lockBtn"><i class="fa-solid fa-lock-open"></i></button>
-        </div>
-    </div>
-
-    <div id="nonFullscreenContent">
-        <nav class="theater-header">
-            <a href="details.html" style="color:white; font-size: 1.2rem;"><i class="fa-solid fa-chevron-left"></i></a>
-            <h2 id="displayTitle">BODA THEATER</h2>
+    <div id="mainLayout">
+        <!-- Header (Only shows when not fullscreen) -->
+        <nav class="theater-header" id="topNav">
+            <a href="details.html" style="color:white;"><i class="fa-solid fa-chevron-left"></i></a>
+            <h2 id="displaySeries">SERIES TITLE</h2>
         </nav>
 
         <div class="video-wrapper">
@@ -96,22 +98,28 @@
         </div>
 
         <div class="info-container">
-            <div class="ep-meta">
-                <div class="ep-number" id="epNum">EPISODE --</div>
+            <div class="main-title" id="mainTitle">Episode --</div>
+            <div class="description" id="epDesc"></div>
+            
+            <div class="actions-bar">
                 <button class="like-btn" id="likeBtn" onclick="toggleLike()">
-                    <i class="fa-regular fa-thumbs-up"></i> <span>LIKE</span>
+                    <i class="fa-regular fa-thumbs-up"></i> <span>Like</span>
                 </button>
             </div>
-            <div class="description" id="epDesc">The journey continues. Sit back and enjoy the cinematic experience provided by BODA Luxury Streaming.</div>
+        </div>
 
-            <div class="next-label">Up Next</div>
-            <div class="next-episodes" id="nextList">
-                <!-- Example Next Card -->
-                <div class="next-card">
-                    <img src="https://via.placeholder.com/160x90/111/D4AF37?text=BODA" alt="next">
-                    <div class="card-info">EPISODE --</div>
+        <div class="playlist-header">Playlist</div>
+        <div id="playlistContainer">
+            <!-- Items like YouTube list -->
+            <a href="#" class="playlist-item">
+                <div class="thumb-box">
+                    <img src="https://via.placeholder.com/140x80/222/D4AF37?text=BODA" alt="thumb">
                 </div>
-            </div>
+                <div class="item-details">
+                    <h4>Episode Title...</h4>
+                    <p>BODA Theater</p>
+                </div>
+            </a>
         </div>
     </div>
 
@@ -121,92 +129,70 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         const videoUrl = decodeURIComponent(params.get('video') || '');
-        const title = params.get('title') || 'Masterpiece';
-        const epName = params.get('epName') || 'The Sequel';
+        const seriesTitle = params.get('title') || 'BODA Theater';
+        const epName = params.get('epName') || ''; // Default empty
         const epIdx = params.get('epIdx') || '1';
+        const desc = params.get('desc') || ''; // Default empty
 
-        document.getElementById('displayTitle').innerText = title;
-        document.getElementById('epNum').innerText = `EP ${epIdx}: ${epName}`;
+        // 1. Logic for Titles: If epName is empty, show only "Episode No."
+        const finalTitle = epName.trim() !== "" ? `Episode ${epIdx} - ${epName}` : `Episode ${epIdx}`;
+        document.getElementById('mainTitle').innerText = finalTitle;
+        document.getElementById('displaySeries').innerText = seriesTitle;
+
+        // 2. Logic for Description: Only show and populate if it exists
+        const descEl = document.getElementById('epDesc');
+        if (desc.trim() !== "" && desc !== "null") {
+            descEl.innerText = desc;
+            descEl.style.display = "block";
+        }
 
         const video = document.getElementById('player');
         const loader = document.getElementById('loader');
 
-        // FORCE LOADER OFF FALLBACK (If video fails to signal, loader disappears in 5s)
-        const loaderTimeout = setTimeout(() => hideLoader(), 5000);
-
-        function hideLoader() {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.style.display = 'none', 500);
-            clearTimeout(loaderTimeout);
-        }
+        // Fast Loader removal fallback
+        const safetyTimeout = setTimeout(() => { loader.style.display = 'none'; }, 4000);
 
         const player = new Plyr(video, {
-            controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
-            tooltips: { controls: true, seek: true }
+            controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen']
         });
 
-        // HLS Logic with fixes for .m3u8
         if (Hls.isSupported()) {
-            const hls = new Hls({
-                maxBufferLength: 30,
-                enableWorker: true
-            });
+            const hls = new Hls();
             hls.loadSource(videoUrl);
             hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, hideLoader);
-            hls.on(Hls.Events.ERROR, (event, data) => {
-                if (data.fatal) hideLoader(); // Hide loader even if there is an error
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                loader.style.display = 'none';
+                clearTimeout(safetyTimeout);
             });
-        } 
-        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = videoUrl;
-            video.addEventListener('loadedmetadata', hideLoader);
-        } else {
-            hideLoader(); // Fallback for unsupported
+            video.addEventListener('loadedmetadata', () => {
+                loader.style.display = 'none';
+                clearTimeout(safetyTimeout);
+            });
         }
 
-        // Like Button Function
         function toggleLike() {
             const btn = document.getElementById('likeBtn');
+            btn.classList.toggle('active');
             const icon = btn.querySelector('i');
             const txt = btn.querySelector('span');
-            
-            if(!btn.classList.contains('active')) {
-                btn.classList.add('active');
+            if(btn.classList.contains('active')) {
                 icon.className = 'fa-solid fa-thumbs-up';
-                txt.innerText = 'LIKED';
-                if(navigator.vibrate) navigator.vibrate(50);
-            }
-        }
-
-        // UI Hide Logic
-        const lockBtn = document.getElementById('lockBtn');
-        const uiLayer = document.getElementById('uiLayer');
-        let isLocked = false;
-        let uiTimer;
-
-        lockBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            isLocked = !isLocked;
-            lockBtn.innerHTML = isLocked ? '<i class="fa-solid fa-lock"></i>' : '<i class="fa-solid fa-lock-open"></i>';
-            document.getElementById('nonFullscreenContent').style.opacity = isLocked ? '0.5' : '1';
-            
-            if(isLocked) {
-                uiLayer.classList.add('ui-hidden');
+                txt.innerText = 'Liked';
             } else {
-                handleActivity();
+                icon.className = 'fa-regular fa-thumbs-up';
+                txt.innerText = 'Like';
             }
-        });
-
-        function handleActivity() {
-            if(isLocked) return;
-            uiLayer.classList.remove('ui-hidden');
-            clearTimeout(uiTimer);
-            uiTimer = setTimeout(() => { if(player.playing) uiLayer.classList.add('ui-hidden'); }, 3000);
         }
 
-        ['touchstart', 'mousemove', 'click'].forEach(evt => window.addEventListener(evt, handleActivity));
-
+        // Fullscreen visibility logic
+        player.on('enterfullscreen', () => {
+            document.getElementById('topNav').style.display = 'none';
+        });
+        player.on('exitfullscreen', () => {
+            document.getElementById('topNav').style.display = 'flex';
+        });
     </script>
 </body>
 </html>
