@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BODA | Theater</title>
+    <title>BODA | Professional Theater</title>
 
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -14,111 +14,92 @@
         :root { 
             --gold: #D4AF37; 
             --black: #050505;
-            --surface: #121212;
+            --surface: #111111;
             --plyr-color-main: var(--gold);
         }
 
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: var(--black); font-family: 'Poppins', sans-serif; 
-            color: white; overflow: hidden; /* Prevents double scroll */
+            color: white; overflow: hidden;
         }
 
-        /* Fixed Video Header */
-        .video-section {
+        /* Video Section - Stays Fixed at Top */
+        .video-container {
             width: 100%; background: #000; position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .theater-header {
+        .theater-nav {
             display: flex; align-items: center; padding: 12px 20px;
             background: #000; gap: 15px;
         }
-        .theater-header h2 { font-family: 'Cinzel'; font-size: 0.8rem; color: var(--gold); margin: 0; letter-spacing: 1px; }
+        .theater-nav h2 { font-family: 'Cinzel'; font-size: 0.8rem; color: var(--gold); margin: 0; letter-spacing: 1px; }
 
-        /* Episode Info */
-        .now-playing-info { padding: 15px 20px; background: linear-gradient(to bottom, #000, var(--surface)); }
-        .current-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
-        .current-desc { font-size: 0.8rem; color: #888; line-height: 1.4; display: none; }
+        /* Current Playing Info */
+        .now-playing-box { padding: 15px 20px; background: var(--surface); border-bottom: 1px solid #222; }
+        .current-ep-title { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .current-ep-desc { font-size: 0.75rem; color: #888; line-height: 1.4; display: none; }
 
-        /* Scrollable Playlist Area */
-        .playlist-area {
-            height: calc(100vh - 350px); /* Adjust based on video height */
+        /* Sequential Playlist Area */
+        .playlist-scroll {
+            height: calc(100vh - 360px); /* Keeps playlist scrollable below video */
             overflow-y: auto;
-            padding-bottom: 40px;
+            background: var(--black);
         }
-        .playlist-label { 
-            padding: 20px 20px 10px; font-family: 'Cinzel'; 
-            color: var(--gold); font-size: 0.7rem; border-bottom: 1px solid #222;
-        }
+        .list-label { padding: 15px 20px 10px; font-family: 'Cinzel'; color: var(--gold); font-size: 0.7rem; opacity: 0.8; }
 
-        /* Playlist Item Styling */
+        /* Episode Row Items */
         .ep-row {
-            display: flex; align-items: center; gap: 15px; padding: 12px 20px;
-            text-decoration: none; color: white; border-bottom: 1px solid #1a1a1a;
-            transition: 0.2s;
+            display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+            text-decoration: none; color: white; border-bottom: 1px solid #161616;
+            transition: background 0.2s;
         }
         .ep-row:active { background: #1a1a1a; }
-        .ep-row.active { background: rgba(212,175,55,0.05); }
-
-        .ep-thumb {
-            width: 100px; aspect-ratio: 16/9; background: #222; 
-            border-radius: 4px; overflow: hidden; flex-shrink: 0;
-            border: 1px solid #333;
+        
+        /* Thumbnail is the Backdrop */
+        .ep-backdrop {
+            width: 120px; aspect-ratio: 16/9; background: #222; 
+            border-radius: 4px; overflow: hidden; flex-shrink: 0; position: relative;
         }
-        .ep-thumb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+        .ep-backdrop img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        
+        .ep-meta { flex-grow: 1; overflow: hidden; }
+        .ep-meta h4 { margin: 0; font-size: 0.8rem; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ep-meta p { margin: 2px 0 0; font-size: 0.65rem; color: #666; }
 
-        .ep-details { flex-grow: 1; overflow: hidden; }
-        .ep-details h4 { margin: 0; font-size: 0.85rem; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ep-details p { margin: 2px 0 0; font-size: 0.7rem; color: #666; }
-
-        /* Now Playing Animation (Audio Style) */
-        .playing-icon { color: var(--gold); font-size: 0.8rem; display: none; }
-        .active .playing-icon { display: block; }
-        .active .ep-details h4 { color: var(--gold); }
+        /* Sequential Highlight */
+        .ep-row.playing { background: rgba(212, 175, 55, 0.08); }
+        .ep-row.playing h4 { color: var(--gold); font-weight: 600; }
+        .playing-indicator { color: var(--gold); font-size: 0.7rem; }
 
         #loader { position: fixed; inset: 0; background: var(--black); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .gold-spinner { width: 30px; height: 30px; border: 2px solid rgba(212,175,55,0.1); border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .spinner { width: 30px; height: 30px; border: 2px solid #222; border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 
 <body>
 
-    <div id="loader"><div class="gold-spinner"></div></div>
+    <div id="loader"><div class="spinner"></div></div>
 
-    <div class="video-section">
-        <nav class="theater-header">
+    <div class="video-container">
+        <nav class="theater-nav">
             <a href="javascript:history.back()" style="color:white;"><i class="fa-solid fa-chevron-left"></i></a>
-            <h2 id="seriesLabel">SERIES</h2>
+            <h2 id="seriesTitle">LOADING...</h2>
         </nav>
+        
         <video id="player" playsinline controls crossorigin="anonymous"></video>
         
-        <div class="now-playing-info">
-            <div class="current-title" id="mainTitle">Episode --</div>
-            <div class="current-desc" id="mainDesc"></div>
+        <div class="now-playing-box">
+            <div class="current-ep-title" id="displayEp">Episode --</div>
+            <div class="current-ep-desc" id="displayDesc"></div>
         </div>
     </div>
 
-    <div class="playlist-area">
-        <div class="playlist-label">Episodes List</div>
-        <div id="playlistContainer">
-            <!-- Items will be generated or can be hardcoded here -->
-            <a href="#" class="ep-row active">
-                <div class="ep-thumb">
-                    <img src="your-backdrop-image.jpg" alt="ep">
-                </div>
-                <div class="ep-details">
-                    <h4>Episode 1</h4>
-                    <p>Now Playing</p>
-                </div>
-                <div class="playing-icon">
-                    <i class="fa-solid fa-volume-high"></i>
-                </div>
-            </a>
-
-            <!-- Example of other episodes -->
-            <div id="dynamicPlaylist"></div>
+    <div class="playlist-scroll">
+        <div class="list-label">Sequential Episodes</div>
+        <div id="episodeList">
+            <!-- Episode items will appear here -->
         </div>
     </div>
 
@@ -128,37 +109,68 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         const videoUrl = decodeURIComponent(params.get('video') || '');
-        const series = params.get('title') || 'BODA Cinema';
+        const backdrop = decodeURIComponent(params.get('backdrop') || ''); // Backdrop as thumbnail
+        const series = params.get('title') || 'BODA Theater';
         const epName = params.get('epName') || '';
         const epIdx = params.get('epIdx') || '1';
         const desc = params.get('desc') || '';
 
-        document.getElementById('seriesLabel').innerText = series;
-        document.getElementById('mainTitle').innerText = epName.trim() !== "" ? `EP ${epIdx} - ${epName}` : `Episode ${epIdx}`;
+        // Update Header & Current Info
+        document.getElementById('seriesTitle').innerText = series;
+        document.getElementById('displayEp').innerText = epName.trim() !== "" ? `EP ${epIdx}: ${epName}` : `Episode ${epIdx}`;
         
-        if (desc.trim() !== "" && desc !== "null") {
-            const d = document.getElementById('mainDesc');
-            d.innerText = desc;
-            d.style.display = "block";
+        if (desc && desc !== "null") {
+            const descDiv = document.getElementById('displayDesc');
+            descDiv.innerText = desc;
+            descDiv.style.display = "block";
         }
 
+        // Initialize Video Player
         const video = document.getElementById('player');
         const player = new Plyr(video, { 
-            controls: ['play', 'progress', 'current-time', 'mute', 'fullscreen'] 
+            controls: ['play', 'progress', 'current-time', 'mute', 'fullscreen'],
+            autoplay: true 
         });
 
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(videoUrl);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => document.getElementById('loader').style.display = 'none');
-        } else {
-            video.src = videoUrl;
-            video.onloadedmetadata = () => document.getElementById('loader').style.display = 'none';
+        // HLS Playing Logic
+        function loadVideo(url) {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    document.getElementById('loader').style.display = 'none';
+                    video.play().catch(() => { /* Handle auto-play block */ });
+                });
+            } else {
+                video.src = url;
+                video.onloadedmetadata = () => {
+                    document.getElementById('loader').style.display = 'none';
+                    video.play();
+                };
+            }
         }
 
-        // Safety loader clear
-        setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 3000);
+        loadVideo(videoUrl);
+
+        // Generate the "Now Playing" row in the sequential list
+        const listContainer = document.getElementById('episodeList');
+        const row = document.createElement('div');
+        row.className = 'ep-row playing';
+        row.innerHTML = `
+            <div class="ep-backdrop">
+                <img src="${backdrop}" onerror="this.src='https://via.placeholder.com/120x68/111/D4AF37?text=BODA'">
+            </div>
+            <div class="ep-meta">
+                <h4>${epName ? 'EP ' + epIdx + ': ' + epName : 'Episode ' + epIdx}</h4>
+                <p>Now Playing</p>
+            </div>
+            <div class="playing-indicator"><i class="fa-solid fa-volume-high"></i></div>
+        `;
+        listContainer.appendChild(row);
+
+        // Auto-hide loader safety
+        setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 4000);
     </script>
 </body>
 </html>
