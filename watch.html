@@ -8,111 +8,82 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>BODA | Professional Theater</title>
 
-    <!-- Plyr API Style -->
+    <!-- Plyr & HLS.js -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
         :root { 
             --gold: #D4AF37; 
             --black: #050505;
-            /* Customizing Plyr to Gold */
+            --gray: #121212;
             --plyr-color-main: var(--gold);
-            --plyr-video-background: #000;
         }
 
         body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: var(--black); font-family: 'Poppins', sans-serif; 
-            min-height: -webkit-fill-available; overflow: hidden;
+            margin: 0; padding: 0; width: 100%; 
+            background: var(--black); font-family: 'Poppins', sans-serif; color: white;
         }
 
-        /* Fixed Navigation - This ensures it stays visible after exiting fullscreen */
+        /* UI Overlays for Player */
         .global-ui {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1000;
+            position: absolute; inset: 0; pointer-events: none; z-index: 10;
             transition: opacity 0.4s ease;
         }
 
-        .player-nav {
-            position: absolute;
-            top: env(safe-area-inset-top, 20px);
-            left: 20px;
-            pointer-events: auto;
-        }
-
-        .lock-wrapper {
-            position: absolute;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
+        .player-header {
+            position: absolute; top: 15px; left: 15px; right: 15px;
+            display: flex; justify-content: space-between; align-items: center;
             pointer-events: auto;
         }
 
         .btn-ui { 
-            background: rgba(0, 0, 0, 0.6); 
-            color: white; 
-            border: 1px solid rgba(212, 175, 55, 0.5); 
-            border-radius: 50px; 
-            backdrop-filter: blur(15px); 
-            cursor: pointer; 
-            transition: 0.3s; 
-            -webkit-tap-highlight-color: transparent; 
+            background: rgba(0, 0, 0, 0.6); color: white; border: 1px solid rgba(212, 175, 55, 0.4); 
+            border-radius: 50px; backdrop-filter: blur(10px); cursor: pointer; transition: 0.3s; 
         }
 
-        .btn-back { 
-            text-decoration: none; 
-            padding: 10px 20px; 
-            font-size: 0.8rem; 
-            font-family: 'Cinzel', serif; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            color: white;
-        }
-
-        .btn-lock { 
-            width: 45px; height: 45px; 
-            border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-        }
-
-        /* Active/Idle Logic */
-        .ui-hidden { opacity: 0; visibility: hidden; }
+        .btn-back { text-decoration: none; padding: 8px 15px; font-size: 0.75rem; font-family: 'Cinzel'; display: flex; align-items: center; gap: 8px; }
         
-        body.is-locked .player-nav, 
-        body.is-locked .plyr__controls { 
-            display: none !important; 
-        }
+        .video-container { width: 100%; background: #000; aspect-ratio: 16 / 9; }
+        .ui-hidden { opacity: 0; visibility: hidden; }
 
-        body.is-locked .btn-lock { 
-            border-color: #ff4444; color: #ff4444; background: rgba(0,0,0,0.8);
-            opacity: 0.3;
-        }
+        /* Details Content (Scrollable below player) */
+        .details-section { padding: 20px; max-width: 1000px; margin: auto; }
+        .ep-info h2 { font-family: 'Cinzel'; color: var(--gold); margin: 0; font-size: 1.4rem; }
+        .ep-info p { color: #bbb; font-size: 0.9rem; margin: 10px 0; line-height: 1.5; }
 
-        /* Loader */
+        .action-bar { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
+        .like-btn { 
+            background: none; border: 1px solid #333; color: #fff; 
+            padding: 8px 20px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .like-btn.liked { color: var(--gold); border-color: var(--gold); pointer-events: none; }
+
+        .next-episodes { margin-top: 30px; }
+        .next-episodes h3 { font-family: 'Cinzel'; font-size: 1rem; color: var(--gold); margin-bottom: 15px; }
+        
+        .ep-row { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; scrollbar-width: none; }
+        .ep-row::-webkit-scrollbar { display: none; }
+
+        .ep-card { 
+            min-width: 200px; background: var(--gray); border-radius: 8px; 
+            overflow: hidden; border: 1px solid #222; cursor: pointer;
+        }
+        .ep-card img { width: 100%; height: 110px; object-fit: cover; }
+        .ep-card-title { padding: 8px; font-size: 0.8rem; text-align: center; color: #eee; }
+
+        /* Fullscreen handling */
+        body.is-fullscreen .details-section { display: none; }
+        body.is-fullscreen .video-container { height: 100vh; }
+
         #loader { 
             position: fixed; inset: 0; background: var(--black); 
-            display: flex; flex-direction: column; justify-content: center; 
-            align-items: center; z-index: 2000; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; 
         }
-
-        .gold-spinner { 
-            width: 30px; height: 30px; 
-            border: 2px solid rgba(212, 175, 55, 0.1); 
-            border-top: 2px solid var(--gold); 
-            border-radius: 50%; 
-            animation: spin 0.8s linear infinite; 
-        }
-
+        .gold-spinner { width: 40px; height: 40px; border: 3px solid rgba(212, 175, 55, 0.1); border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Plyr Overrides */
-        .plyr--full-ui input[type=range] { color: var(--gold); }
-        .plyr__control--overlaid { background: rgba(212, 175, 55, 0.2); border: 1px solid var(--gold); }
     </style>
 </head>
 
@@ -120,137 +91,117 @@
 
     <div id="loader">
         <div class="gold-spinner"></div>
-        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; letter-spacing: 2px; font-size: 0.6rem;">INITIALIZING CINEMA</p>
+        <p style="color: var(--gold); margin-top: 15px; font-family: 'Cinzel'; font-size: 0.7rem;">LOADING THEATER</p>
     </div>
 
-    <!-- UI Layer -->
-    <div class="global-ui" id="uiLayer">
-        <nav class="player-nav">
-            <a href="javascript:history.back()" class="btn-ui btn-back">
-                <i class="fa-solid fa-arrow-left"></i> EXIT
-            </a>
-        </nav>
+    <div class="video-container" id="vContainer">
+        <div class="global-ui" id="uiLayer">
+            <div class="player-header">
+                <a href="javascript:history.back()" class="btn-ui btn-back">
+                    <i class="fa-solid fa-chevron-left"></i> BACK
+                </a>
+                <span id="topTitle" style="font-family:'Cinzel'; color:var(--gold); font-size:0.8rem;">STREAMING</span>
+                <button class="btn-ui" id="lockBtn" style="width:35px; height:35px;"><i class="fa-solid fa-lock-open"></i></button>
+            </div>
+        </div>
+        <video id="player" playsinline controls crossorigin="anonymous"></video>
+    </div>
 
-        <div class="lock-wrapper">
-            <button class="btn-ui btn-lock" id="lockBtn">
-                <i class="fa-solid fa-lock-open"></i>
+    <div class="details-section">
+        <div class="ep-info">
+            <h2 id="viewTitle">Episode Loading...</h2>
+            <p id="viewDesc">Fetching information from the cloud masterpieces...</p>
+        </div>
+
+        <div class="action-bar">
+            <button class="like-btn" id="likeBtn" onclick="handleLike()">
+                <i class="fa-regular fa-heart"></i> <span id="likeText">Like</span>
             </button>
         </div>
-    </div>
 
-    <div class="video-container">
-        <video id="player" playsinline controls crossorigin="anonymous">
-            <source src="" type="video/mp4" />
-        </video>
+        <div class="next-episodes">
+            <h3>Next Episodes</h3>
+            <div class="ep-row" id="nextEpList">
+                <!-- Episodes will load here -->
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         const params = new URLSearchParams(window.location.search);
-        const rawVideoUrl = params.get('video');
-        const vttUrl = params.get('vtt');
-        const isOfflineMode = params.get('offline') === 'true';
+        const videoUrl = params.get('video');
+        const epTitle = params.get('title') || "BODA Studio Content";
+        const epDescription = params.get('desc') || "No description provided for this episode.";
 
-        // Initialize Plyr
-        const player = new Plyr('#player', {
-            controls: [
-                'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 
-                'captions', 'settings', 'pip', 'airplay', 'fullscreen'
-            ],
-            settings: ['quality', 'speed'],
-            keyboard: { focused: true, global: true },
+        // Set UI Text
+        document.getElementById('topTitle').innerText = epTitle;
+        document.getElementById('viewTitle').innerText = epTitle;
+        document.getElementById('viewDesc').innerText = epDescription;
+
+        const video = document.getElementById('player');
+        const player = new Plyr(video, {
+            controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
             tooltips: { controls: true, seek: true }
         });
 
-        async function setupSource() {
-            if (!rawVideoUrl) return;
-            const decodedUrl = decodeURIComponent(decodeURIComponent(rawVideoUrl));
-            const videoElement = document.getElementById('player');
-
-            if (isOfflineMode) {
-                const cache = await caches.open('boda-videos');
-                const cachedResponse = await cache.match(decodedUrl);
-                if (cachedResponse) {
-                    const blob = await cachedResponse.blob();
-                    videoElement.src = URL.createObjectURL(blob);
-                } else {
-                    alert("Media not found in local storage.");
-                }
-            } else {
-                videoElement.src = decodedUrl;
-            }
-
-            if (vttUrl && vttUrl !== "null") {
-                const track = document.createElement('track');
-                track.kind = 'captions';
-                track.label = 'English';
-                track.srclang = 'en';
-                track.src = decodeURIComponent(vttUrl);
-                track.default = true;
-                videoElement.appendChild(track);
-            }
+        // HLS Fix for .m3u8 links
+        if (Hls.isSupported() && videoUrl.includes('m3u8')) {
+            const hls = new Hls();
+            hls.loadSource(videoUrl);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                document.getElementById('loader').style.display = 'none';
+            });
+        } else {
+            // Standard MP4 or iOS Native HLS
+            video.src = videoUrl;
+            video.oncanplay = () => document.getElementById('loader').style.display = 'none';
         }
 
-        setupSource();
+        // Like Button Persistence
+        function handleLike() {
+            const btn = document.getElementById('likeBtn');
+            btn.classList.add('liked');
+            btn.innerHTML = '<i class="fa-solid fa-heart"></i> Liked';
+            localStorage.setItem('liked_' + epTitle, 'true');
+        }
 
-        // Screen Orientation & Fullscreen Logic
-        player.on('enterfullscreen', () => {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(() => {});
+        if (localStorage.getItem('liked_' + epTitle)) {
+            const btn = document.getElementById('likeBtn');
+            btn.classList.add('liked');
+            btn.innerHTML = '<i class="fa-solid fa-heart"></i> Liked';
+        }
+
+        // Mock Next Episodes (In a real app, you'd fetch from your JSONBin)
+        function loadMockNext() {
+            const list = document.getElementById('nextEpList');
+            for(let i=1; i<=5; i++) {
+                list.innerHTML += `
+                    <div class="ep-card">
+                        <img src="boda.jpg" alt="ep">
+                        <div class="ep-card-title">Next Episode ${i}</div>
+                    </div>
+                `;
             }
-        });
+        }
+        loadMockNext();
 
-        player.on('exitfullscreen', () => {
-            if (screen.orientation && screen.orientation.unlock) {
-                screen.orientation.unlock();
-            }
-            // Force UI update to ensure Exit button is visible
-            handleUserActivity();
-        });
-
-        // Loader removal
-        player.on('ready', () => {
-            setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000);
-        });
-
-        // Lock & UI Controls
-        const lockBtn = document.getElementById('lockBtn');
-        const uiLayer = document.getElementById('uiLayer');
-        let isLocked = false;
+        // UI Auto-hide Logic
         let uiTimer;
-
-        lockBtn.addEventListener('click', () => {
-            isLocked = !isLocked;
-            if (isLocked) {
-                document.body.classList.add('is-locked');
-                lockBtn.innerHTML = '<i class="fa-solid fa-lock"></i>';
-                if (navigator.vibrate) navigator.vibrate(40);
-                // Hide UI immediately when locked
-                uiLayer.classList.add('ui-hidden');
-            } else {
-                document.body.classList.remove('is-locked');
-                lockBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
-                handleUserActivity();
-            }
-        });
-
-        function handleUserActivity() {
-            if (isLocked) {
-                // Show only the lock button briefly when locked and screen is touched
-                uiLayer.classList.remove('ui-hidden');
-                clearTimeout(uiTimer);
-                uiTimer = setTimeout(() => { if(isLocked) uiLayer.classList.add('ui-hidden'); }, 2000);
-                return;
-            }
-
+        const uiLayer = document.getElementById('uiLayer');
+        function showUI() {
             uiLayer.classList.remove('ui-hidden');
             clearTimeout(uiTimer);
-            uiTimer = setTimeout(() => {
-                if (player.playing) uiLayer.classList.add('ui-hidden');
-            }, 3500);
+            if (!player.paused) {
+                uiTimer = setTimeout(() => uiLayer.classList.add('ui-hidden'), 3000);
+            }
         }
 
-        ['mousemove', 'touchstart', 'click'].forEach(evt => window.addEventListener(evt, handleUserActivity));
+        ['mousemove', 'touchstart', 'click'].forEach(e => window.addEventListener(e, showUI));
+        
+        player.on('enterfullscreen', () => document.body.classList.add('is-fullscreen'));
+        player.on('exitfullscreen', () => document.body.classList.remove('is-fullscreen'));
     </script>
 </body>
 </html>
