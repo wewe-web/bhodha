@@ -9,98 +9,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #D4AF37;
-            --black: #050505;
-            --gray: #121212;
-            --danger: #ff4d4d;
-        }
-
-        body {
-            background: var(--black);
-            color: #e0e0e0;
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding-bottom: 100px;
-        }
-
-        header {
-            background: linear-gradient(to bottom, #111, var(--black));
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom: 1px solid #222;
-        }
-
+        :root { --gold: #D4AF37; --black: #050505; --gray: #121212; --danger: #ff4d4d; }
+        body { background: var(--black); color: #e0e0e0; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 100px; }
+        header { background: linear-gradient(to bottom, #111, var(--black)); padding: 40px 20px; text-align: center; border-bottom: 1px solid #222; }
         h1 { font-family: 'Cinzel'; color: var(--gold); letter-spacing: 2px; }
-
         .admin-container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-
         .content-manager { background: var(--gray); border-radius: 12px; padding: 25px; border: 1px solid #222; }
-
-        .list-item {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #181818; padding: 15px 20px; margin-bottom: 10px;
-            border-radius: 8px; border-left: 3px solid transparent; transition: 0.3s;
-        }
-
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #181818; padding: 15px 20px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid transparent; transition: 0.3s; }
         .list-item:hover { border-left-color: var(--gold); background: #1d1d1d; }
-
         .item-info h4 { margin: 0; color: #fff; }
         .item-info span { font-size: 0.75rem; color: var(--gold); text-transform: uppercase; }
-
         .action-btns { display: flex; gap: 15px; }
-        .delete-btn { color: #444; cursor: pointer; background: none; border: none; font-size: 1.1rem; }
+        .delete-btn, .edit-btn { color: #444; cursor: pointer; background: none; border: none; font-size: 1.1rem; transition: 0.2s; }
         .delete-btn:hover { color: var(--danger); }
-        .edit-btn { color: #444; cursor: pointer; background: none; border: none; font-size: 1.1rem; }
         .edit-btn:hover { color: var(--gold); }
-
-        #uploadSection {
-            display: none; background: var(--gray); border-radius: 12px;
-            padding: 30px; margin-top: 20px; border: 1px solid var(--gold);
-        }
-
+        #uploadSection { display: none; background: var(--gray); border-radius: 12px; padding: 30px; margin-top: 20px; border: 1px solid var(--gold); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .full { grid-column: span 2; }
-
         label { display: block; margin-bottom: 5px; color: var(--gold); font-size: 0.8rem; font-weight: 600; }
-        input, textarea, select {
-            width: 100%; padding: 12px; background: #000; border: 1px solid #333;
-            color: white; border-radius: 5px; box-sizing: border-box; margin-bottom: 15px;
-        }
-
-        .episode-card { background: #080808; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #222; }
-
-        .btn-gold {
-            background: var(--gold); color: black; padding: 15px; border: none;
-            font-weight: bold; cursor: pointer; font-family: 'Cinzel'; width: 100%;
-            border-radius: 5px; transition: 0.3s;
-        }
-
-        .add-toggle {
-            position: fixed; bottom: 30px; right: 30px; background: var(--gold);
-            color: black; width: 60px; height: 60px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 100;
-        }
+        input, textarea, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; margin-bottom: 15px; }
+        .episode-card { background: #080808; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; position: relative; }
+        .btn-gold { background: var(--gold); color: black; padding: 15px; border: none; font-weight: bold; cursor: pointer; font-family: 'Cinzel'; width: 100%; border-radius: 5px; transition: 0.3s; margin-top: 10px; }
+        .add-toggle { position: fixed; bottom: 30px; right: 30px; background: var(--gold); color: black; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 100; }
+        .remove-ep { position: absolute; top: 10px; right: 10px; color: var(--danger); cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 
 <body>
-
-    <header>
-        <h1>BODA STUDIO</h1>
-    </header>
+    <header><h1>BODA STUDIO</h1></header>
 
     <div class="admin-container">
         <div class="content-manager">
             <h3 style="font-family:'Cinzel'; margin-bottom:20px;">Master Library</h3>
-            <div id="libraryList">
-                <p style="text-align:center; color:#555;">Connecting to cloud...</p>
-            </div>
+            <div id="libraryList"><p style="text-align:center; color:#555;">Connecting...</p></div>
         </div>
 
         <div id="uploadSection">
-            <h2 id="formTitle" style="text-align:center; font-family:'Cinzel';">New Entry</h2>
+            <h2 id="formTitle" style="text-align:center; font-family:'Cinzel'; color:var(--gold);">Entry Details</h2>
             
             <div class="form-grid">
                 <div class="form-group">
@@ -110,47 +55,40 @@
                         <option value="movie">Movie</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="title" required>
-                </div>
-                <div class="form-group full">
-                    <label>Synopsis</label>
-                    <textarea id="synopsis" rows="3"></textarea>
-                </div>
+                <div class="form-group"><label>Title</label><input type="text" id="title" required></div>
+                <div class="form-group full"><label>Synopsis</label><textarea id="synopsis" rows="2"></textarea></div>
                 <div class="form-group"><label>Poster URL</label><input type="text" id="cover"></div>
                 <div class="form-group"><label>Backdrop URL</label><input type="text" id="backdrop"></div>
-                <div class="form-group"><label>Trailer URL (YT)</label><input type="text" id="trailerLink"></div>
-                <div class="form-group"><label>Genres (Comma Separated)</label><input type="text" id="genres"></div>
-                <div class="form-group">
-                    <label>Billboard Hero?</label>
-                    <select id="isHero">
-                        <option value="NO">NO</option>
-                        <option value="YES">YES</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
+                <div class="form-group"><label>Trailer URL</label><input type="text" id="trailerLink"></div>
+                <div class="form-group"><label>Genres</label><input type="text" id="genres" placeholder="Action, Drama"></div>
+                <div class="form-group"><label>Status</label>
                     <select id="status">
                         <option>Ongoing</option>
                         <option>Completed</option>
                         <option>Upcoming</option>
                     </select>
                 </div>
+                <div class="form-group"><label>Hero Spotlight?</label>
+                    <select id="isHero"><option value="NO">NO</option><option value="YES">YES</option></select>
+                </div>
+                <!-- New Date Fields -->
+                <div class="form-group"><label>First Episode Date</label><input type="date" id="startDate"></div>
+                <div class="form-group"><label>Final Episode Date</label><input type="date" id="endDate"></div>
             </div>
 
             <div id="seriesFields">
+                <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
                 <div class="form-grid">
-                    <div class="form-group"><label>Seasons</label><input type="number" id="seasons" value="1"></div>
-                    <div class="form-group"><label>Total Episodes</label><input type="number" id="totalEpisodes"></div>
+                    <div class="form-group"><label>Total Seasons</label><input type="number" id="seasons" value="1"></div>
+                    <div class="form-group"><label>Target Ep Count</label><input type="number" id="totalEpisodes"></div>
                 </div>
                 <div id="episodeList"></div>
-                <button type="button" class="btn-gold" style="background:#222; color:#fff; margin-bottom:20px;" onclick="addEpisode()">+ Add Episode</button>
+                <button type="button" class="btn-gold" style="background:#222; color:#fff;" onclick="addEpisode()">+ Add Episode</button>
             </div>
 
             <div id="movieFields" style="display:none;">
-                <div class="form-group full"><label>Video URL (m3u8/mp4)</label><input type="text" id="movieLink"></div>
-                <div class="form-group full"><label>Download URL</label><input type="text" id="movieDownload"></div>
+                <div class="form-group full"><label>Stream Link</label><input type="text" id="movieLink"></div>
+                <div class="form-group full"><label>Download Link</label><input type="text" id="movieDownload"></div>
             </div>
 
             <button id="saveBtn" class="btn-gold" onclick="saveToBoda()">PUSH TO CLOUD</button>
@@ -174,80 +112,54 @@
                     fetch(`https://api.jsonbin.io/v3/b/${SERIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY }}),
                     fetch(`https://api.jsonbin.io/v3/b/${MOVIES_BIN}/latest`, { headers: { 'X-Master-Key': API_KEY }})
                 ]);
-                
                 const sData = await sRes.json();
                 const mData = await mRes.json();
-
-                // Validation fix: ensure record is always an array
-                fullLibrary.series = sData.record ? (Array.isArray(sData.record) ? sData.record : [sData.record]) : [];
-                fullLibrary.movies = mData.record ? (Array.isArray(mData.record) ? mData.record : [mData.record]) : [];
-                
+                fullLibrary.series = Array.isArray(sData.record) ? sData.record : [];
+                fullLibrary.movies = Array.isArray(mData.record) ? mData.record : [];
                 renderLibrary();
-            } catch (err) { 
-                console.error("Fetch Error:", err);
-                document.getElementById('libraryList').innerHTML = `<p style="color:red">Connection Error. Check API Key.</p>`;
-            }
+            } catch (err) { console.error(err); }
         }
 
         function renderLibrary() {
             const list = document.getElementById('libraryList');
             list.innerHTML = "";
             const all = [...fullLibrary.series.map(i => ({...i, type:'series'})), ...fullLibrary.movies.map(i => ({...i, type:'movie'}))];
-            
-            if (all.length === 0) {
-                list.innerHTML = `<p style="text-align:center; color:#444;">Vault is empty.</p>`;
-                return;
-            }
-
             all.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
-                div.innerHTML = `
-                    <div class="item-info">
-                        <h4>${item.title}</h4>
-                        <span>${item.type} • ${item.status || 'Active'}</span>
-                    </div>
+                div.innerHTML = `<div><h4>${item.title}</h4><span>${item.type} • ${item.status}</span></div>
                     <div class="action-btns">
                         <button class="edit-btn" onclick="editItem('${item.type}', '${item.title}')"><i class="fa-solid fa-pen"></i></button>
                         <button class="delete-btn" onclick="deleteItem('${item.type}', '${item.title}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
+                    </div>`;
                 list.appendChild(div);
             });
         }
 
-        function toggleFields() {
-            const type = document.getElementById('mediaType').value;
-            document.getElementById('seriesFields').style.display = (type === 'series') ? 'block' : 'none';
-            document.getElementById('movieFields').style.display = (type === 'movie') ? 'block' : 'none';
-        }
-
-        function showForm() {
-            editingId = null;
-            document.getElementById('uploadSection').style.display = 'block';
-            document.getElementById('episodeList').innerHTML = "";
-            document.getElementById('title').value = "";
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
-        function hideForm() { document.getElementById('uploadSection').style.display = 'none'; }
-
         function addEpisode(data = {}) {
+            const container = document.getElementById('episodeList');
             const div = document.createElement('div');
             div.className = 'episode-card';
             div.innerHTML = `
-                <input type="text" class="ep-title" placeholder="Ep Title" value="${data.title || ''}">
-                <input type="text" class="ep-link" placeholder="Stream Link" value="${data.link || ''}">
-                <input type="text" class="ep-download" placeholder="Download Link" value="${data.download || ''}">
-                <button onclick="this.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer;">Remove</button>
-            `;
-            document.getElementById('episodeList').appendChild(div);
+                <i class="fa-solid fa-circle-xmark remove-ep" onclick="this.parentElement.remove()"></i>
+                <div class="form-grid">
+                    <div class="form-group"><label>Ep Title</label><input type="text" class="ep-title" value="${data.title || ''}"></div>
+                    <div class="form-group"><label>Status</label>
+                        <select class="ep-status">
+                            <option value="Completed" ${data.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            <option value="Upcoming" ${data.status === 'Upcoming' ? 'selected' : ''}>Upcoming</option>
+                        </select>
+                    </div>
+                    <div class="form-group full"><label>Stream Link</label><input type="text" class="ep-link" value="${data.link || ''}"></div>
+                    <div class="form-group full"><label>Description</label><textarea class="ep-desc" rows="2">${data.description || ''}</textarea></div>
+                    <div class="form-group full"><label>Release Date & Time (For Timer)</label><input type="datetime-local" class="ep-time" value="${data.releaseTime || ''}"></div>
+                </div>`;
+            container.appendChild(div);
         }
 
         function editItem(type, title) {
             const item = fullLibrary[type === 'series' ? 'series' : 'movies'].find(i => i.title === title);
             if (!item) return;
-
             editingId = title;
             document.getElementById('uploadSection').style.display = 'block';
             document.getElementById('mediaType').value = type;
@@ -256,12 +168,13 @@
             document.getElementById('cover').value = item.cover || "";
             document.getElementById('backdrop').value = item.backdrop || "";
             document.getElementById('trailerLink').value = item.trailerLink || "";
-            document.getElementById('genres').value = item.genres ? item.genres.join(',') : "";
-            document.getElementById('isHero').value = item.isHero || "NO";
+            document.getElementById('genres').value = (item.genres || []).join(',');
             document.getElementById('status').value = item.status || "Ongoing";
+            document.getElementById('isHero').value = item.isHero || "NO";
+            document.getElementById('startDate').value = item.startDate || "";
+            document.getElementById('endDate').value = item.endDate || "";
 
             toggleFields();
-
             if (type === 'series') {
                 document.getElementById('seasons').value = item.seasons || 1;
                 document.getElementById('totalEpisodes').value = item.totalEpisodes || "";
@@ -271,17 +184,14 @@
                 document.getElementById('movieLink').value = item.videoLink || "";
                 document.getElementById('movieDownload').value = item.downloadLink || "";
             }
-            window.scrollTo(0, document.body.scrollHeight);
+            window.scrollTo(0, 0);
         }
 
         async function saveToBoda() {
             const btn = document.getElementById('saveBtn');
             const type = document.getElementById('mediaType').value;
-            const binId = (type === 'series') ? SERIES_BIN : MOVIES_BIN;
-
-            btn.innerText = "SAVING...";
-            btn.disabled = true;
-
+            btn.innerText = "SYNCING...";
+            
             const payload = {
                 title: document.getElementById('title').value,
                 synopsis: document.getElementById('synopsis').value,
@@ -289,8 +199,10 @@
                 backdrop: document.getElementById('backdrop').value,
                 trailerLink: document.getElementById('trailerLink').value,
                 genres: document.getElementById('genres').value.split(',').map(s => s.trim()),
-                isHero: document.getElementById('isHero').value,
                 status: document.getElementById('status').value,
+                isHero: document.getElementById('isHero').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value
             };
 
             if (type === 'series') {
@@ -298,48 +210,52 @@
                 payload.totalEpisodes = document.getElementById('totalEpisodes').value;
                 payload.episodes = Array.from(document.querySelectorAll('.episode-card')).map(card => ({
                     title: card.querySelector('.ep-title').value,
+                    status: card.querySelector('.ep-status').value,
                     link: card.querySelector('.ep-link').value,
-                    download: card.querySelector('.ep-download').value
+                    description: card.querySelector('.ep-desc').value,
+                    releaseTime: card.querySelector('.ep-time').value
                 }));
             } else {
                 payload.videoLink = document.getElementById('movieLink').value;
                 payload.downloadLink = document.getElementById('movieDownload').value;
             }
 
-            let currentArray = fullLibrary[type === 'series' ? 'series' : 'movies'];
+            let arr = fullLibrary[type === 'series' ? 'series' : 'movies'];
             if (editingId) {
-                const idx = currentArray.findIndex(i => i.title === editingId);
-                currentArray[idx] = payload;
-            } else {
-                currentArray.push(payload);
-            }
+                const idx = arr.findIndex(i => i.title === editingId);
+                arr[idx] = payload;
+            } else { arr.push(payload); }
 
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                await fetch(`https://api.jsonbin.io/v3/b/${type === 'series' ? SERIES_BIN : MOVIES_BIN}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                    body: JSON.stringify(currentArray)
+                    body: JSON.stringify(arr)
                 });
-                if(res.ok) { alert("Sync Complete!"); location.reload(); }
-            } catch (e) { alert("Failed to save."); }
-            finally { btn.innerText = "PUSH TO CLOUD"; btn.disabled = false; }
+                location.reload();
+            } catch (e) { alert("Save failed"); btn.innerText = "PUSH TO CLOUD"; }
         }
 
         async function deleteItem(type, title) {
-            if(!confirm("Delete forever?")) return;
-            const binId = (type === 'series') ? SERIES_BIN : MOVIES_BIN;
-            const updated = fullLibrary[type === 'series' ? 'series' : 'movies'].filter(i => i.title !== title);
-            
+            if(!confirm("Delete this entry?")) return;
+            const arr = fullLibrary[type === 'series' ? 'series' : 'movies'].filter(i => i.title !== title);
             try {
-                await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                await fetch(`https://api.jsonbin.io/v3/b/${type === 'series' ? SERIES_BIN : MOVIES_BIN}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                    body: JSON.stringify(updated)
+                    body: JSON.stringify(arr)
                 });
                 location.reload();
-            } catch (e) { alert("Delete failed."); }
+            } catch (e) { alert("Delete failed"); }
         }
 
+        function toggleFields() {
+            const type = document.getElementById('mediaType').value;
+            document.getElementById('seriesFields').style.display = (type === 'series') ? 'block' : 'none';
+            document.getElementById('movieFields').style.display = (type === 'movie') ? 'block' : 'none';
+        }
+        function showForm() { editingId = null; document.getElementById('uploadSection').style.display = 'block'; document.getElementById('episodeList').innerHTML = ""; }
+        function hideForm() { document.getElementById('uploadSection').style.display = 'none'; }
         window.onload = fetchLibrary;
     </script>
 </body>
