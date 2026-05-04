@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BODA | Series and Shows Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --black: #050505;
+            --surface: #121212;
+            --text-dim: #aaa;
+        }
+
+        body {
+            background-color: var(--black);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, #111, transparent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-family: 'Cinzel'; color: var(--gold); font-size: 1.5rem; letter-spacing: 3px; }
+
+        /* Controls Section */
+        .controls {
+            padding: 0 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid #333;
+            padding: 12px 45px;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .search-box i { position: absolute; left: 15px; top: 15px; color: var(--gold); }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+
+        .filter-chip, .sort-select {
+            background: var(--surface);
+            border: 1px solid #333;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .filter-chip.active { background: var(--gold); color: black; border-color: var(--gold); }
+
+        /* Grid Layout */
+        .series-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .series-card {
+            background: var(--surface);
+            border-radius: 10px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease;
+            border: 1px solid #222;
+        }
+
+        .series-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+
+        .card-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            position: relative;
+        }
+
+        .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .card-info { padding: 10px; }
+        .card-info h3 { 
+            margin: 0; font-size: 0.85rem; font-weight: 600; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+        .card-info p { margin: 4px 0 0; font-size: 0.7rem; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">BODA</div>
+        <div class="user-icon"><i class="fa-solid fa-circle-user fa-xl"></i></div>
+    </header>
+
+    <div class="controls">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search series or shows..." onkeyup="filterContent()">
+        </div>
+
+        <div class="filters">
+            <button class="filter-chip active" onclick="setGenre('All')">All</button>
+            <button class="filter-chip" onclick="setGenre('Action')">Action</button>
+            <button class="filter-chip" onclick="setGenre('Drama')">Drama</button>
+            <button class="filter-chip" onclick="setGenre('Horror')">Horror</button>
+            <select class="sort-select" id="sortOrder" onchange="filterContent()">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="series-grid" id="seriesGrid">
+        <!-- Content will be injected here -->
+    </div>
+
+    <script>
+        // Placeholder Data
+        const seriesData = [
+            { title: "The Grand Estate", genre: "Drama", date: "2026-05-01", backdrop: "https://via.placeholder.com/320x180/111/D4AF37?text=Estate" },
+            { title: "Shadow Pulse", genre: "Action", date: "2026-04-15", backdrop: "https://via.placeholder.com/320x180/111/D4AF37?text=Pulse" },
+            { title: "Midnight Echo", genre: "Horror", date: "2026-01-20", backdrop: "https://via.placeholder.com/320x180/111/D4AF37?text=Echo" }
+        ];
+
+        let currentGenre = 'All';
+
+        function setGenre(genre) {
+            currentGenre = genre;
+            document.querySelectorAll('.filter-chip').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText === genre);
+            });
+            filterContent();
+        }
+
+        function filterContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const sort = document.getElementById('sortOrder').value;
+            const grid = document.getElementById('seriesGrid');
+            
+            let filtered = seriesData.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(query);
+                const matchesGenre = currentGenre === 'All' || item.genre === currentGenre;
+                return matchesSearch && matchesGenre;
+            });
+
+            // Sorting logic
+            filtered.sort((a, b) => {
+                return sort === 'newest' 
+                    ? new Date(b.date) - new Date(a.date) 
+                    : new Date(a.date) - new Date(b.date);
+            });
+
+            grid.innerHTML = filtered.map(item => `
+                <a href="details.html?title=${encodeURIComponent(item.title)}" class="series-card">
+                    <div class="card-thumb">
+                        <img src="${item.backdrop}" alt="${item.title}">
+                    </div>
+                    <div class="card-info">
+                        <h3>${item.title}</h3>
+                        <p>${item.genre} • ${item.date.split('-')[0]}</p>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Initial Load
+        filterContent();
+    </script>
+</body>
+</html>
