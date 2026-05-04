@@ -6,7 +6,6 @@
     <title>BODA | Series Library</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
-    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -14,46 +13,28 @@
             --gold: #D4AF37;
             --black: #050505;
             --surface: #111111;
-            --search-bg: rgba(255, 255, 255, 0.08);
+            --nav-bg: rgba(10, 10, 10, 0.95);
         }
 
         body {
             background-color: var(--black);
             color: white;
             font-family: 'Poppins', sans-serif;
-            margin: 0; padding: 0;
+            margin: 0; padding: 0 0 80px 0; /* Bottom padding for Nav */
             overflow-x: hidden;
         }
 
-        /* Fixed Navigation & Search Header */
+        /* Top Header with Search */
         header {
             position: sticky;
             top: 0;
             background: var(--black);
             z-index: 100;
             padding: 15px 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-
-        nav { 
-            display: flex; 
-            justify-content: center; 
-            gap: 25px; 
-            margin-bottom: 15px;
-        }
-        
-        nav a {
-            color: #888; text-decoration: none;
-            font-family: 'Cinzel', serif; font-size: 0.75rem; 
-            transition: 0.3s; text-transform: uppercase;
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-        }
-        
-        nav a i { font-size: 1rem; }
-        nav a:hover, nav a.active { color: var(--gold); }
 
         .home-search {
-            background: var(--search-bg);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 50px;
             display: flex;
@@ -74,7 +55,38 @@
 
         .home-search i { color: var(--gold); margin-right: 10px; }
 
-        /* Filter Row */
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid #222;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Cinzel', serif;
+            font-size: 0.65rem;
+            transition: 0.3s;
+            gap: 4px;
+        }
+
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item.active { color: var(--gold); }
+
+        /* Genre Sync Row */
         .filter-row {
             padding: 10px 20px;
             display: flex;
@@ -87,21 +99,20 @@
         .genre-btn {
             background: transparent;
             border: 1px solid #222;
-            color: #666;
+            color: #888;
             padding: 6px 16px;
             border-radius: 20px;
             font-size: 0.75rem;
             cursor: pointer;
             white-space: nowrap;
-            transition: 0.3s;
         }
 
-        .genre-btn.active { background: var(--gold); color: black; border-color: var(--gold); font-weight: 600; }
+        .genre-btn.active { background: var(--gold); color: black; border-color: var(--gold); }
 
         /* Grid */
         .series-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 15px;
             padding: 20px;
         }
@@ -113,38 +124,26 @@
             text-decoration: none;
             color: inherit;
             border: 1px solid #1a1a1a;
-            transition: 0.3s;
         }
-        
-        .series-card:active { transform: scale(0.96); }
 
         .backdrop-thumb {
             width: 100%;
             aspect-ratio: 16/9;
             background: #1a1a1a;
-            position: relative;
         }
-        
         .backdrop-thumb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
 
         .series-info { padding: 12px; }
         .series-info h3 { 
-            margin: 0; font-size: 0.85rem; font-family: 'Cinzel'; 
-            color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            margin: 0; font-size: 0.8rem; font-family: 'Cinzel'; color: var(--gold); 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
-        .series-info p { margin: 4px 0 0; font-size: 0.65rem; color: #555; font-weight: 600; }
+        .series-info p { margin: 4px 0 0; font-size: 0.65rem; color: #555; }
 
-        /* Sorting */
         .sort-area { display: flex; justify-content: flex-end; padding: 0 20px; }
         .sort-pill {
-            background: #111;
-            color: var(--gold);
-            border: 1px solid #222;
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-family: 'Cinzel';
-            font-size: 0.65rem;
-            outline: none;
+            background: #111; color: var(--gold); border: 1px solid #222;
+            padding: 6px 12px; border-radius: 50px; font-family: 'Cinzel'; font-size: 0.6rem;
         }
 
         #pageLoader {
@@ -160,12 +159,6 @@
     <div id="pageLoader"><div class="spinner"></div></div>
 
     <header>
-        <nav>
-            <a href="index.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
-            <a href="series.html" class="active"><i class="fa-solid fa-tv"></i><span>Series</span></a>
-            <a href="movies.html"><i class="fa-solid fa-film"></i><span>Movies</span></a>
-        </nav>
-
         <div class="home-search">
             <i class="fa-solid fa-magnifying-glass"></i>
             <input type="text" id="seriesSearch" placeholder="Search series..." oninput="runSearch()">
@@ -185,6 +178,22 @@
 
     <div class="series-grid" id="mainGrid"></div>
 
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="series.html" class="nav-item active">
+            <i class="fa-solid fa-tv"></i>
+            <span>Series</span>
+        </a>
+        <a href="movies.html" class="nav-item">
+            <i class="fa-solid fa-film"></i>
+            <span>Movies</span>
+        </a>
+    </nav>
+
     <script>
         const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
         const SERIES_BIN = "69f3074faaba882197550749";
@@ -198,18 +207,18 @@
                     headers: { 'X-Master-Key': API_KEY }
                 });
                 const data = await response.json();
-                library = data.record.series || data.record;
+                library = data.record.series || data.record; //
                 
                 generateGenres();
                 runSearch();
                 document.getElementById('pageLoader').style.display = 'none';
             } catch (error) {
                 console.error("Fetch error:", error);
-                document.getElementById('pageLoader').innerHTML = "<p style='color:var(--gold)'>Network Error</p>";
             }
         }
 
         function generateGenres() {
+            // This syncs all genres from your bin automatically
             const genres = ['All', ...new Set(library.map(s => s.genre).filter(Boolean))];
             const container = document.getElementById('genreList');
             container.innerHTML = genres.map(g => `
@@ -234,6 +243,7 @@
                 return title.includes(query) && (selectedGenre === 'All' || s.genre === selectedGenre);
             });
 
+            // Sorting by ID
             results.sort((a, b) => sort === 'new' ? (b.id - a.id) : (a.id - b.id));
 
             grid.innerHTML = results.map(s => `
