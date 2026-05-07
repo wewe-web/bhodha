@@ -89,6 +89,33 @@
             text-transform: uppercase;
         }
 
+        /* NEW: Subtitle & Audio Badges */
+        .ep-meta-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag-sub {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border: 1px solid #444;
+            color: #aaa;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tag-audio {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            border-radius: 3px;
+            text-decoration: none;
+        }
+
         .main-title {
             font-family: var(--luxury-font);
             font-size: clamp(2.2rem, 8vw, 4.5rem);
@@ -129,7 +156,6 @@
             letter-spacing: 2px;
         }
 
-        /* Netflix-Style Episode Row */
         .ep-item {
             display: grid;
             grid-template-columns: 240px 1fr;
@@ -156,7 +182,6 @@
             position: relative;
         }
 
-        /* Backdrop Thumbnail Overlay */
         .ep-thumb::before {
             content: '';
             position: absolute;
@@ -320,10 +345,20 @@
                 eps = window.currentData.episodes || [];
             }
 
-            // Using Backdrop as Thumbnail
             const thumbUrl = window.currentData.backdrop || window.currentData.cover;
 
-            list.innerHTML = eps.map((ep, i) => `
+            list.innerHTML = eps.map((ep, i) => {
+                // Subtitle Logic: Show only if they exist in JSON
+                let subHtml = '';
+                if(ep.hasEnglishSub) subHtml += `<span class="tag-sub">English Sub</span>`;
+                if(ep.hasFilipinoSub) subHtml += `<span class="tag-sub">Filipino Sub</span>`;
+                
+                // Audio Link Logic: If sound is missing
+                let audioHtml = ep.audioLink ? 
+                    `<a href="${ep.audioLink}" class="tag-audio" onclick="event.stopPropagation();" target="_blank"><i class="fa-solid fa-volume-high"></i> External Audio</a>` 
+                    : '';
+
+                return `
                 <div class="ep-item" onclick="window.location.href='watch.html?video=${encodeURIComponent(ep.link)}'">
                     <div class="ep-thumb" style="background-image: url('${thumbUrl}')">
                         <i class="fa-solid fa-play"></i>
@@ -331,13 +366,16 @@
                     <div class="ep-info">
                         <h4>${i+1}. ${ep.title || 'Episode ' + (i+1)}</h4>
                         <p>${ep.description || 'Watch ' + window.currentData.title + ' online in premium quality.'}</p>
+                        <div class="ep-meta-tags">
+                            ${subHtml}
+                            ${audioHtml}
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         window.onload = init;
     </script>
 </body>
-    </html>
-    
+</html>
