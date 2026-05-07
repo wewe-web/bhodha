@@ -99,7 +99,6 @@
         .card:hover { border-color: var(--gold); transform: scale(1.05); }
         .card img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 
-        /* Dynamic Title Styling */
         .card-title {
             padding: 8px; text-align: center; color: var(--gold);
             background: rgba(0,0,0,0.85); position: absolute; bottom: 0; width: 100%;
@@ -108,7 +107,6 @@
             height: 40px; line-height: 1.1;
         }
 
-        /* NEW: Release Badge */
         .badge {
             position: absolute; top: 8px; right: 8px; background: var(--gold);
             color: black; font-size: 0.6rem; font-weight: bold;
@@ -155,7 +153,6 @@
         <div class="hero-content" id="hero-content"></div>
     </section>
 
-    <!-- NEW SECTION: Airing Today -->
     <div id="today-section" style="display:none;">
         <h2 class="section-title"><i class="fa-solid fa-bolt" style="color:#FFD700;"></i> Airing Today</h2>
         <div class="grid-row" id="airing-today"></div>
@@ -208,13 +205,11 @@
             let hasToday = false;
 
             items.forEach(item => {
-                // Check for Today's Release in Episodes
                 let isAiringToday = false;
                 if(item.episodes) {
                     isAiringToday = item.episodes.some(ep => ep.releaseTime && ep.releaseTime.startsWith(todayStr));
                 }
 
-                // Dynamic font size logic for title
                 const fontSize = item.title.length > 20 ? '0.6rem' : (item.title.length > 12 ? '0.75rem' : '0.85rem');
                 
                 const cardHtml = `
@@ -233,7 +228,6 @@
                 if (item.status === "Ongoing") ongoingRow.innerHTML += cardHtml;
                 if (item.status === "Upcoming") upcomingRow.innerHTML += cardHtml;
 
-                // Simple "New" check (approx 3 days)
                 const itemDate = item.startDate ? new Date(item.startDate) : new Date();
                 const diff = Math.ceil(Math.abs(new Date() - itemDate) / (1000 * 60 * 60 * 24));
                 if (diff <= 7) newRow.innerHTML += cardHtml;
@@ -261,7 +255,14 @@
 
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
-            if (term === "iamtheadminof1227") { window.location.href = 'dashboard.html'; return; }
+            
+            // --- UPDATED ADMIN LOGIC ---
+            if (term === "iamtheadminof1227") { 
+                sessionStorage.setItem("boda_admin_auth", "authenticated_1227"); // Create the token
+                window.location.href = 'dashboard.html'; 
+                return; 
+            }
+            
             if (term.length < 2) { searchResults.style.display = 'none'; return; }
 
             const matches = allItems.filter(i => i.title.toLowerCase().includes(term));
