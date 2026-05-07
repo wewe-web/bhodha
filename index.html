@@ -9,8 +9,6 @@
     <title>BODA | Luxury Streaming</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
-    <link rel="manifest" href="manifest.json">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
@@ -30,6 +28,7 @@
             margin: 0;
             overflow-x: hidden;
             padding-bottom: 80px; 
+            -webkit-tap-highlight-color: transparent;
         }
 
         @media (min-width: 769px) { body { padding-bottom: 0; } }
@@ -48,7 +47,9 @@
             width: 100%; padding: 10px 15px 10px 35px; border-radius: 30px;
             border: 1px solid var(--gold); background: var(--gray);
             color: white; font-size: 0.9rem; outline: none; box-sizing: border-box;
+            transition: 0.3s;
         }
+        #smartSearch:focus { border-color: white; box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
 
         .search-area i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gold); }
 
@@ -62,7 +63,6 @@
         .search-item { display: flex; padding: 12px; border-bottom: 1px solid #222; cursor: pointer; gap: 15px; transition: 0.2s; }
         .search-item:hover { background: #1a1a1a; }
         .search-item img { width: 110px; height: 65px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
-
         .search-info h4 { margin: 0 0 4px 0; color: var(--gold); font-family: var(--luxury-font); font-size: 0.9rem; }
 
         nav { display: flex; align-items: center; }
@@ -77,43 +77,130 @@
             background: var(--gold); color: black; border: none;
             padding: 8px 18px; border-radius: 5px; font-weight: 600;
             cursor: pointer; font-family: var(--luxury-font); white-space: nowrap;
+            transition: 0.3s;
+        }
+        .app-dl:active { transform: scale(0.95); }
+
+        /* --- DYNAMIC HERO SLIDER --- */
+        #hero-slider { 
+            height: 75vh; 
+            width: 100%;
+            position: relative; 
+            overflow: hidden;
+            background: #000;
         }
 
-        #hero-slider { height: 70vh; display: flex; align-items: flex-end; position: relative; }
-        .hero-content { padding: 0 5% 40px; background: linear-gradient(transparent, var(--black)); width: 100%; }
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+        }
 
+        .slide.active { opacity: 1; z-index: 5; }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, var(--black) 15%, transparent 60%),
+                        linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        .hero-content { 
+            padding: 0 5% 60px; 
+            position: relative;
+            z-index: 10;
+            width: 100%; 
+        }
+
+        .hero-content h1 {
+            font-size: clamp(1.8rem, 7vw, 3.8rem);
+            font-family: var(--luxury-font);
+            margin: 0;
+            text-shadow: 2px 2px 20px rgba(0,0,0,1);
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            max-width: 600px;
+            color: #ddd;
+            margin: 15px 0 25px;
+            font-size: clamp(0.85rem, 2vw, 1.05rem);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* --- SMART GRID SYSTEM --- */
         .section-title {
             font-family: var(--luxury-font); color: var(--gold);
-            padding: 25px 5% 10px; font-size: 1.4rem; letter-spacing: 2px;
+            padding: 25px 5% 10px; font-size: 1.3rem; letter-spacing: 2px;
             display: flex; align-items: center; gap: 10px;
         }
 
-        .grid-row { display: flex; overflow-x: auto; padding: 0 5% 20px; gap: 15px; scrollbar-width: none; }
+        .grid-row { 
+            display: flex; 
+            overflow-x: auto; 
+            padding: 5px 5% 25px; 
+            gap: 15px; 
+            scrollbar-width: none; 
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+        }
         .grid-row::-webkit-scrollbar { display: none; }
 
         .card {
-            min-width: 160px; max-width: 160px; height: 240px;
-            background: #1a1a1a; border-radius: 10px; transition: 0.3s ease;
-            cursor: pointer; border: 1px solid transparent; position: relative;
+            min-width: 150px; 
+            max-width: 150px; 
+            height: 225px;
+            background: #1a1a1a; 
+            border-radius: 10px; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; 
+            border: 1px solid transparent; 
+            position: relative;
+            scroll-snap-align: start;
+            flex: 0 0 auto;
         }
-        .card:hover { border-color: var(--gold); transform: scale(1.05); }
+        .card:hover { border-color: var(--gold); transform: translateY(-5px); }
         .card img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 
         .card-title {
-            padding: 8px; text-align: center; color: var(--gold);
-            background: rgba(0,0,0,0.85); position: absolute; bottom: 0; width: 100%;
-            border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
-            box-sizing: border-box; display: flex; align-items: center; justify-content: center;
-            height: 40px; line-height: 1.1;
+            padding: 8px; 
+            text-align: center; 
+            color: var(--gold);
+            background: linear-gradient(to top, rgba(0,0,0,1) 70%, transparent);
+            position: absolute; 
+            bottom: 0; 
+            width: 100%;
+            border-bottom-left-radius: 10px; 
+            border-bottom-right-radius: 10px;
+            box-sizing: border-box; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            height: 45px; 
+            line-height: 1.2;
+            font-weight: 600;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
 
         .badge {
             position: absolute; top: 8px; right: 8px; background: var(--gold);
-            color: black; font-size: 0.6rem; font-weight: bold;
-            padding: 3px 8px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            z-index: 5;
+            color: black; font-size: 0.6rem; font-weight: 900;
+            padding: 3px 8px; border-radius: 4px; z-index: 5;
+            text-transform: uppercase;
         }
 
+        /* --- MOBILE NAV & FIXES --- */
         @media (max-width: 768px) {
             header { padding: 10px 15px; flex-wrap: wrap; }
             .logo-box { order: 1; }
@@ -123,11 +210,13 @@
                 position: fixed; bottom: 0; left: 0; width: 100%;
                 background: #000; justify-content: space-around;
                 padding: 12px 0; border-top: 1px solid var(--gold); z-index: 2000;
+                backdrop-filter: blur(10px);
             }
             nav a { font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 0; }
             nav a i { font-size: 1.3rem; }
-            #hero-slider { height: 45vh; }
+            #hero-slider { height: 55vh; }
             .card { min-width: 130px; height: 195px; }
+            .section-title { font-size: 1.1rem; padding: 20px 5% 5px; }
         }
     </style>
 </head>
@@ -149,8 +238,8 @@
         <button class="app-dl" onclick="location.href='about.html'"><i class="fa-solid fa-mobile-screen-button"></i> APP</button>
     </header>
 
-    <section id="hero-slider" style="background: url('boda.jpg') center/cover;">
-        <div class="hero-content" id="hero-content"></div>
+    <section id="hero-slider">
+        <!-- Slides injected by JS -->
     </section>
 
     <div id="today-section" style="display:none;">
@@ -173,6 +262,7 @@
         const MOVIES_BIN = "69f307c736566621a80b4134";
 
         let allItems = [];
+        let currentSlide = 0;
 
         async function loadContent() {
             try {
@@ -190,7 +280,7 @@
                 ].filter(item => item && item.title);
 
                 renderRows(allItems);
-                updateHero(allItems);
+                initHeroSlider(allItems);
 
             } catch (err) { console.error("Sync Failure:", err); }
         }
@@ -210,21 +300,21 @@
                     isAiringToday = item.episodes.some(ep => ep.releaseTime && ep.releaseTime.startsWith(todayStr));
                 }
 
-                const fontSize = item.title.length > 20 ? '0.6rem' : (item.title.length > 12 ? '0.75rem' : '0.85rem');
-                
+                // SMART FONT SCALING LOGIC
+                const titleLength = item.title.length;
+                let dynamicFS = '0.78rem'; 
+                if (titleLength > 28) dynamicFS = '0.62rem';
+                else if (titleLength > 18) dynamicFS = '0.7rem';
+
                 const cardHtml = `
-                    <div class="card" onclick="location.href='details.html?title=${encodeURIComponent(item.title)}'">
+                    <div class="card" onclick="location.href='details.html?id=${item.id}'">
                         ${isAiringToday ? '<div class="badge">NEW EP</div>' : ''}
-                        <img src="${item.cover}" alt="${item.title}">
-                        <div class="card-title" style="font-size: ${fontSize}">${item.title}</div>
+                        <img src="${item.cover}" alt="${item.title}" loading="lazy">
+                        <div class="card-title" style="font-size: ${dynamicFS}">${item.title}</div>
                     </div>
                 `;
 
-                if (isAiringToday) {
-                    todayRow.innerHTML += cardHtml;
-                    hasToday = true;
-                }
-
+                if (isAiringToday) { todayRow.innerHTML += cardHtml; hasToday = true; }
                 if (item.status === "Ongoing") ongoingRow.innerHTML += cardHtml;
                 if (item.status === "Upcoming") upcomingRow.innerHTML += cardHtml;
 
@@ -236,29 +326,49 @@
             if(hasToday) document.getElementById('today-section').style.display = 'block';
         }
 
-        function updateHero(items) {
-            const hero = items.find(i => i.isHero === "YES") || items[0];
-            if (hero) {
-                document.getElementById('hero-slider').style.background = `linear-gradient(to bottom, rgba(0,0,0,0.3), var(--black)), url('${hero.backdrop}') center/cover`;
-                document.getElementById('hero-content').innerHTML = `
-                    <h1 style="font-size: 3.2rem; font-family: var(--luxury-font); margin:0; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); line-height:1;">${hero.title}</h1>
-                    <p style="max-width: 550px; color: #ddd; font-size: 1rem; margin: 15px 0 20px 0;">${hero.synopsis ? hero.synopsis.substring(0, 140) + '...' : ''}</p>
-                    <button class="app-dl" onclick="location.href='details.html?title=${encodeURIComponent(hero.title)}'">
-                        <i class="fa-solid fa-play"></i> START WATCHING
-                    </button>
-                `;
+        function initHeroSlider(items) {
+            const slider = document.getElementById('hero-slider');
+            // Filter all items marked as YES for Hero
+            const heroItems = items.filter(i => i.isHero === "YES");
+            
+            // Fallback to latest 3 items if none marked YES
+            const displayItems = heroItems.length > 0 ? heroItems : items.slice(0, 3);
+
+            slider.innerHTML = displayItems.map((hero, index) => `
+                <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${hero.backdrop || hero.cover}')">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content">
+                        <span style="color:var(--gold); font-family:var(--luxury-font); font-size:0.75rem; letter-spacing:4px; font-weight:700;">BODA EXCLUSIVE</span>
+                        <h1>${hero.title}</h1>
+                        <p>${hero.synopsis ? hero.synopsis : "Experience a new standard of luxury storytelling, exclusively on Boda."}</p>
+                        <button class="app-dl" onclick="location.href='details.html?id=${hero.id}'">
+                            <i class="fa-solid fa-play"></i> VIEW MASTERPIECE
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Automatic Cycle
+            if (displayItems.length > 1) {
+                setInterval(() => {
+                    const slides = document.querySelectorAll('.slide');
+                    if(slides.length === 0) return;
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 6000);
             }
         }
 
+        // --- SEARCH LOGIC ---
         const searchInput = document.getElementById('smartSearch');
         const searchResults = document.getElementById('searchResults');
 
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             
-            // --- UPDATED ADMIN LOGIC ---
             if (term === "iamtheadminof1227") { 
-                sessionStorage.setItem("boda_admin_auth", "authenticated_1227"); // Create the token
+                sessionStorage.setItem("boda_admin_auth", "authenticated_1227");
                 window.location.href = 'dashboard.html'; 
                 return; 
             }
@@ -268,11 +378,11 @@
             const matches = allItems.filter(i => i.title.toLowerCase().includes(term));
             if (matches.length > 0) {
                 searchResults.innerHTML = matches.map(item => `
-                    <div class="search-item" onclick="location.href='details.html?title=${encodeURIComponent(item.title)}'">
+                    <div class="search-item" onclick="location.href='details.html?id=${item.id}'">
                         <img src="${item.backdrop || item.cover}" alt="backdrop">
                         <div class="search-info">
                             <h4>${item.title}</h4>
-                            <div style="font-size:0.7rem; color:#888;">Genres: ${item.genres ? item.genres.join(', ') : 'Masterpiece'}</div>
+                            <div style="font-size:0.7rem; color:#888;">${item.category} • ${item.year}</div>
                         </div>
                     </div>
                 `).join('');
@@ -285,12 +395,6 @@
         });
 
         window.onload = loadContent;
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(err => console.log('SW Failed', err));
-            });
-        }
     </script>
 </body>
 </html>
