@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BODA Admin | Content Management</title>
+    <title>BODA Admin | Luxury Management</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@300;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -21,7 +21,7 @@
 
         body {
             margin: 0;
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Poppins', sans-serif;
             background-color: var(--bg-black);
             color: var(--text-light);
         }
@@ -68,9 +68,11 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            text-transform: uppercase;
         }
 
         .btn-gold { background: var(--gold); color: black; font-weight: bold; }
+        .btn-gold:disabled { background: #555; cursor: not-allowed; }
         .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
         .btn-danger { background: #8b0000; color: white; }
         .btn-sm { padding: 5px 10px; font-size: 0.6rem; }
@@ -89,10 +91,13 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            transition: 0.3s;
         }
+        .item-card:hover { border-color: var(--gold); }
 
         .item-card img { width: 100%; height: 180px; object-fit: cover; }
         .item-content { padding: 15px; flex-grow: 1; }
+        .item-tag { font-size: 0.7rem; color: var(--gold); margin-bottom: 5px; display: block; }
 
         .modal {
             display: none;
@@ -143,19 +148,21 @@
 
     <header>
         <h2>BODA LUXE | Admin</h2>
-        <button class="btn btn-gold" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add Title</button>
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline" onclick="location.href='index.html'"><i class="fa-solid fa-eye"></i> View Site</button>
+            <button class="btn btn-gold" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add Title</button>
+        </div>
     </header>
 
     <div class="admin-nav">
-        <div style="flex-grow: 1;"><input type="text" id="search" placeholder="Search by title..." oninput="filterList()"></div>
+        <div style="flex-grow: 1;"><input type="text" id="search" placeholder="Search Database..." oninput="filterList()"></div>
         <div style="width: 200px;">
             <select id="catFilter" onchange="filterList()">
-                <option value="all">All Categories</option>
-                <option value="Korean Drama">K-Drama</option>
-                <option value="Chinese Drama">C-Drama</option>
+                <option value="all">All Content</option>
+                <option value="Korean Drama">Korean Drama</option>
+                <option value="Chinese Drama">Chinese Drama</option>
                 <option value="PH-Drama">PH-Drama</option>
                 <option value="TV Show">TV Show</option>
-                <option value="Tagalog Dubbed">Tagalog Dubbed</option>
                 <option value="Movie">Movies</option>
             </select>
         </div>
@@ -166,19 +173,19 @@
     <!-- MAIN MODAL -->
     <div id="masterModal" class="modal">
         <div class="modal-content">
-            <h2 id="modalTitle" style="color: var(--gold); margin-top: 0;">Add New Title</h2>
+            <h2 id="modalTitle" style="color: var(--gold); margin-top: 0;">Add Masterpiece</h2>
             <form id="bodaForm">
                 <input type="hidden" id="editId">
+                <input type="hidden" id="originalBin"> <!-- Track if moved from Drama to Movie -->
 
                 <div class="form-section">
-                    <label>Main Category</label>
+                    <label>Content Type</label>
                     <select id="mainCategory" onchange="toggleFormType()" required>
                         <option value="Korean Drama">Korean Drama</option>
                         <option value="Chinese Drama">Chinese Drama</option>
                         <option value="PH-Drama">PH-Drama</option>
                         <option value="TV Show">TV Show</option>
-                        <option value="Tagalog Dubbed">Tagalog Dubbed</option>
-                        <option value="Movie">Movies</option>
+                        <option value="Movie">Movie</option>
                     </select>
                 </div>
 
@@ -213,70 +220,61 @@
                 </div>
 
                 <div class="form-section">
-                    <label>Display on Slideshow Banner?</label>
-                    <select id="isBanner">
-                        <option value="No">No</option>
-                        <option value="Yes">Yes</option>
+                    <label>Promote to Hero Banner?</label>
+                    <select id="isHero">
+                        <option value="NO">No</option>
+                        <option value="YES">Yes</option>
                     </select>
                 </div>
 
                 <div class="form-section">
-                    <label>Media Assets</label>
-                    <input type="text" id="coverImg" placeholder="Cover Image URL (Poster)">
-                    <input type="text" id="backdropImg" placeholder="Backdrop Image URL (Horizontal)">
-                    <input type="text" id="trailer" placeholder="YouTube Trailer Link">
+                    <label>Media Links</label>
+                    <input type="text" id="coverImg" placeholder="Poster Image URL">
+                    <input type="text" id="backdropImg" placeholder="Landscape Backdrop URL">
+                    <input type="text" id="trailer" placeholder="YouTube Link">
                 </div>
 
-                <!-- VIDEO SECTION -->
                 <div class="form-section" id="videoSection">
-                    <label style="display:block; margin-bottom:10px; font-weight: bold; color: var(--gold);">Video & Audio Sources</label>
+                    <label style="display:block; margin-bottom:10px; font-weight: bold; color: var(--gold);">Video Sources</label>
 
-                    <!-- MOVIE SPECIFIC -->
-                    <div id="movieLinkBox">
-                        <input type="text" id="movieUrl" placeholder="Direct Video Link (m3u8/mp4)">
-                        <input type="text" id="movieAudioUrl" placeholder="External Audio Link (Optional)">
+                    <!-- MOVIE BOX -->
+                    <div id="movieLinkBox" style="display:none;">
+                        <input type="text" id="movieUrl" placeholder="Video Source (.m3u8 / .mp4)">
+                        <input type="text" id="movieAudioUrl" placeholder="Alternate Audio (Optional)">
                         <div id="movieSubsContainer"></div>
                         <button type="button" class="btn btn-outline btn-sm" onclick="addSubtitleField('movieSubsContainer')">+ Add Subtitle Track</button>
                     </div>
 
-                    <!-- DRAMA SPECIFIC -->
-                    <div id="episodeBoxContainer" style="display:none;">
+                    <!-- DRAMA BOX -->
+                    <div id="episodeBoxContainer">
                         <div id="episodesList"></div>
                         <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="addEpField()">+ Add New Episode</button>
                     </div>
                 </div>
 
                 <div style="display:flex; gap:15px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-gold">Save to Database</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Close</button>
+                    <button type="submit" id="saveBtn" class="btn btn-gold">Sync to Database</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-
-        // --- AUTHENTICATION GUARD ---
-    // This checks if the user has logged in. If not, it redirects them away immediately.
-    (function() {
-        const sessionAuth = sessionStorage.getItem("boda_admin_auth");
-        if (sessionAuth !== "authenticated_1227") {
-            // Redirect to your home page (change 'index.html' to your actual home filename)
-            window.location.href = "index.html"; 
-        }
-    })();
         const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
         const BINS = {
             drama: "69f3074faaba882197550749",
             movies: "69f307c736566621a80b4134"
         };
+        
         let localData = [];
 
         const genreSets = {
-            tv: ['Drama', 'Comedy', 'Romance', 'Sci-fi', 'Fantasy', 'Sports', 'Action', 'Adventure', 'Animated', 'Live action', 'Revenge', 'Medical'],
-            shows: ['Talk', 'Variety', 'Reality', 'Survival', 'Talent', 'Game']
+            tv: ['Drama', 'Comedy', 'Romance', 'Sci-fi', 'Fantasy', 'Action', 'Thriller', 'Revenge', 'Medical', 'Melodrama'],
+            shows: ['Talk', 'Variety', 'Reality', 'Survival', 'Game Show']
         };
 
+        // UI Logic
         function toggleFormType() {
             const cat = document.getElementById('mainCategory').value;
             const genreContainer = document.getElementById('genreContainer');
@@ -304,44 +302,45 @@
             const container = document.getElementById(containerId);
             const subDiv = document.createElement('div');
             subDiv.className = 'subtitle-entry';
-
-            const langs = ['English', 'Filipino', 'Korean', 'Chinese', 'Indo'];
-            const isOther = data && !langs.includes(data.lang);
+            const subId = Math.random().toString(36).substr(2, 5);
 
             subDiv.innerHTML = `
                 <div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <select class="sub-lang" onchange="this.nextElementSibling.style.display = (this.value === 'Other') ? 'block' : 'none'" style="flex:1;">
-                        ${langs.map(l => `<option value="${l}" ${data?.lang === l ? 'selected' : ''}>${l}</option>`).join('')}
-                        <option value="Other" ${isOther ? 'selected' : ''}>Other</option>
+                    <select class="sub-lang" style="flex:1;">
+                        <option value="English" ${data?.lang === 'English' ? 'selected' : ''}>English</option>
+                        <option value="Filipino" ${data?.lang === 'Filipino' ? 'selected' : ''}>Filipino</option>
+                        <option value="Korean" ${data?.lang === 'Korean' ? 'selected' : ''}>Korean</option>
+                        <option value="Chinese" ${data?.lang === 'Chinese' ? 'selected' : ''}>Chinese</option>
                     </select>
-                    <input type="text" class="custom-lang" placeholder="Language Name" style="flex:1; display:${isOther ? 'block' : 'none'};" value="${isOther ? data.lang : ''}">
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer;">&times;</button>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
                 </div>
-                <textarea placeholder="Paste SRT content here..." class="sub-content" rows="3">${data?.content || ''}</textarea>
+                <textarea placeholder="Paste VTT/SRT Content Here" class="sub-content" rows="3">${data?.content || ''}</textarea>
             `;
             container.appendChild(subDiv);
         }
 
         function addEpField(data = null) {
             const container = document.getElementById('episodesList');
-            const epId = 'subs_' + Math.random().toString(36).substr(2, 9);
             const epDiv = document.createElement('div');
             epDiv.className = 'episode-box';
+            const epSubId = 'subCont_' + Math.random().toString(36).substr(2, 9);
+            
             epDiv.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <strong>Episode Content</strong>
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer;">Remove Ep</button>
+                    <strong>Episode Setup</strong>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer;">Delete Episode</button>
                 </div>
-                <input type="text" placeholder="Episode Title (e.g. Ep 1)" class="ep-title" value="${data?.title || ''}">
+                <input type="text" placeholder="Title (e.g. Episode 01)" class="ep-title" value="${data?.title || ''}">
                 <input type="text" placeholder="Video URL" class="ep-url" value="${data?.url || ''}">
-                <input type="text" placeholder="Audio URL (Alternative)" class="ep-audio" value="${data?.audio || ''}">
-                <div id="${epId}"></div>
-                <button type="button" class="btn btn-outline btn-sm" onclick="addSubtitleField('${epId}')" style="margin-top:5px;">+ Add Subtitle</button>
+                <input type="text" placeholder="Audio URL" class="ep-audio" value="${data?.audio || ''}">
+                <div id="${epSubId}"></div>
+                <button type="button" class="btn btn-outline btn-sm" onclick="addSubtitleField('${epSubId}')" style="margin-top:5px;">+ Add Subtitle</button>
             `;
             container.appendChild(epDiv);
-            if (data?.subtitles) data.subtitles.forEach(s => addSubtitleField(epId, s));
+            if (data?.subtitles) data.subtitles.forEach(s => addSubtitleField(epSubId, s));
         }
 
+        // Data Sync Logic
         async function fetchBin(id) {
             const r = await fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, { headers: { 'X-Master-Key': API_KEY } });
             const j = await r.json();
@@ -351,22 +350,26 @@
         async function loadAll() {
             try {
                 const [d, m] = await Promise.all([fetchBin(BINS.drama), fetchBin(BINS.movies)]);
-                localData = [...d.map(i => ({ ...i, b: BINS.drama })), ...m.map(i => ({ ...i, b: BINS.movies }))];
+                // Attach bin info so we know where each item came from
+                localData = [
+                    ...d.map(i => ({ ...i, bin: BINS.drama })), 
+                    ...m.map(i => ({ ...i, bin: BINS.movies }))
+                ];
                 render(localData);
-            } catch (err) { console.error("Load error:", err); }
+            } catch (err) { console.error("Sync Failure:", err); }
         }
 
         function render(data) {
             const grid = document.getElementById('mainGrid');
             grid.innerHTML = data.map(item => `
                 <div class="item-card">
-                    <img src="${item.poster || 'https://via.placeholder.com/280x180'}" alt="">
+                    <img src="${item.cover || item.poster || 'logo.png'}" alt="">
                     <div class="item-content">
                         <span class="item-tag">${item.category}</span>
-                        <h3>${item.title}</h3>
-                        <div style="display:flex; gap:10px;">
+                        <h3 style="margin:5px 0; font-size:1rem; color:var(--gold);">${item.title}</h3>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
                             <button class="btn btn-outline btn-sm" onclick="editItem('${item.id}')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.id}', '${item.b}')">Delete</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteItem('${item.id}', '${item.bin}')">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -385,7 +388,8 @@
             document.getElementById('episodesList').innerHTML = '';
             document.getElementById('movieSubsContainer').innerHTML = '';
             document.getElementById('editId').value = '';
-            document.getElementById('modalTitle').innerText = 'Add New Title';
+            document.getElementById('originalBin').value = '';
+            document.getElementById('modalTitle').innerText = 'Add Masterpiece';
             toggleFormType();
             document.getElementById('masterModal').style.display = 'block';
         }
@@ -396,19 +400,20 @@
             const item = localData.find(i => i.id == id);
             if (!item) return;
             openModal();
-            document.getElementById('modalTitle').innerText = 'Edit: ' + item.title;
+            document.getElementById('modalTitle').innerText = 'Edit Masterpiece';
             document.getElementById('editId').value = item.id;
+            document.getElementById('originalBin').value = item.bin;
             document.getElementById('mainCategory').value = item.category;
             toggleFormType();
 
             document.getElementById('title').value = item.title;
             document.getElementById('year').value = item.year;
-            document.getElementById('synopsis').value = item.synopsis;
-            document.getElementById('status').value = item.status;
-            document.getElementById('isBanner').value = item.isBanner;
-            document.getElementById('coverImg').value = item.poster;
-            document.getElementById('backdropImg').value = item.backdrop;
-            document.getElementById('trailer').value = item.trailer;
+            document.getElementById('synopsis').value = item.synopsis || '';
+            document.getElementById('status').value = item.status || 'Completed';
+            document.getElementById('isHero').value = item.isHero || 'NO';
+            document.getElementById('coverImg').value = item.cover || item.poster || '';
+            document.getElementById('backdropImg').value = item.backdrop || '';
+            document.getElementById('trailer').value = item.trailer || '';
 
             if (item.genres) {
                 document.querySelectorAll('input[name="genre"]').forEach(cb => cb.checked = item.genres.includes(cb.value));
@@ -425,35 +430,37 @@
         }
 
         function collectSubs(container) {
-            return Array.from(container.querySelectorAll('.subtitle-entry')).map(entry => {
-                const sel = entry.querySelector('.sub-lang').value;
-                const custom = entry.querySelector('.custom-lang').value;
-                return {
-                    lang: sel === 'Other' ? custom : sel,
-                    content: entry.querySelector('.sub-content').value
-                };
-            });
+            return Array.from(container.querySelectorAll('.subtitle-entry')).map(entry => ({
+                lang: entry.querySelector('.sub-lang').value,
+                content: entry.querySelector('.sub-content').value
+            }));
         }
 
         document.getElementById('bodaForm').onsubmit = async (e) => {
             e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Synchronizing...";
+
             const id = document.getElementById('editId').value || Date.now().toString();
-            const cat = document.getElementById('mainCategory').value;
-            const binId = (cat === 'Movie') ? BINS.movies : BINS.drama;
+            const currentCat = document.getElementById('mainCategory').value;
+            const targetBinId = (currentCat === 'Movie') ? BINS.movies : BINS.drama;
+            const originalBinId = document.getElementById('originalBin').value;
 
             let itemData = {
-                id, category: cat, title: document.getElementById('title').value,
+                id, category: currentCat, 
+                title: document.getElementById('title').value,
                 year: document.getElementById('year').value,
                 synopsis: document.getElementById('synopsis').value,
                 genres: Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(cb => cb.value),
                 status: document.getElementById('status').value,
-                isBanner: document.getElementById('isBanner').value,
-                poster: document.getElementById('coverImg').value,
+                isHero: document.getElementById('isHero').value,
+                cover: document.getElementById('coverImg').value,
                 backdrop: document.getElementById('backdropImg').value,
                 trailer: document.getElementById('trailer').value
             };
 
-            if (cat === 'Movie') {
+            if (currentCat === 'Movie') {
                 itemData.videoUrl = document.getElementById('movieUrl').value;
                 itemData.audioUrl = document.getElementById('movieAudioUrl').value;
                 itemData.subtitles = collectSubs(document.getElementById('movieSubsContainer'));
@@ -468,31 +475,44 @@
             }
 
             try {
-                let fullBin = await fetchBin(binId);
-                const idx = fullBin.findIndex(i => i.id == id);
-                if (idx > -1) fullBin[idx] = itemData; else fullBin.push(itemData);
+                // 1. If Category changed (e.g. Series to Movie), remove from old bin
+                if (originalBinId && originalBinId !== targetBinId) {
+                    let oldBin = await fetchBin(originalBinId);
+                    oldBin = oldBin.filter(i => i.id != id);
+                    await updateBin(originalBinId, oldBin);
+                }
 
-                await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                    body: JSON.stringify(fullBin)
-                });
-                alert('Saved successfully!');
+                // 2. Save to target bin
+                let targetBin = await fetchBin(targetBinId);
+                const idx = targetBin.findIndex(i => i.id == id);
+                if (idx > -1) targetBin[idx] = itemData; else targetBin.push(itemData);
+                await updateBin(targetBinId, targetBin);
+
+                alert('Database Synchronized Successfully');
                 location.reload();
-            } catch (err) { alert('Error saving data.'); }
+            } catch (err) { 
+                alert('Connection Error. Check API Key.'); 
+                saveBtn.disabled = false;
+                saveBtn.innerText = "Sync to Database";
+            }
         };
 
+        async function updateBin(binId, data) {
+            return fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(data)
+            });
+        }
+
         async function deleteItem(id, bId) {
-            if (!confirm('Confirm delete?')) return;
+            if (!confirm('Permanently remove this masterpiece?')) return;
             try {
                 let bin = await fetchBin(bId);
                 bin = bin.filter(i => i.id != id);
-                await fetch(`https://api.jsonbin.io/v3/b/${bId}`, {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                    body: JSON.stringify(bin)
-                });
+                await updateBin(bId, bin);
                 location.reload();
-            } catch (err) { console.error(err); }
+            } catch (err) { alert('Delete failed'); }
         }
 
         window.onload = loadAll;
