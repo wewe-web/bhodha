@@ -255,6 +255,16 @@
     </div>
 
     <script>
+
+        // --- AUTHENTICATION GUARD ---
+    // This checks if the user has logged in. If not, it redirects them away immediately.
+    (function() {
+        const sessionAuth = sessionStorage.getItem("boda_admin_auth");
+        if (sessionAuth !== "authenticated_1227") {
+            // Redirect to your home page (change 'index.html' to your actual home filename)
+            window.location.href = "index.html"; 
+        }
+    })();
         const API_KEY = "$2a$10$sNCC8H0eDz90JN9ha9ORGe4mbISKfuRKzcvb71lDyLSwx8omK0d86";
         const BINS = {
             drama: "69f3074faaba882197550749",
