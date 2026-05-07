@@ -176,7 +176,7 @@
             <h2 id="modalTitle" style="color: var(--gold); margin-top: 0;">Add Masterpiece</h2>
             <form id="bodaForm">
                 <input type="hidden" id="editId">
-                <input type="hidden" id="originalBin"> <!-- Track if moved from Drama to Movie -->
+                <input type="hidden" id="originalBin">
 
                 <div class="form-section">
                     <label>Content Type</label>
@@ -190,7 +190,7 @@
                 </div>
 
                 <div class="grid-2 form-section">
-                    <div><label>Title</label><input type="text" id="title" required></div>
+                    <div><label>Main Title</label><input type="text" id="title" required></div>
                     <div><label>Year</label><input type="number" id="year" required></div>
                 </div>
 
@@ -237,7 +237,6 @@
                 <div class="form-section" id="videoSection">
                     <label style="display:block; margin-bottom:10px; font-weight: bold; color: var(--gold);">Video Sources</label>
 
-                    <!-- MOVIE BOX -->
                     <div id="movieLinkBox" style="display:none;">
                         <input type="text" id="movieUrl" placeholder="Video Source (.m3u8 / .mp4)">
                         <input type="text" id="movieAudioUrl" placeholder="Alternate Audio (Optional)">
@@ -245,7 +244,6 @@
                         <button type="button" class="btn btn-outline btn-sm" onclick="addSubtitleField('movieSubsContainer')">+ Add Subtitle Track</button>
                     </div>
 
-                    <!-- DRAMA BOX -->
                     <div id="episodeBoxContainer">
                         <div id="episodesList"></div>
                         <button type="button" class="btn btn-outline" style="margin-top:10px;" onclick="addEpField()">+ Add New Episode</button>
@@ -274,7 +272,6 @@
             shows: ['Talk', 'Variety', 'Reality', 'Survival', 'Game Show']
         };
 
-        // UI Logic
         function toggleFormType() {
             const cat = document.getElementById('mainCategory').value;
             const genreContainer = document.getElementById('genreContainer');
@@ -302,8 +299,6 @@
             const container = document.getElementById(containerId);
             const subDiv = document.createElement('div');
             subDiv.className = 'subtitle-entry';
-            const subId = Math.random().toString(36).substr(2, 5);
-
             subDiv.innerHTML = `
                 <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <select class="sub-lang" style="flex:1;">
@@ -330,8 +325,11 @@
                     <strong>Episode Setup</strong>
                     <button type="button" onclick="this.parentElement.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer;">Delete Episode</button>
                 </div>
-                <input type="text" placeholder="Title (e.g. Episode 01)" class="ep-title" value="${data?.title || ''}">
+                <label>Episode Title</label>
+                <input type="text" placeholder="e.g. Episode 01: The Beginning" class="ep-title" value="${data?.title || ''}">
+                <label>Video URL</label>
                 <input type="text" placeholder="Video URL" class="ep-url" value="${data?.url || ''}">
+                <label>Audio URL (Optional)</label>
                 <input type="text" placeholder="Audio URL" class="ep-audio" value="${data?.audio || ''}">
                 <div id="${epSubId}"></div>
                 <button type="button" class="btn btn-outline btn-sm" onclick="addSubtitleField('${epSubId}')" style="margin-top:5px;">+ Add Subtitle</button>
@@ -340,7 +338,6 @@
             if (data?.subtitles) data.subtitles.forEach(s => addSubtitleField(epSubId, s));
         }
 
-        // Data Sync Logic
         async function fetchBin(id) {
             const r = await fetch(`https://api.jsonbin.io/v3/b/${id}/latest`, { headers: { 'X-Master-Key': API_KEY } });
             const j = await r.json();
@@ -350,7 +347,6 @@
         async function loadAll() {
             try {
                 const [d, m] = await Promise.all([fetchBin(BINS.drama), fetchBin(BINS.movies)]);
-                // Attach bin info so we know where each item came from
                 localData = [
                     ...d.map(i => ({ ...i, bin: BINS.drama })), 
                     ...m.map(i => ({ ...i, bin: BINS.movies }))
@@ -376,11 +372,44 @@
             `).join('');
         }
 
-        function filterList() {
-            const term = document.getElementById('search').value.toLowerCase();
-            const cat = document.getElementById('catFilter').value;
-            const filtered = localData.filter(i => (cat === 'all' || i.category === cat) && i.title.toLowerCase().includes(term));
-            render(filtered);
+        function editItem(id) {
+            const item = localData.find(i => String(i.id) === String(id));
+            if (!item) return;
+            
+            openModal();
+            document.getElementById('modalTitle').innerText = 'Edit Masterpiece';
+            document.getElementById('editId').value = item.id;
+            document.getElementById('originalBin').value = item.bin;
+            document.getElementById('mainCategory').value = item.category;
+            
+            toggleFormType(); // Refresh genre list and fields based on category
+
+            // Populate Main Fields
+            document.getElementById('title').value = item.title;
+            document.getElementById('year').value = item.year;
+            document.getElementById('synopsis').value = item.synopsis || '';
+            document.getElementById('status').value = item.status || 'Completed';
+            document.getElementById('isHero').value = item.isHero || 'NO';
+            document.getElementById('coverImg').value = item.cover || item.poster || '';
+            document.getElementById('backdropImg').value = item.backdrop || '';
+            document.getElementById('trailer').value = item.trailer || '';
+
+            // Map Genres
+            if (item.genres) {
+                document.querySelectorAll('input[name="genre"]').forEach(cb => {
+                    cb.checked = item.genres.includes(cb.value);
+                });
+            }
+
+            // Populate Video Data
+            if (item.category === 'Movie') {
+                document.getElementById('movieUrl').value = item.videoUrl || '';
+                document.getElementById('movieAudioUrl').value = item.audioUrl || '';
+                item.subtitles?.forEach(s => addSubtitleField('movieSubsContainer', s));
+            } else {
+                document.getElementById('epCount').value = item.epCount || '';
+                item.episodes?.forEach(ep => addEpField(ep));
+            }
         }
 
         function openModal() {
@@ -396,37 +425,11 @@
 
         function closeModal() { document.getElementById('masterModal').style.display = 'none'; }
 
-        function editItem(id) {
-            const item = localData.find(i => i.id == id);
-            if (!item) return;
-            openModal();
-            document.getElementById('modalTitle').innerText = 'Edit Masterpiece';
-            document.getElementById('editId').value = item.id;
-            document.getElementById('originalBin').value = item.bin;
-            document.getElementById('mainCategory').value = item.category;
-            toggleFormType();
-
-            document.getElementById('title').value = item.title;
-            document.getElementById('year').value = item.year;
-            document.getElementById('synopsis').value = item.synopsis || '';
-            document.getElementById('status').value = item.status || 'Completed';
-            document.getElementById('isHero').value = item.isHero || 'NO';
-            document.getElementById('coverImg').value = item.cover || item.poster || '';
-            document.getElementById('backdropImg').value = item.backdrop || '';
-            document.getElementById('trailer').value = item.trailer || '';
-
-            if (item.genres) {
-                document.querySelectorAll('input[name="genre"]').forEach(cb => cb.checked = item.genres.includes(cb.value));
-            }
-
-            if (item.category === 'Movie') {
-                document.getElementById('movieUrl').value = item.videoUrl || '';
-                document.getElementById('movieAudioUrl').value = item.audioUrl || '';
-                item.subtitles?.forEach(s => addSubtitleField('movieSubsContainer', s));
-            } else {
-                document.getElementById('epCount').value = item.epCount || '';
-                item.episodes?.forEach(ep => addEpField(ep));
-            }
+        function filterList() {
+            const term = document.getElementById('search').value.toLowerCase();
+            const cat = document.getElementById('catFilter').value;
+            const filtered = localData.filter(i => (cat === 'all' || i.category === cat) && i.title.toLowerCase().includes(term));
+            render(filtered);
         }
 
         function collectSubs(container) {
@@ -475,23 +478,21 @@
             }
 
             try {
-                // 1. If Category changed (e.g. Series to Movie), remove from old bin
                 if (originalBinId && originalBinId !== targetBinId) {
                     let oldBin = await fetchBin(originalBinId);
-                    oldBin = oldBin.filter(i => i.id != id);
+                    oldBin = oldBin.filter(i => String(i.id) !== String(id));
                     await updateBin(originalBinId, oldBin);
                 }
 
-                // 2. Save to target bin
                 let targetBin = await fetchBin(targetBinId);
-                const idx = targetBin.findIndex(i => i.id == id);
+                const idx = targetBin.findIndex(i => String(i.id) === String(id));
                 if (idx > -1) targetBin[idx] = itemData; else targetBin.push(itemData);
                 await updateBin(targetBinId, targetBin);
 
                 alert('Database Synchronized Successfully');
                 location.reload();
             } catch (err) { 
-                alert('Connection Error. Check API Key.'); 
+                alert('Connection Error.'); 
                 saveBtn.disabled = false;
                 saveBtn.innerText = "Sync to Database";
             }
@@ -509,7 +510,7 @@
             if (!confirm('Permanently remove this masterpiece?')) return;
             try {
                 let bin = await fetchBin(bId);
-                bin = bin.filter(i => i.id != id);
+                bin = bin.filter(i => String(i.id) !== String(id));
                 await updateBin(bId, bin);
                 location.reload();
             } catch (err) { alert('Delete failed'); }
